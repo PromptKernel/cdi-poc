@@ -167,6 +167,9 @@ def analyze(project_root, tool_root, config_dir, target, pr, baseline: Graph, fr
     base_frags = M.split_scanner_fragments(baseline, names, commits)
     base_scanner = Graph.from_fragments(list(base_frags.values()))
 
+    all_changed = D.git(root, "diff", "--name-only", "--no-renames", mb, head_sha).splitlines()
+    folders = [r["path"].rstrip("/") + "/" for r in repos]
+    outside = [f for f in all_changed if not any(f.startswith(x) for x in folders)]          # changed files in no analysed logical repo (a root README, workflows, ...)
     limit = cfg["limits"]["max_changed_files"]
     n_changed = sum(len(D.changes(root, mb, head_sha, r["path"])) for r in repos)
     if n_changed > limit:
@@ -368,7 +371,7 @@ def analyze(project_root, tool_root, config_dir, target, pr, baseline: Graph, fr
         keep.update(base=base, head=head)
     synthetic_any = any(o["synthetic"] for o in results) or any(f["synthetic"] for f in file_reports)
     return {
-        "meta": {"pr": name or pr, "pr_branch": pr_label or pr, "target": target_label or target, "target_sha": tgt, "pr_sha": head_sha, "merge_base": mb,
+        "meta": {"files_outside_analysed_folders": outside, "pr": name or pr, "pr_branch": pr_label or pr, "target": target_label or target, "target_sha": tgt, "pr_sha": head_sha, "merge_base": mb,
                  "baseline_commits": (freshness or {}).get("commits"), "baseline_loaded_at": (freshness or {}).get("loaded_at"),
                  "baseline_mode": (freshness or {}).get("mode"), "target_commits": target_commits, "warnings": warnings,
                  "synthetic_notice": synthetic_any, "scan_plan": plan,

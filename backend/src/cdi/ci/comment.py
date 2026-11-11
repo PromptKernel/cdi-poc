@@ -62,8 +62,15 @@ def _render(result, b, ccfg, scale, violations, blocking):
     if not objs:
         nf = [f for f in result["files"] if f.get("no_graph_node")]
         ns = [f for f in result["files"] if not f["scanned"]]
-        lines += ["### Changed objects", f"No changed object mapped to the graph. Changed files: {len(result['files'])} "
-                  f"({len(nf)} with no graph node, {len(ns)} not covered by a scanner)."]
+        out = meta.get("files_outside_analysed_folders") or []
+        lines += ["### Changed objects", "No changed object mapped to the graph."]
+        if result["files"]:
+            lines.append(f"Changed files in the analysed folders: {len(result['files'])} ({len(nf)} with no graph node, {len(ns)} not covered by a scanner).")
+        if out:
+            shown = ", ".join(f"`{f}`" for f in out[:5]) + (f" and {len(out) - 5} more" if len(out) > 5 else "")
+            lines.append(f"This pull request changes {len(out)} file(s) outside every folder the scanners analyse: {shown}. They cannot affect the dependency graph.")
+        if not result["files"] and not out:
+            lines.append("This pull request changes no files.")
         lines += [f"- `{f['repo']}:{f['path']}` — {f['result']}" for f in (nf + ns)[:lim("max_unresolved_items")]]
         return lines + [""]
     lines += [f"### Changed objects ({len(objs)})", "| Object | Kind | Change | Risk (rule that fired) |", "|---|---|---|---|"]

@@ -345,3 +345,19 @@ def test_main_moving_only_outside_the_scanned_files_gives_no_stale_warning(moved
         body = comment_body(gh)
     assert code == 0 and "OLDER target" not in body and "### ⚠ Warnings" not in body
     assert "Basis:" in body and "compared with target `main`" in body
+
+
+def test_a_pr_touching_only_files_outside_the_analysed_folders_says_so(world, tmp_path):
+    """Found on the third real PR (README only): the comment said 'Changed files: 0', which is wrong and confusing."""
+    p, bl = world
+    sh(["git", "switch", "-q", "main"], cwd=p.path)
+    sh(["git", "switch", "-q", "-c", "pr-readme"], cwd=p.path)
+    (p.path / "README.md").write_text("only docs\n"); (p.path / "NOTES.md").write_text("notes\n")
+    sh(["git", "add", "README.md", "NOTES.md"], cwd=p.path); sh(["git", *GIT_ID, "commit", "-q", "-m", "docs only"], cwd=p.path)
+    sh(["git", "switch", "-q", "main"], cwd=p.path)
+    with FakeGitHub() as gh:
+        code, _ = run_flow(tmp_path, p, bl, gh, ev=event_file(tmp_path, p, head="pr-readme"))
+        body = comment_body(gh)
+    assert code == 0 and "No changed object mapped to the graph." in body and "Changed files: 0" not in body
+    assert "changes 2 file(s) outside every folder the scanners analyse: `NOTES.md`, `README.md`" in body and "cannot affect the dependency graph" in body
+    assert "OLDER target" not in body and gh is not None

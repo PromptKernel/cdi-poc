@@ -72,6 +72,10 @@ def render(res):
     a("")
     a("## Changed files")
     a("")
+    outside = m.get("files_outside_analysed_folders") or []
+    if outside:
+        a(f"Files outside every analysed folder ({len(outside)}): " + ", ".join(f"`{f}`" for f in outside[:20]) + (f" and {len(outside) - 20} more" if len(outside) > 20 else ""))
+        a("")
     for f in res["files"]:
         h = ", ".join(f"old {x[0]} → new {x[1]}" for x in f["hunks"]) or "whole file"
         flag = " **NO GRAPH NODE**" if f.get("no_graph_node") else ""
