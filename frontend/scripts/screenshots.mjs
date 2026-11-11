@@ -20,20 +20,20 @@ await page.goto(base)
 await page.getByRole('heading', { name: 'Dependency explorer' }).waitFor()
 
 // 1. search with results
-await page.locator('#search').fill('FetchEmployee')
+await page.locator('#search').fill('FetchItem')
 await page.getByRole('listbox').waitFor()
 await shot('01-search.png')
 
 // 2. expanded workflow with all three confidence styles: UI service -> request -> endpoint -> interface (inferred dispatch) -> data access -> dynamic SQL (unresolved)
 await page.locator('#search').fill('')
-await pick('EmployeeService.getEmployeeById', 'UI_SERVICE_METHOD')
+await pick('ItemService.getItemById', 'UI_SERVICE_METHOD')
 await page.locator('#depth').fill('12')
 await page.getByRole('button', { name: 'Expand selected' }).click()
-await visible.getByText('EmployeeDataAccessLayer.GetEmployeeData(int)').waitFor()
+await visible.getByText('ItemDataAccessLayer.GetItemData(int)').waitFor()
 await shot('02-expanded-workflow-three-confidence-styles.png')
 
 // 3. side panel: an inferred edge with its reason, evidence, commit and the GitHub link
-await visible.getByRole('button', { name: 'ASPCoreWithAngular.Interfaces.IEmployee.GetEmployeeData(int)' }).click()
+await visible.getByRole('button', { name: 'ShopApp.Interfaces.IItem.GetItemData(int)' }).click()
 await page.getByTestId('node-panel').getByRole('button', { name: /DISPATCHES_TO/ }).click()
 await page.getByTestId('edge-panel').waitFor()
 await shot('03-side-panel-inferred-edge.png')

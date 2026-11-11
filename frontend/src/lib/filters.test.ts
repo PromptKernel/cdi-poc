@@ -10,10 +10,10 @@ const e = (s: string, t: string, confidence: GEdge['confidence'] = 'CONFIRMED_ST
 })
 // UI -> SVC -> API -> DAL -> PROC -> TABLE ; API -?-> UNRES (unresolved) ; UI2 -> SVC
 const data: GraphData = {
-  meta: { generated_at: '', source: 'files', notice: '', counts: { nodes: 0, edges: 0 }, baseline: null, repos: { web: { path: 'samples/web', kind: 'frontend' }, api: { path: 'samples/api', kind: 'api' }, db: { path: 'samples/db', kind: 'sql' } } },
-  nodes: [n('UI', 'UI_COMPONENT', 'web', 'FetchEmployeeComponent'), n('UI2', 'UI_COMPONENT', 'web', 'Other'), n('SVC', 'UI_SERVICE_METHOD', 'web', 'EmployeeService.getEmployees'),
-          n('API', 'API_ENDPOINT', 'api', 'EmployeeController.Index()'), n('DAL', 'DATA_ACCESS_METHOD', 'api'), n('PROC', 'SQL_PROC', 'db', 'dbo.spGetAllEmployees'),
-          n('TBL', 'SQL_TABLE', 'db', 'dbo.tblEmployee'), n('UNRES', 'UNRESOLVED', 'api', 'dynamic SQL at x:1')],
+  meta: { generated_at: '', source: 'files', notice: '', counts: { nodes: 0, edges: 0 }, baseline: null, repos: { web: { path: 'apps/web', kind: 'frontend' }, api: { path: 'apps/api', kind: 'api' }, db: { path: 'apps/db', kind: 'sql' } } },
+  nodes: [n('UI', 'UI_COMPONENT', 'web', 'FetchItemComponent'), n('UI2', 'UI_COMPONENT', 'web', 'Other'), n('SVC', 'UI_SERVICE_METHOD', 'web', 'ItemService.getItems'),
+          n('API', 'API_ENDPOINT', 'api', 'ItemController.Index()'), n('DAL', 'DATA_ACCESS_METHOD', 'api'), n('PROC', 'SQL_PROC', 'db', 'dbo.spGetAllItems'),
+          n('TBL', 'SQL_TABLE', 'db', 'dbo.tblItem'), n('UNRES', 'UNRESOLVED', 'api', 'dynamic SQL at x:1')],
   edges: [e('UI', 'SVC'), e('UI2', 'SVC'), e('SVC', 'API', 'CONFIRMED_STATIC', 'ROUTES_TO'), e('API', 'DAL', 'INFERRED', 'DISPATCHES_TO'), e('DAL', 'PROC'), e('PROC', 'TBL', 'CONFIRMED_STATIC', 'READS_TABLE'),
           e('DAL', 'UNRES', 'UNRESOLVED', 'EXECUTES_DYNAMIC_SQL'), e('UI', 'TBL', 'CONFIRMED_STATIC', 'USES_TYPE')],
 }
@@ -81,10 +81,10 @@ describe('filters', () => {
 
 describe('search', () => {
   it('finds by name case-insensitively and ranks exact > prefix > last segment > substring', () => {
-    expect(search(ix, 'fetchemployeecomponent', F())[0].id).toBe('UI')
+    expect(search(ix, 'fetchitemcomponent', F())[0].id).toBe('UI')
     expect(search(ix, 'dbo.tbl', F()).map((x) => x.id)).toEqual(['TBL'])
-    expect(search(ix, 'getEmployees', F())[0].id).toBe('SVC')
-    expect(search(ix, 'employee', F()).length).toBeGreaterThan(2)
+    expect(search(ix, 'getItems', F())[0].id).toBe('SVC')
+    expect(search(ix, 'item', F()).length).toBeGreaterThan(2)
   })
   it('respects node filters and limits, and returns nothing for an empty query', () => {
     expect(search(ix, 'dbo', F({ kinds: new Set(['SQL_TABLE']) })).map((x) => x.id)).toEqual(['TBL'])
@@ -97,7 +97,7 @@ describe('github link', () => {
   const cfg = { githubBaseUrl: 'https://example.invalid/org/repo/', linkTemplate: '{base}/blob/{commit}/{repoPath}/{file}#L{line}' }
   const sha = 'a'.repeat(40)
   it('builds a blob URL from base URL, the edge commit, the repo folder, file and line', () => {
-    expect(githubLink(cfg, data.meta, 'api', 'Controllers/EmployeeController.cs', 27, sha)).toBe(`https://example.invalid/org/repo/blob/${sha}/samples/api/Controllers/EmployeeController.cs#L27`)
+    expect(githubLink(cfg, data.meta, 'api', 'Controllers/ItemController.cs', 27, sha)).toBe(`https://example.invalid/org/repo/blob/${sha}/apps/api/Controllers/ItemController.cs#L27`)
   })
   it('encodes path segments', () => expect(githubLink(cfg, data.meta, 'web', 'src/a b/c#.ts', 1, sha)).toContain('src/a%20b/c%23.ts#L1'))
   it('returns null when the commit, file, repo folder or config is missing or malformed', () => {

@@ -62,7 +62,7 @@ export default function GraphView({ ix, nodes, edges, selection, onSelect }: { i
   return (
     <div className="graphbox">
       <div ref={box} className="cy" role="img" aria-label={`Dependency graph with ${nodes.length} nodes and ${edges.length} edges. A text list of the visible nodes follows the graph.`} data-testid="graph-canvas" />
-      {nodes.length === 0 && <p className="empty">Search for a node (for example FetchEmployeeComponent) to start.</p>}
+      {nodes.length === 0 && <p className="empty">Search for a node by name (a component, endpoint, procedure, ...) to start.</p>}
       <span hidden data-testid="graph-counts">{nodes.length}/{edges.length}</span>
       <span hidden>{ix.data.meta.counts.nodes}</span>
     </div>

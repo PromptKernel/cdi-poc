@@ -1,0 +1,32 @@
+{
+ "reports": [
+  {
+   "name": "pr-b-view",
+   "md": "reports/report-pr-b-view.md",
+   "json": "reports/report-pr-b-view.json",
+   "modified": "2026-11-11T10:04:14+00:00",
+   "summary": {
+    "objects": 1,
+    "pr": "pr-b-view",
+    "labels": [
+     "Medium"
+    ],
+    "warnings": 0
+   }
+  },
+  {
+   "name": "pr-e-delete-proc",
+   "md": "reports/report-pr-e-delete-proc.md",
+   "json": "reports/report-pr-e-delete-proc.json",
+   "modified": "2026-11-11T10:27:43+00:00",
+   "summary": {
+    "objects": 1,
+    "pr": "pr-e-delete-proc",
+    "labels": [
+     "High"
+    ],
+    "warnings": 1
+   }
+  }
+ ]
+}

@@ -41,7 +41,7 @@ export default function GraphPage({ ix, linkCfg }: { ix: Index; linkCfg: LinkCon
       <aside className="left" aria-label="Controls">
         <section>
           <label htmlFor="search">Search by name</label>
-          <input id="search" type="search" value={query} onChange={(e) => setQuery(e.target.value)} placeholder="e.g. FetchEmployeeComponent" autoComplete="off" />
+          <input id="search" type="search" value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Search nodes by name" autoComplete="off" />
           {results.length > 0 && (
             <ul className="results" role="listbox" aria-label="Search results">
               {results.map((n) => (

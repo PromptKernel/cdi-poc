@@ -20,15 +20,15 @@ test('explorer smoke: search, expand, trace UI -> SQL in both directions, styles
     await expect(page.locator('.meta')).toContainText('nodes')
   })
 
-  await test.step('search FetchEmployeeComponent and expand its dependencies down to a SQL table', async () => {
-    await pick(page, 'FetchEmployeeComponent', 'UI_COMPONENT')
-    await expect(visible(page)).toContainText('FetchEmployeeComponent')
+  await test.step('search FetchItemComponent and expand its dependencies down to a SQL table', async () => {
+    await pick(page, 'FetchItemComponent', 'UI_COMPONENT')
+    await expect(visible(page)).toContainText('FetchItemComponent')
     await page.locator('#depth').fill('12')
     await expect(page.getByLabel(/Depth: 12/)).toBeVisible()
     // click the node ON THE CANVAS: selects it and expands per the chosen direction and depth
     const pos = await page.evaluate(() => { const c = (window as any).__cy; const n = c.nodes()[0]; const p = n.renderedPosition(); const r = c.container().getBoundingClientRect(); return { x: r.left + p.x, y: r.top + p.y } })
     await page.mouse.click(pos.x, pos.y)
-    for (const name of ['EmployeeService.getEmployees', 'GET api/Employee/Index', 'EmployeeController.Index()', 'IEmployee.GetAllEmployees()', 'EmployeeDataAccessLayer.GetAllEmployees()', 'dbo.spGetAllEmployees', 'dbo.tblEmployee'])
+    for (const name of ['ItemService.getItems', 'GET api/Item/Index', 'ItemController.Index()', 'IItem.GetAllItems()', 'ItemDataAccessLayer.GetAllItems()', 'dbo.spGetAllItems', 'dbo.tblItem'])
       await expect(visible(page)).toContainText(name)
     await expect(page.getByText(/depth 12/)).toBeVisible()
   })
@@ -46,7 +46,7 @@ test('explorer smoke: search, expand, trace UI -> SQL in both directions, styles
   })
 
   await test.step('side panel: an inferred edge shows its reason, evidence, commit and an exact-file GitHub link', async () => {
-    await visible(page).getByRole('button', { name: 'ASPCoreWithAngular.Interfaces.IEmployee.GetAllEmployees()' }).click()
+    await visible(page).getByRole('button', { name: 'ShopApp.Interfaces.IItem.GetAllItems()' }).click()
     await expect(page.getByTestId('node-panel')).toContainText('INTERFACE_METHOD')
     await page.getByTestId('node-panel').getByRole('button', { name: /DISPATCHES_TO/ }).click()
     const ep = page.getByTestId('edge-panel')
@@ -54,22 +54,22 @@ test('explorer smoke: search, expand, trace UI -> SQL in both directions, styles
     await expect(ep).toContainText('runtime DI decision')
     await expect(ep).toContainText('roslyn:interface-implementation')
     const href = await ep.getByRole('link', { name: /view on GitHub/ }).getAttribute('href')
-    expect(href).toMatch(/\/blob\/[0-9a-f]{40}\/samples\/api\/DataAccess\/EmployeeDataAccessLayer\.cs#L22$/)
+    expect(href).toMatch(/\/blob\/[0-9a-f]{40}\/apps\/api\/DataAccess\/ItemDataAccessLayer\.cs#L22$/)
   })
 
   await test.step('reverse direction: from the SQL table, downstream consumers reach the screen', async () => {
     await page.getByRole('button', { name: 'Clear' }).click()
-    await pick(page, 'dbo.tblEmployee', 'SQL_TABLE')
+    await pick(page, 'dbo.tblItem', 'SQL_TABLE')
     await page.getByLabel(/Downstream: affected by this \(consumers\)/).check()
     await page.locator('#depth').fill('12')
     await page.getByRole('button', { name: 'Expand selected' }).click()
-    await expect(visible(page)).toContainText('FetchEmployeeComponent')
-    await expect(visible(page)).toContainText('dbo.spGetAllEmployees')
+    await expect(visible(page)).toContainText('FetchItemComponent')
+    await expect(visible(page)).toContainText('dbo.spGetAllItems')
   })
 
   await test.step('unresolved / not-found nodes are distinct and explain why', async () => {
     await page.getByRole('button', { name: 'Clear' }).click()
-    await pick(page, 'DepartmentReportService.getHeadcount', 'UI_SERVICE_METHOD')
+    await pick(page, 'GroupReportService.getHeadcount', 'UI_SERVICE_METHOD')
     await page.getByLabel(/Upstream: depends on \(dependencies\)/).check()
     await page.getByRole('button', { name: 'Expand selected' }).click()
     await visible(page).getByRole('button', { name: /✕|unresolved|<unresolved URL>/i }).first().click()
@@ -83,12 +83,12 @@ test('explorer smoke: search, expand, trace UI -> SQL in both directions, styles
   await test.step('filters: confidence and repo filters change what is searchable/expandable', async () => {
     await page.getByRole('button', { name: 'Clear' }).click()
     await page.getByLabel('INFERRED', { exact: true }).uncheck()
-    await pick(page, 'FetchEmployeeComponent', 'UI_COMPONENT')
+    await pick(page, 'FetchItemComponent', 'UI_COMPONENT')
     await page.getByLabel(/Upstream: depends on \(dependencies\)/).check()
     await page.locator('#depth').fill('12')
     await page.getByRole('button', { name: 'Expand selected' }).click()
-    await expect(visible(page)).toContainText('EmployeeController.Index()')
-    await expect(visible(page)).not.toContainText('dbo.tblEmployee')      // the path is cut at the INFERRED dispatch hop
+    await expect(visible(page)).toContainText('ItemController.Index()')
+    await expect(visible(page)).not.toContainText('dbo.tblItem')      // the path is cut at the INFERRED dispatch hop
     await page.getByLabel('INFERRED', { exact: true }).check()
   })
 
