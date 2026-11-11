@@ -105,7 +105,19 @@ def test_e_deleted_procedure_shows_the_broken_callers_and_what_is_above_them(wor
     assert any(u["type"] == "CALLS_PROCEDURE" and u["source_kind"] == "TEST" for u in res["new_unresolved"])
     # consumer paths of the removed object are flagged as broken by this PR
     assert any(c["broken_by_pr"] for g in o["consumers"].values() for c in g)
+    # the SQL test is tied to the removed proc by BOTH an annotation and a static reference: ranked as annotation-based, path flagged as broken
+    (t,) = [t for t in res["tests"] if t["name"].endswith("counts employees per department")]
+    assert t["mapping"] == "annotation" and set(t["mapped_by"]) == {"annotation", "static-reference"} and t["broken_by_pr"]
+    # introduced items are in C1 only, not repeated as "pre-existing" in C2
+    assert o["unresolved_own"] == []
     md = report.render(res)
+    c2 = md[md.index("### C2."):md.index("### C3.")]
+    assert "_None._" in c2
+    # hops read in stored edge direction with node kinds, so a caller is never shown as being called by the callee
+    assert "DATA_ACCESS_METHOD `ASPCoreWithAngular.Synthetic.DataAccess.DepartmentDataAccess.ReadHeadcount()` → SQL_REF `dbo.spGetDepartmentHeadcount`" in md
+    assert "BROKEN BY THIS PR" in md
+    # C3 names the screen above the unresolved (config-built) request
+    assert "screen(s) that call it: DepartmentReportComponent" in md
     assert "referenced" in md and "no definition was found" in md and "no longer holds after this PR" in md
 
 
@@ -120,6 +132,9 @@ def test_f_route_change_leaves_the_request_unmatched_and_names_the_screen(world)
     assert [c["name"] for c in screens] == ["FetchEmployeeComponent"] and screens[0]["broken_by_pr"]
     broken = [h for h in screens[0]["path"] if h.get("broken_by_pr")]
     assert broken and broken[0]["type"] == "ROUTES_TO" and broken[0]["replacement"]["confidence"] == "UNRESOLVED"
+    assert o["attr_changes"] == [{"attr": "route_normalized", "before": "api/Employee/Index", "after": "api/Employee/List"},
+                                 {"attr": "route_template", "before": "api/Employee/Index", "after": "api/Employee/List"}]
+    assert "Declared attributes changed" in report.render(res)
 
 
 def test_tests_are_ranked_and_convention_group_is_separate(world):

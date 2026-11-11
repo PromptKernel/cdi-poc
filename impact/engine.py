@@ -30,7 +30,8 @@ def cite(g: Graph, edge_id):
     return {"edge_id": edge_id, "type": e["type"], "confidence": e["confidence"], "repo": e["repo"], "file": e["source_file"], "line": e["location"]["line"],
             "method": e["analysis_method"], "commit": e["commit_id"], "synthetic": e["synthetic"], "reason": e.get("reason"),
             "evidence": e.get("evidence", ""), "source": g.nodes.get(e["source"], {}).get("name", e["source"]),
-            "target": g.nodes.get(e["target"], {}).get("name", e["target"]), "attrs": e.get("attrs") or {}}
+            "target": g.nodes.get(e["target"], {}).get("name", e["target"]), "attrs": e.get("attrs") or {},
+            "source_kind": g.nodes.get(e["source"], {}).get("kind", "?"), "target_kind": g.nodes.get(e["target"], {}).get("kind", "?")}
 
 
 def path_view(g, path, head_keys=None, head=None):
@@ -73,6 +74,19 @@ def freshness_warnings(recorded, target_commits, merge_base, target_tip):
         w.append(f"The PR branch is based on an OLDER target: merge-base is {short(merge_base)}, the target tip is {short(target_tip)}. "
                  f"The diff covers only the PR's own changes (three-dot), but the baseline graph reflects the target tip.")
     return w
+
+
+def test_categories(g: Graph, test_id, affected):
+    """All ways a test is tied to the affected node set: explicit annotation, static reference (a resolved edge from the test), or convention."""
+    cats = set()
+    for e in g.out.get(test_id, []):
+        if e["target"] not in affected or e["confidence"] == "UNRESOLVED":
+            continue
+        if e["type"] == "TESTS":
+            cats.add("annotation" if (e.get("attrs") or {}).get("mapping_method") == "annotation" else "convention")
+        else:
+            cats.add("static-reference")
+    return cats
 
 
 def classify(kind, groups):
@@ -223,10 +237,13 @@ def analyze(project_root, tool_root, config_dir, target, pr, baseline: Graph, fr
                     "path": path_view(c["g"], c["path"], head_keys if c["graph"] == "baseline" else None, head)}
             view["broken_by_pr"] = any(h.get("broken_by_pr") for h in view["path"])
             if n["kind"] == "TEST":
-                last = view["path"][-1]
-                mm = (last["attrs"].get("mapping_method"))
-                cat = "annotation" if mm == "annotation" else "convention" if mm == "naming-convention" else "static-reference"
-                view["mapping"] = cat
+                cats = test_categories(c["g"], cid, set(c["g"].nodes) and {k for k in c["g"].nodes if k in reach_nodes or k == nid})
+                if not cats:
+                    last = view["path"][-1]
+                    mm = last["attrs"].get("mapping_method")
+                    cats = {"annotation" if mm == "annotation" else "convention" if mm == "naming-convention" else "static-reference"}
+                view["mapping"] = min(cats, key=lambda x: TEST_RANK[x])
+                view["mapped_by"] = sorted(cats, key=lambda x: TEST_RANK[x])
                 tests.append(view)
             elif grp:
                 by_group[grp].append(view)
@@ -246,14 +263,16 @@ def analyze(project_root, tool_root, config_dir, target, pr, baseline: Graph, fr
                              "confidence": conf, "path": path_view(dep_graph, path)})
         deps.sort(key=lambda x: (CONF_ORDER.index(x["confidence"]), x["name"]))
         # unresolved: own, in scope, introduced
+        new_ids = {e["id"] for e in new_unres}
         own_unres = [e for g in (base, head) for e in g.out.get(nid, []) if e["confidence"] == "UNRESOLVED"]
         seen = set(); own_unres = [cite(base if e["id"] in base.edges else head, e["id"]) for e in own_unres if not (e["id"] in seen or seen.add(e["id"]))]
+        own_unres = [u for u in own_unres if u["edge_id"] not in new_ids]      # introduced ones are reported in C1
         introduced = [e for e in new_unres if e["source"] in reach_nodes]
         in_scope = []
         seen = set()
         for g in (base, head):
             for e in T.unresolved_in_scope(g, reach_nodes):
-                if e["id"] not in seen and ukey(e) in base_unres | {ukey(x) for x in new_unres}:
+                if e["id"] not in seen and e["id"] not in new_ids and ukey(e) in base_unres:
                     seen.add(e["id"]); in_scope.append(cite(g, e["id"]))
         screens = by_group.get("screen", [])
         facts = {"change": m.change, "kind": node["kind"], "in_critical_list": risk.in_critical_list(rcfg, node["name"]),
@@ -264,7 +283,11 @@ def analyze(project_root, tool_root, config_dir, target, pr, baseline: Graph, fr
                  "reaches_api_endpoint": bool(by_group.get("api_endpoint")),
                  "introduces_unresolved": bool(introduced), "has_own_unresolved": bool(own_unres)}
         rule = risk.select(rcfg, facts)
-        res = {"id": nid, "name": node["name"], "kind": node["kind"], "repo": node["repo"], "file": node.get("file"),
+        attr_changes = []
+        if m.change == "modified" and nid in base.nodes and nid in head.nodes:
+            ba, ha = base.nodes[nid].get("attrs") or {}, head.nodes[nid].get("attrs") or {}
+            attr_changes = [{"attr": k, "before": ba.get(k), "after": ha.get(k)} for k in sorted(set(ba) | set(ha)) if ba.get(k) != ha.get(k)]
+        res = {"id": nid, "name": node["name"], "attr_changes": attr_changes, "kind": node["kind"], "repo": node["repo"], "file": node.get("file"),
                "line": (node.get("location") or {}).get("line"), "end_line": (node.get("location") or {}).get("end_line"),
                "change": m.change, "synthetic": node.get("synthetic", False), "mapped_by": m.sides,
                "hunks": [[h.old_range, h.new_range] for h in f["change"].hunks],
@@ -306,7 +329,8 @@ def analyze(project_root, tool_root, config_dir, target, pr, baseline: Graph, fr
     if any(o["consumers"].get("api_endpoint") or o["kind"] == "API_ENDPOINT" for o in results):
         for e in head.edges.values():
             if e["type"] == "MAKES_REQUEST" and e["confidence"] == "UNRESOLVED":
-                hidden.append(cite(head, e["id"]))
+                above, _, _ = T.reach_ex(head, e["source"], "reverse", d_down, EXCL)
+                hidden.append({**cite(head, e["id"]), "screens_above": sorted(head.nodes[i]["name"] for i in above if head.nodes[i]["kind"] == "UI_COMPONENT")})
     tests_ranked = sorted(test_pool.values(), key=test_sort_key)
     t_end = time.perf_counter()
     synthetic_any = any(o["synthetic"] for o in results) or any(f["synthetic"] for f in file_reports)

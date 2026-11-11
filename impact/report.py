@@ -5,7 +5,8 @@ MAX_DEPS_IN_MD = 12
 
 
 def hop_line(h):
-    s = f"`{h['type']}` [{h['confidence']}] {h['from']} → {h['to']} — {h['repo']}:{h['file']}:{h['line']} via `{h['method']}` @{(h['commit'] or '')[:8]}"
+    s = (f"`{h['type']}` [{h['confidence']}] {h['source_kind']} `{h['source']}` → {h['target_kind']} `{h['target']}` — "
+         f"{h['repo']}:{h['file']}:{h['line']} via `{h['method']}` @{(h['commit'] or '')[:8]}")
     if h.get("synthetic"):
         s += " (synthetic)"
     if h["confidence"] != "CONFIRMED_STATIC" and h.get("reason"):
@@ -92,6 +93,8 @@ def render(res):
         a(f"### {i}. `{o['name']}`")
         a(f"- **Changed object:** `{o['name']}` — **kind:** {o['kind']} — **repo:** {o['repo']} — **change:** {o['change']}{' — **synthetic**' if o['synthetic'] else ''}")
         a(f"- **Evidence:** {o['repo']}:{o['file']}:{o['line']}–{o['end_line']}; hunks (old/new): {o['hunks']}; matched on the {'/'.join(o['mapped_by'])} side")
+        if o.get("attr_changes"):
+            a("- **Declared attributes changed:** " + "; ".join(f"`{c['attr']}`: `{c['before']}` → `{c['after']}`" for c in o["attr_changes"]))
         a(f"- **Risk:** {label_text(o)}")
         a(f"- **Required developer action:** {o['action']}")
         c = o["consumers"]
@@ -110,6 +113,7 @@ def render(res):
         a("")
         a(f"## {title}")
         a(blurb)
+        a("Reading a hop: `A → B` means A depends on B (the stored edge direction). A path starts at the changed object and walks outward through its consumers or dependencies.")
         any_ = False
         for o in objs:
             items = [x for g in o["consumers"].values() for x in g if x["confidence"] == conf]
@@ -122,7 +126,7 @@ def render(res):
             if items:
                 a(f"**Consumers — who depends on it ({len(items)}):**")
                 for x in sorted(items, key=lambda x: (x["kind"] != "UI_COMPONENT", x["kind"] != "API_ENDPOINT", x["name"])):
-                    a(f"- {x['kind']} `{x['name']}`{' ⚠ broken by this PR' if x['broken_by_pr'] else ''} — found in {x['found_in']} graph")
+                    a(f"- {'**BROKEN BY THIS PR (held in the baseline, not after it)** — ' if x['broken_by_pr'] else ''}{x['kind']} `{x['name']}` — found in the {x['found_in']} graph")
                     a(path_block(x["path"]))
             if deps:
                 a(f"**Dependencies — what it depends on ({len(deps)}; first {min(len(deps), MAX_DEPS_IN_MD)} shown):**")
@@ -159,7 +163,7 @@ def render(res):
         if u["depth_truncated"]:
             a("  - ⚠ traversal above this reference stopped at the depth limit")
     a("")
-    a("### C2. Pre-existing unresolved links on or under the changed objects")
+    a("### C2. Pre-existing unresolved links on or under the changed objects (already present in the baseline)")
     any_ = False
     for o in objs:
         for u in o["unresolved_own"] + [x for x in o["unresolved_in_scope"] if x not in o["unresolved_own"]]:
@@ -172,7 +176,8 @@ def render(res):
     if not res["hidden_consumer_candidates"]:
         a("_None, or no API endpoint is affected._")
     for u in res["hidden_consumer_candidates"]:
-        a(f"- {u['source']} — {u['repo']}:{u['file']}:{u['line']} — reason: {u['reason']}")
+        sc = f"; screen(s) that call it: {', '.join(u['screens_above'])}" if u["screens_above"] else ""
+        a(f"- {u['source']} — {u['repo']}:{u['file']}:{u['line']} — reason: {u['reason']}{sc}")
     a("")
     a("## Tests to run")
     a("Ranked: (1) explicit `@covers` annotation (CONFIRMED), (2) a test that statically references an affected object (CONFIRMED), (3) naming/file-convention mappings (INFERRED).")
@@ -183,7 +188,8 @@ def render(res):
         a("")
         a(f"**{title}**")
         for t_ in by[rank]:
-            a(f"- `{t_['name']}` — {t_['repo']}:{t_['file']}:{t_['line']}; covers affected object(s) of: {', '.join(sorted(set(t_['objects'])))}; path confidence {t_['confidence']}")
+            a(f"- `{t_['name']}` — {t_['repo']}:{t_['file']}:{t_['line']}; mapped by: {', '.join(t_.get('mapped_by', []))}; for changed object(s): {', '.join(sorted(set(t_['objects'])))}; path confidence {t_['confidence']}"
+              f"{'; ⚠ the path to it is broken by this PR' if t_.get('broken_by_pr') else ''}")
             a(path_block(t_["path"][-1:], "    "))
         if not by[rank]:
             a("_None._")
