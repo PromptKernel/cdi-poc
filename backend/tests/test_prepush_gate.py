@@ -234,3 +234,27 @@ def test_scripts_never_hide_output_and_nothing_is_hardcoded():
 def test_docs_say_pushes_are_one_command_joined_by_and_and():
     doc = (ROOT / "docs/pre-push-gate.md").read_text()
     assert "scripts/prepush_gate.sh && git push" in doc and "never" in doc.lower() and "git config core.hooksPath .githooks" in doc
+
+
+def test_commits_already_on_the_remote_are_not_rescanned_but_new_ones_and_the_tree_always_are(repo, tmp_path):
+    """Merging an already-pushed branch into main publishes nothing new: its commits are on the remote. Anything not yet on the remote is scanned in full."""
+    bare = tmp_path / "remote.git"; subprocess.run(["git", "init", "-q", "--bare", str(bare)], check=True)
+    git(repo, "remote", "add", "origin", str(bare)); git(repo, "push", "-q", "origin", "main")
+    git(repo, "switch", "-q", "-c", "feature")
+    add_file(repo, "shot.png", PNG, binary=True); commit(repo, "add image on the feature branch")
+    git(repo, "rm", "-q", "shot.png"); commit(repo, "remove it again")
+    git(repo, "push", "-q", "-u", "origin", "feature")                                     # the image is now public on origin/feature
+    git(repo, "switch", "-q", "main"); git(repo, "branch", "-q", "--set-upstream-to=origin/main", "main"); git(repo, "merge", "-q", "--ff-only", "feature")
+    res = gate(repo)
+    assert res.returncode == 0 and "commits to be pushed: 0" in res.stdout and "already on remote 'origin'" in res.stdout, res.stdout
+    add_file(repo, "second.png", PNG, binary=True); commit(repo, "a NEW image commit")      # not on the remote: scanned
+    res = gate(repo)
+    assert res.returncode == 1 and "second.png" in res.stdout
+    git(repo, "rm", "-q", "second.png"); commit(repo, "remove the new image")
+    assert gate(repo).returncode == 1, "the new commit that added the image is still in the range, even though a later commit removed it"
+    # the tree is always scanned: an image still tracked fails even when every commit is already public
+    git(repo, "reset", "-q", "--hard", "origin/feature")
+    git(repo, "switch", "-q", "-c", "other"); add_file(repo, "tracked.png", PNG, binary=True); commit(repo, "track an image")
+    git(repo, "push", "-q", "-u", "origin", "other")
+    res = gate(repo)
+    assert res.returncode == 1 and "tracked.png" in res.stdout

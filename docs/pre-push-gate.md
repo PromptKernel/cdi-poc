@@ -20,7 +20,9 @@ The same applies to `gh` commands that publish content.
 | `authors` | every author and committer email must match `ALLOWED_EMAIL_REGEX` (default: exactly `git config user.email`) |
 | `overlap` | optional: no run of `OVERLAP_WORDS` words shared with a private text (`OVERLAP_FILE`); when the file is absent the gate says the check was not run |
 
-"Commits to be pushed" = `@{upstream}..HEAD`, or every commit that is on no remote; override with `--range`.
+"Commits to be pushed" = every commit not yet on the remote of the branch's upstream (`HEAD --not --remotes=<remote>`), or every commit on no remote when there is no upstream; override with `--range`.
+So merging a branch that is already pushed (e.g. fast-forwarding `main` to `origin/restructure`) does not re-scan commits that are public already; the committed tree and the staging area are still scanned in full,
+and any new commit is scanned in full. The gate prints how many commits it skipped for that reason.
 
 ## Nothing is hardcoded
 Rules live in `.prepush-gate.conf` (`KEY=value`, parsed and never executed) and in `PREPUSH_<KEY>` environment variables, which win. The file holds no names, paths or identities.

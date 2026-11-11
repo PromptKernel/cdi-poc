@@ -4,7 +4,9 @@
 #   scripts/prepush_gate.sh && git push origin <branch>      # ALWAYS one command joined with &&, never ';' or '&'
 #
 # usage: scripts/prepush_gate.sh [--range <rev-range>] [--conf <file>]
-#   --range   commits that would be pushed (default: @{upstream}..HEAD, else every commit that is on no remote: HEAD --not --remotes)
+#   --range   commits that would be pushed (default: every commit that is not yet on the remote of the branch's upstream: HEAD --not --remotes=<remote>;
+#             with no upstream: every commit that is on no remote at all). Commits already on that remote are public already and are not re-scanned;
+#             the committed tree and the staging area are always scanned in full.
 #   --conf    rules file (default: $PREPUSH_CONFIG, else <repo>/.prepush-gate.conf if it exists)
 # Nothing here is specific to one repository or person. Rules come from the rules file (KEY=value lines, parsed and never executed) and from the
 # environment (PREPUSH_<KEY> overrides the file):
@@ -48,8 +50,14 @@ for k in IMAGE_EXTENSIONS ALLOW_IMAGE_DIRS FORBIDDEN_PATHS ALLOWED_EMAIL_REGEX T
 done
 esc() { printf '%s' "$1" | sed 's/[][\.*^$+?(){}|\\/]/\\&/g'; }
 if [ -z "$ALLOWED_EMAIL_REGEX" ]; then ALLOWED_EMAIL_REGEX="^$(esc "$(git config user.email)")\$"; fi
+ON_REMOTE=0; REMOTE_NAME=""
 if [ -z "$RANGE" ]; then
-  if git rev-parse --verify -q '@{upstream}' >/dev/null; then RANGE="@{upstream}..HEAD"; else RANGE="HEAD --not --remotes"; fi
+  if git rev-parse --verify -q '@{upstream}' >/dev/null; then
+    REMOTE_NAME="$(git config "branch.$(git rev-parse --abbrev-ref HEAD).remote")"
+    if [ -n "$REMOTE_NAME" ]; then
+      RANGE="HEAD --not --remotes=$REMOTE_NAME"; ON_REMOTE="$(git rev-list @{upstream}..HEAD | wc -l | tr -d ' ')"
+    else RANGE="@{upstream}..HEAD"; fi
+  else RANGE="HEAD --not --remotes"; fi
 fi
 
 FAILS=0; SUMMARY=""
@@ -65,6 +73,7 @@ note()  { printf 'gate note [%s]: %s\n' "$1" "$2"; }
 
 echo "== pre-push gate: $TOP"
 echo "== commits to be pushed: $(git rev-list $RANGE | wc -l | tr -d ' ')   range: $RANGE"
+if [ "$ON_REMOTE" -gt 0 ] 2>/dev/null; then echo "== note: $(( ON_REMOTE - $(git rev-list $RANGE | wc -l | tr -d ' ') )) commit(s) ahead of the upstream branch are already on remote '$REMOTE_NAME' (another branch), so they are public already and are not re-scanned; the tree and the staging area are scanned in full"; fi
 echo "== rules: ${CONF:-none}; images: $IMAGE_EXTENSIONS (allowed in: ${ALLOW_IMAGE_DIRS:-nowhere}); forbidden paths: ${FORBIDDEN_PATHS:-none}"
 
 # Everything that is tracked or staged now, plus every path ADDED by a commit to be pushed (an image added and deleted inside the range is still pushed).
