@@ -81,6 +81,13 @@ which permission is missing. A fork PR, a missing token, an unknown base ref or 
 baseline job fails (non-zero) on a tool error, so a broken baseline is visible. Blocking applies only through the deterministic policies in config
 (`ci.blocking`), never through GitHub errors.
 
+## Job summary in the log
+GitHub has no API to read a job summary, so the tool also prints the summary text into the job log inside `::group::cdi job summary` / `::endgroup::`. The text includes names taken
+from pull-request files, so it is printed inert: workflow commands are switched off with `::stop-commands::<random token>` for the duration, and every line is indented. Anything that looks
+like a credential (the token, an `Authorization` header, GitHub token patterns) is replaced by `***` before it reaches the summary or the log (tests:
+`test_no_token_or_authorization_header_can_appear_in_the_summary_or_the_log`, `test_text_from_pr_files_cannot_act_as_workflow_commands`). The `stop-commands` behaviour is from
+GitHub's workflow-command feature and has not been exercised on a real runner yet.
+
 ## Comment size
 The comment builder already caps at `limits.comment_max_chars` (default 20,000). The adapter additionally truncates to 65,536 characters and the status
 description to 140. **Neither number is stated in GitHub's REST pages** (see below); they come from community reports and are treated as conservative caps.

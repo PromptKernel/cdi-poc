@@ -295,3 +295,15 @@ def test_baseline_limit_defaults_to_a_marked_placeholder():
     cfg = load_config(FIXTURE_CONFIG, environ={})
     assert cfg["limits"]["baseline_max_bytes"] == 52428800
     assert "baseline_max_bytes" in (BACKEND / "src/cdi/config/profiles/_base.yml").read_text() and "placeholder, unvalidated" in (BACKEND / "src/cdi/config/profiles/_base.yml").read_text()
+
+
+def test_flow_summary_reaches_the_log_without_credentials(world, tmp_path, capfd):
+    p, bl = world
+    with FakeGitHub() as gh:
+        gh.deny["comments"] = 403
+        run_flow(tmp_path, p, bl, gh)
+    out = capfd.readouterr().out
+    assert "::group::cdi job summary" in out and "::endgroup::" in out and "could not post to GitHub" in out
+    summary = (tmp_path / "summary.md").read_text()
+    for text in (out, summary):
+        assert TOKEN not in text and "Authorization" not in text and "Bearer" not in text
