@@ -11,7 +11,7 @@ export interface GEdge {
 }
 export interface GraphMeta {
   generated_at: string; source: string; notice: string; counts: { nodes: number; edges: number }
-  baseline: { commits: Record<string, string>; loaded_at: string | null; mode: string | null } | null
+  baseline: { commits: Record<string, string>; loaded_at: string | null; mode: string | null; schema_version?: number | null } | null
   repos: Record<string, { path: string; kind: string }>
 }
 export interface GraphData { meta: GraphMeta; nodes: GNode[]; edges: GEdge[] }
@@ -33,10 +33,4 @@ export function buildIndex(data: GraphData): Index {
     ;(inn.get(e.target) ?? inn.set(e.target, []).get(e.target)!).push(e)
   }
   return { data, nodes, edges, out, inn }
-}
-
-export async function loadGraph(url = 'data/graph.json'): Promise<GraphData> {
-  const r = await fetch(url, { cache: 'no-store' })
-  if (!r.ok) throw new Error(`could not load ${url} (${r.status}). Run: python tools/export_graph.py`)
-  return (await r.json()) as GraphData
 }

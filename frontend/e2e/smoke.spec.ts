@@ -1,4 +1,5 @@
 import { expect, test, type Page } from '@playwright/test'
+import { readFileSync } from 'node:fs'
 
 const visible = (page: Page) => page.getByTestId('visible-nodes')
 
@@ -9,7 +10,11 @@ async function pick(page: Page, text: string, kind: string) {
 
 test('explorer smoke: search, expand, trace UI -> SQL in both directions, styles, panel, reports', async ({ page }) => {
   const external: string[] = []
-  page.on('request', (r) => { const u = r.url(); if (!u.startsWith('http://127.0.0.1:4173') && !u.startsWith('data:') && !u.startsWith('blob:')) external.push(u) })
+  const mode = test.info().project.name                       // 'snapshot' or 'live'
+  const live = mode === 'live'
+  const allowed = [test.info().project.use.baseURL!, 'http://127.0.0.1:8765', 'data:', 'blob:']        // localhost app and, in live mode, the localhost API
+  const urls: string[] = []
+  page.on('request', (r) => { const u = r.url(); urls.push(u); if (!allowed.some((a) => u.startsWith(a))) external.push(u) })
   const consoleErrors: string[] = []
   page.on('console', (m) => { if (m.type() === 'error') consoleErrors.push(m.text()) })
 
@@ -18,6 +23,27 @@ test('explorer smoke: search, expand, trace UI -> SQL in both directions, styles
     await expect(page.getByRole('heading', { name: 'Dependency explorer' })).toBeVisible()
     await expect(page.getByRole('note').first()).toContainText('Synthetic sample data')
     await expect(page.locator('.meta')).toContainText('nodes')
+  })
+
+  await test.step('shows where the data comes from: live API or snapshot', async () => {
+    const ind = page.getByTestId('data-source')
+    await expect(ind).toHaveAttribute('data-kind', live ? 'live' : 'snapshot')
+    await expect(ind).toContainText(live ? 'live API (http://127.0.0.1:8765)' : 'snapshot')
+    if (live) await expect(ind).not.toContainText('snapshot')
+  })
+
+  await test.step('Analyze panel: baseline commit of every repo, load time, schema version', async () => {
+    await page.getByRole('link', { name: 'Analyze' }).click()
+    const panel = page.getByTestId('analyze-panel')
+    await expect(panel).toBeVisible()
+    await expect(page.getByTestId('analyze-source')).toContainText(live ? 'live API' : 'snapshot')
+    const baseline = JSON.parse(readFileSync(new URL('./fixtures/live/baseline.json', import.meta.url), 'utf8')).freshness   // the commits the baseline was built from
+    for (const [repo, sha] of Object.entries(baseline.commits as Record<string, string>))
+      await expect(page.getByTestId(`commit-${repo}`)).toHaveText(sha)
+    // the snapshot fixture predates schema versions: the panel must say so rather than invent a value
+    await expect(page.getByTestId('analyze-schema')).toHaveText(live ? '1' : 'not recorded')
+    await expect(page.getByTestId('analyze-loaded')).toContainText(live ? '2026-01-01T00:00:00+00:00' : '')
+    await page.getByRole('link', { name: 'Graph' }).click()
   })
 
   await test.step('search FetchItemComponent and expand its dependencies down to a SQL table', async () => {
@@ -54,7 +80,8 @@ test('explorer smoke: search, expand, trace UI -> SQL in both directions, styles
     await expect(ep).toContainText('runtime DI decision')
     await expect(ep).toContainText('roslyn:interface-implementation')
     const href = await ep.getByRole('link', { name: /view on GitHub/ }).getAttribute('href')
-    expect(href).toMatch(/\/blob\/[0-9a-f]{40}\/apps\/api\/DataAccess\/ItemDataAccessLayer\.cs#L22$/)
+    // the folder comes from the data source's repo list: apps/api in the snapshot, api in the live config
+    expect(href).toMatch(/\/blob\/[0-9a-f]{40}\/(apps\/)?api\/DataAccess\/ItemDataAccessLayer\.cs#L22$/)
   })
 
   await test.step('reverse direction: from the SQL table, downstream consumers reach the screen', async () => {
@@ -105,6 +132,12 @@ test('explorer smoke: search, expand, trace UI -> SQL in both directions, styles
     await expect(page.locator('.marker')).toContainText('cdi-poc:impact-report:v1')
   })
 
+  if (live) {
+    expect(urls.some((u) => u.endsWith('/api/graph')), 'live mode reads the graph from the API').toBe(true)
+    expect(urls.some((u) => u.includes('data/graph.json')), 'live mode must not read the snapshot').toBe(false)
+  } else {
+    expect(urls.some((u) => u.includes('/api/')), 'snapshot mode must not call the API').toBe(false)
+  }
   expect(external, 'no request may leave localhost (no CDNs, no telemetry)').toEqual([])
   expect(consoleErrors, 'no console errors').toEqual([])
 })

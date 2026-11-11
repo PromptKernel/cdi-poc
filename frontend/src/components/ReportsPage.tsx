@@ -1,29 +1,27 @@
 import { useEffect, useState } from 'react'
 import Markdown from './Markdown'
+import type { DataSource, ReportEntry as Entry } from '../lib/source'
 
-interface Entry { name: string; md: string; json: string | null; modified: string; summary?: { objects: number; pr: string; labels: string[]; warnings: number } }
-
-export default function ReportsPage() {
+export default function ReportsPage({ source }: { source: DataSource }) {
   const [list, setList] = useState<Entry[] | null>(null)
   const [sel, setSel] = useState<string | null>(null)
   const [text, setText] = useState('')
   const [err, setErr] = useState<string | null>(null)
   useEffect(() => {
-    fetch('data/reports/index.json', { cache: 'no-store' }).then((r) => (r.ok ? r.json() : Promise.reject(new Error(`reports index not found (${r.status}); run python tools/export_graph.py`))))
-      .then((d) => { setList(d.reports); if (d.reports[0]) setSel(d.reports[0].name) }).catch((e) => setErr(String(e.message ?? e)))
-  }, [])
+    source.reportsIndex().then((reports) => { setList(reports); if (reports[0]) setSel(reports[0].name) }).catch((e) => setErr(String(e.message ?? e)))
+  }, [source])
   useEffect(() => {
     const e = list?.find((x) => x.name === sel)
     if (!e) return
-    fetch(`data/${e.md}`, { cache: 'no-store' }).then((r) => r.text()).then(setText).catch((x) => setErr(String(x)))
-  }, [sel, list])
+    source.text(e.md).then(setText).catch((x) => setErr(String(x.message ?? x)))
+  }, [sel, list, source])
   if (err) return <div className="error" role="alert">{err}</div>
   if (!list) return <p className="pad">Loading…</p>
   return (
     <div className="reports">
       <aside aria-label="Impact reports">
         <h2>Impact reports ({list.length})</h2>
-        {list.length === 0 && <p className="dim">No reports found in out/. Run the impact CLI (python -m impact.cli) and export again.</p>}
+        {list.length === 0 && <p className="dim">No reports found in out/. Run `cdi pr` (or the GitHub flow) to create one.</p>}
         <ul>
           {list.map((r) => (
             <li key={r.name}>

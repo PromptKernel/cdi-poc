@@ -1,0 +1,4 @@
+{
+  "apiBaseUrl": null,
+  "_note": "Runtime configuration, read when the page loads (not baked into the build). Set apiBaseUrl to the cdi API (for example \"http://127.0.0.1:8000\") to show live data; leave it null to show the static snapshot in data/. Edit this file in the deployed folder; no rebuild is needed. A bearer token, when the API requires one, is typed into the page and kept only in sessionStorage."
+}

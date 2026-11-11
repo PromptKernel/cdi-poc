@@ -10,7 +10,7 @@ carries them; later milestones link them across repos, load a graph store, and r
 - `config.example/` - optional adapters and examples; `docs/` - documentation.
 - `samples/` - the sample application, still here only until its own repository is approved and created (upstream MIT licence; see `NOTICE`).
 - Configuration: the target repo's `.cdi/config.yml` (see `docs/configuration.md`); `cdi audit` enforces that `backend/` and `frontend/` name nothing from the sample.
-- Not built yet: the live API, the GitHub flow, most of the `cdi` CLI (only `audit` and `config` exist).
+- `cdi` commands: baseline, pr, export, serve (read-only API, `docs/api.md`), audit, config, github (`docs/github-flow.md`). The frontend reads its API URL from `config.json` at run time.
 
 ## Working rules
 - Every claim in a report must trace to a stored edge with file:line, method, confidence and commit.

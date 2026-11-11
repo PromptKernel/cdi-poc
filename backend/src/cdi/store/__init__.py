@@ -53,6 +53,10 @@ class GraphStore(abc.ABC):
     def describe(self) -> str:
         return self.kind
 
+    def fingerprint(self):
+        """A cheap token that changes when the stored baseline changes, or None when the store cannot tell (callers then re-read on a timer)."""
+        return None
+
     def close(self):
         pass
 

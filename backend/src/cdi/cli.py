@@ -1,4 +1,4 @@
-"""`cdi` command line. Subcommands are added as the tool grows; today: audit, config (show / validate / schema / profiles), github (baseline | pr)."""
+"""`cdi` command line: one entry point for the whole tool. `cdi <command> --help` shows that command's options."""
 from __future__ import annotations
 import argparse, json, runpy, sys
 import yaml
@@ -12,11 +12,15 @@ def _audit(argv):
     if not tool.is_file():
         print(f"cdi audit needs a source checkout: {tool} not found", file=sys.stderr)
         return 2
-    mod = runpy.run_path(str(tool), run_name="audit_hardcoding")
-    return mod["main"](argv)
+    return runpy.run_path(str(tool), run_name="audit_hardcoding")["main"](argv)
 
 
-def _config(a):
+def _config(argv):
+    ap = argparse.ArgumentParser(prog="cdi config", description="Inspect the configuration (.cdi/config.yml merged with its profile and environment overrides).")
+    ap.add_argument("what", choices=["show", "validate", "schema", "profiles"],
+                    help="show: print the resolved configuration; validate: check it; schema: print the JSON Schema; profiles: list framework profiles")
+    ap.add_argument("--file", default=None, help="path to .cdi/config.yml (default: $CDI_CONFIG or .cdi/config.yml)")
+    a = ap.parse_args(argv)
     if a.what == "schema":
         print(json.dumps(C.schema(), indent=2)); return 0
     if a.what == "profiles":
@@ -30,22 +34,50 @@ def _config(a):
     print(yaml.safe_dump({k: v for k, v in cfg.items() if not k.startswith("_")}, sort_keys=False)); return 0
 
 
+def _module(path, fn="main"):
+    def run(argv):
+        import importlib
+        return getattr(importlib.import_module(path), fn)(argv)
+    return run
+
+
+# name -> (handler(argv) -> exit code, one-line description). Each handler parses its own options: `cdi <name> --help`.
+COMMANDS = {
+    "baseline": (_module("cdi.pipeline.baseline"), "build the baseline graph (full | incremental) and write it to the store"),
+    "pr": (_module("cdi.pipeline.run_pr"), "analyse a pull request locally against the baseline; writes the comment and status as files (advisory)"),
+    "export": (_module("cdi.export"), "export the baseline and reports as a static snapshot for the explorer (out/explorer)"),
+    "serve": (_module("cdi.api.serve"), "run the read-only HTTP API (127.0.0.1 by default; optional bearer token)"),
+    "audit": (_audit, "fail if sample-specific names appear in backend/ or frontend/ source"),
+    "config": (_config, "show, validate or print the schema of the configuration"),
+    "github": (_module("cdi.github.cli"), "GitHub flow: `github baseline` (push to the base branch) and `github pr` (pull_request event)"),
+}
+
+
+def build_parser():
+    lines = "\n".join(f"  {n:<9} {d}" for n, (_, d) in COMMANDS.items())
+    return argparse.ArgumentParser(
+        prog="cdi", formatter_class=argparse.RawDescriptionHelpFormatter,
+        description="Cross-layer dependency graph and pull-request impact analysis.",
+        epilog=f"commands:\n{lines}\n\nRun `cdi <command> --help` for the options of a command. Configuration lives in the target repository's .cdi/config.yml "
+               f"(see docs/configuration.md); the baseline store is a JSON file by default (docs/graph-store.md).")
+
+
 def main(argv=None):
     argv = sys.argv[1:] if argv is None else list(argv)
-    if argv and argv[0] == "github":
-        from cdi.github import cli as gh
-        return gh.main(argv[1:])
-    if argv and argv[0] == "audit":          # options belong to the audit tool; see backend/tools/audit_hardcoding.py --help
-        return _audit(argv[1:])
-    ap = argparse.ArgumentParser(prog="cdi", description="Cross-layer dependency graph and PR impact analysis")
-    sub = ap.add_subparsers(dest="cmd", required=True)
-    sub.add_parser("audit", help="fail if sample-specific identifiers appear in backend/ or frontend/ source (options: --root, --json)")
-    sub.add_parser("github", help="GitHub flow: `cdi github baseline|pr` (used by the composite action)")
-    cf = sub.add_parser("config", help="inspect the configuration")
-    cf.add_argument("what", choices=["show", "validate", "schema", "profiles"])
-    cf.add_argument("--file", default=None, help="path to .cdi/config.yml (default: $CDI_CONFIG or .cdi/config.yml)")
-    a = ap.parse_args(argv)
-    return _config(a)
+    if not argv or argv[0] in ("-h", "--help"):
+        build_parser().print_help()
+        return 0
+    if argv[0] not in COMMANDS:
+        print(f"cdi: unknown command {argv[0]!r}; choose from {', '.join(COMMANDS)}", file=sys.stderr)
+        return 2
+    try:
+        code = COMMANDS[argv[0]][0](argv[1:])
+    except SystemExit as e:                  # sub-commands exit via argparse/sys.exit; a string is an error message
+        code = e.code
+        if isinstance(code, str):
+            print(code, file=sys.stderr)
+            return 1
+    return code if isinstance(code, int) else (0 if code is None else 1)
 
 
 if __name__ == "__main__":

@@ -1,15 +1,16 @@
 # cdi-poc
 
-> **Branch `restructure` (work in progress, Phase 4 of 7).** The repository is being reorganised into `backend/` and `frontend/` (plus `docs/`, `.github/`, `config.example/`);
+> **Branch `restructure` (work in progress, Phase 5 of 7).** The repository is being reorganised into `backend/` and `frontend/` (plus `docs/`, `.github/`, `config.example/`);
 > the sample application lives in its own repository. The tool is configured by a target repository's `.cdi/config.yml` ([docs/configuration.md](docs/configuration.md)),
 > stores its baseline in a JSON file by default ([docs/graph-store.md](docs/graph-store.md)), and has a GitHub pull-request flow ([docs/github-flow.md](docs/github-flow.md)).
-> The live API and the rest of the `cdi` CLI are later phases. The README is rewritten in the last phases.
+> A read-only API (`cdi serve`) and the explorer's live mode are described in [docs/api.md](docs/api.md); `cdi --help` lists the commands. The README is rewritten in the last phases.
 
 ### Real vs simulated
 | Part | State |
 |---|---|
 | Scanners, linker, graph, impact engine, reports | **Real** code; evidence-backed; results on the synthetic sample say nothing about real-code accuracy |
 | JSON baseline store (default), Neo4j store (optional) | **Real**, tested locally (Neo4j tests need a local container) |
+| Read-only API (`cdi serve`) and explorer live mode | **Real**, tested locally (API tests; Playwright against a real `cdi serve`) |
 | **GitHub flow** (comment upsert, commit status, baseline cache, fork skip) | **Written and tested against an in-memory fake GitHub server. Becomes "real" only once Phase 7 runs it on github.com and the result is verified.** Nothing has run on GitHub yet. |
 | Azure DevOps adapter | **Written, never run** (disabled by default; shapes taken from public docs). Optional plugin, not the default flow |
 | File-sink "simulated CI" (`out/pr-comment.md`) | **Simulation**: writes files only; used locally and as the no-token fallback |

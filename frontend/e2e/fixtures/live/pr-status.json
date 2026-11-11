@@ -1,0 +1,29 @@
+{
+  "simulated": true,
+  "shape_verified_against_real_service": false,
+  "note": "Shapes follow the public Azure DevOps REST docs (api-version 7.1); nothing was posted anywhere.",
+  "thread": {
+    "comments": [
+      {
+        "parentCommentId": 0,
+        "content": "<!-- cdi-poc:impact-report:v1 pr=pr-f-route -->\n## Dependency impact (advisory)\n\n**Advisory:** this comment is informational only and does not block the merge (mode: advisory).\n**Basis:** PR commit `cd485ba4` (`pr-f-route`) compared with target `main` @ `e53930cf` (merge-base `083771f6`); baseline graph commits: api `23f6a263`, db `57e1a2ce`, web `23f6a263`; baseline loaded 2026-11-11T10:25:29+00:00 (full).\nResults are static-analysis evidence on this repository's own graph; confirmed and inferred links are kept separate.\n\n### \u26a0 Warnings\n- The PR branch is based on an OLDER target: merge-base is 083771f6, the target tip is e53930cf. The diff covers only the PR's own changes (three-dot), but the baseline graph reflects the target tip.\n\n### Changed objects (1)\n| Object | Kind | Change | Risk (rule that fired) |\n|---|---|---|---|\n| `ShopApp.Controllers.ItemController.Index()` | API_ENDPOINT | modified | High (`R3-introduces-unresolved`) |\n`ItemController.Index()` declared attributes changed: `route_template` `api/Item/Index` \u2192 `api/Item/List`\n\n### Confirmed consumers (every hop a confirmed static link)\n**`ShopApp.Controllers.ItemController.Index()`** (2):\n- UI_COMPONENT `FetchItemComponent` \u2014 `web:src/app/fetch-item/fetch-item.component.ts:19` \u26a0 broken by this PR\n- UI_SERVICE_METHOD `ItemService.getItems` \u2014 `web:src/app/services/item.service.ts:26` \u26a0 broken by this PR\n\n### Tests to run \u2014 confirmed (explicit `@covers` annotation first, then direct static references)\n_None._\n\n### Unresolved / not found\nIntroduced by this PR (1):\n- `ROUTES_TO` HTTP_REQUEST `GET api/Item/Index` \u2014 `web:src/app/services/item.service.ts:26` via `linker:route-match` @23f6a263: no API endpoint with verb GET and a route matching 'api/Item/Index' in the scanned repos; above it: `FetchItemComponent`\n\n### Lower confidence\n**Inferred consumers (0)** \u2014 at least one hop is inferred (for example DI-decided dispatch); listed in the full report with the inferred hop flagged.\n**Naming/file-convention tests (2)** \u2014 INFERRED; a spec file maps to every method of its source file, so this list over-selects.\n- `ItemService > should be created`\n- `FetchItemComponent > should create`\n\n_Full report: `out/report-pr-f-route.md` and `.json`. PR run 2.98 s (synthetic-scale repository)._\n",
+        "commentType": "text"
+      }
+    ],
+    "status": "active",
+    "properties": {
+      "cdiPocMarker": {
+        "$type": "System.String",
+        "$value": "cdi-poc:impact-report"
+      }
+    }
+  },
+  "status": {
+    "state": "succeeded",
+    "description": "advisory: 1 changed object(s), highest risk label High; 1 unresolved introduced",
+    "context": {
+      "name": "cdi-poc/impact-analysis",
+      "genre": "cdi-poc"
+    }
+  }
+}

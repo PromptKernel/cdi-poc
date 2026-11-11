@@ -1,0 +1,3994 @@
+{
+ "schema_version": 1,
+ "freshness": {
+  "commits": {
+   "web": "23f6a2631edd015c6912abd5f59c81c5b7ff6a8d",
+   "api": "23f6a2631edd015c6912abd5f59c81c5b7ff6a8d",
+   "db": "57e1a2ce0dda204615bcf29589b251e1b202e92d"
+  },
+  "loaded_at": "2026-01-01T00:00:00+00:00",
+  "mode": "full",
+  "from_commit": null,
+  "to_commit": null,
+  "counts": {
+   "nodes": 115,
+   "edges": 125
+  }
+ },
+ "nodes": [
+  {
+   "id": "api:api_endpoint:ShopApp.Controllers.DemoDataController.Readings()",
+   "kind": "API_ENDPOINT",
+   "name": "ShopApp.Controllers.DemoDataController.Readings()",
+   "repo": "api",
+   "synthetic": false,
+   "file": "Controllers/DemoDataController.cs",
+   "location": {
+    "line": 17,
+    "end_line": 27
+   },
+   "attrs": {
+    "http_method": "GET",
+    "route_template": "api/DemoData/Readings",
+    "route_normalized": "api/DemoData/Readings",
+    "class": "ShopApp.Controllers.DemoDataController"
+   }
+  },
+  {
+   "id": "api:api_endpoint:ShopApp.Controllers.ItemController.Create(ShopApp.Models.Item)",
+   "kind": "API_ENDPOINT",
+   "name": "ShopApp.Controllers.ItemController.Create(ShopApp.Models.Item)",
+   "repo": "api",
+   "synthetic": false,
+   "file": "Controllers/ItemController.cs",
+   "location": {
+    "line": 30,
+    "end_line": 35
+   },
+   "attrs": {
+    "http_method": "POST",
+    "route_template": "api/Item/Create",
+    "route_normalized": "api/Item/Create",
+    "class": "ShopApp.Controllers.ItemController"
+   }
+  },
+  {
+   "id": "api:api_endpoint:ShopApp.Controllers.ItemController.Delete(int)",
+   "kind": "API_ENDPOINT",
+   "name": "ShopApp.Controllers.ItemController.Delete(int)",
+   "repo": "api",
+   "synthetic": false,
+   "file": "Controllers/ItemController.cs",
+   "location": {
+    "line": 51,
+    "end_line": 56
+   },
+   "attrs": {
+    "http_method": "DELETE",
+    "route_template": "api/Item/Delete/{id}",
+    "route_normalized": "api/Item/Delete/{}",
+    "class": "ShopApp.Controllers.ItemController"
+   }
+  },
+  {
+   "id": "api:api_endpoint:ShopApp.Controllers.ItemController.Details()",
+   "kind": "API_ENDPOINT",
+   "name": "ShopApp.Controllers.ItemController.Details()",
+   "repo": "api",
+   "synthetic": false,
+   "file": "Controllers/ItemController.cs",
+   "location": {
+    "line": 58,
+    "end_line": 63
+   },
+   "attrs": {
+    "http_method": "GET",
+    "route_template": "api/Item/GetPlaceList",
+    "route_normalized": "api/Item/GetPlaceList",
+    "class": "ShopApp.Controllers.ItemController"
+   }
+  },
+  {
+   "id": "api:api_endpoint:ShopApp.Controllers.ItemController.Details(int)",
+   "kind": "API_ENDPOINT",
+   "name": "ShopApp.Controllers.ItemController.Details(int)",
+   "repo": "api",
+   "synthetic": false,
+   "file": "Controllers/ItemController.cs",
+   "location": {
+    "line": 37,
+    "end_line": 42
+   },
+   "attrs": {
+    "http_method": "GET",
+    "route_template": "api/Item/Details/{id}",
+    "route_normalized": "api/Item/Details/{}",
+    "class": "ShopApp.Controllers.ItemController"
+   }
+  },
+  {
+   "id": "api:api_endpoint:ShopApp.Controllers.ItemController.Edit(ShopApp.Models.Item)",
+   "kind": "API_ENDPOINT",
+   "name": "ShopApp.Controllers.ItemController.Edit(ShopApp.Models.Item)",
+   "repo": "api",
+   "synthetic": false,
+   "file": "Controllers/ItemController.cs",
+   "location": {
+    "line": 44,
+    "end_line": 49
+   },
+   "attrs": {
+    "http_method": "PUT",
+    "route_template": "api/Item/Edit",
+    "route_normalized": "api/Item/Edit",
+    "class": "ShopApp.Controllers.ItemController"
+   }
+  },
+  {
+   "id": "api:api_endpoint:ShopApp.Controllers.ItemController.Index()",
+   "kind": "API_ENDPOINT",
+   "name": "ShopApp.Controllers.ItemController.Index()",
+   "repo": "api",
+   "synthetic": false,
+   "file": "Controllers/ItemController.cs",
+   "location": {
+    "line": 23,
+    "end_line": 28
+   },
+   "attrs": {
+    "http_method": "GET",
+    "route_template": "api/Item/Index",
+    "route_normalized": "api/Item/Index",
+    "class": "ShopApp.Controllers.ItemController"
+   }
+  },
+  {
+   "id": "api:api_endpoint:ShopApp.Synthetic.Controllers.GroupController.Archive(int)",
+   "kind": "API_ENDPOINT",
+   "name": "ShopApp.Synthetic.Controllers.GroupController.Archive(int)",
+   "repo": "api",
+   "synthetic": true,
+   "file": "Synthetic/Controllers/GroupController.cs",
+   "location": {
+    "line": 32,
+    "end_line": 37
+   },
+   "attrs": {
+    "http_method": "POST",
+    "route_template": "api/Group/Archive/{id}",
+    "route_normalized": "api/Group/Archive/{}",
+    "class": "ShopApp.Synthetic.Controllers.GroupController"
+   }
+  },
+  {
+   "id": "api:api_endpoint:ShopApp.Synthetic.Controllers.GroupController.Headcount()",
+   "kind": "API_ENDPOINT",
+   "name": "ShopApp.Synthetic.Controllers.GroupController.Headcount()",
+   "repo": "api",
+   "synthetic": true,
+   "file": "Synthetic/Controllers/GroupController.cs",
+   "location": {
+    "line": 18,
+    "end_line": 23
+   },
+   "attrs": {
+    "http_method": "GET",
+    "route_template": "api/Group/Headcount",
+    "route_normalized": "api/Group/Headcount",
+    "class": "ShopApp.Synthetic.Controllers.GroupController"
+   }
+  },
+  {
+   "id": "api:api_endpoint:ShopApp.Synthetic.Controllers.GroupController.ItemsIn(string)",
+   "kind": "API_ENDPOINT",
+   "name": "ShopApp.Synthetic.Controllers.GroupController.ItemsIn(string)",
+   "repo": "api",
+   "synthetic": true,
+   "file": "Synthetic/Controllers/GroupController.cs",
+   "location": {
+    "line": 25,
+    "end_line": 30
+   },
+   "attrs": {
+    "http_method": "GET",
+    "route_template": "api/Group/Items/{group}",
+    "route_normalized": "api/Group/Items/{}",
+    "class": "ShopApp.Synthetic.Controllers.GroupController"
+   }
+  },
+  {
+   "id": "api:data_access_method:ShopApp.DataAccess.ItemDataAccessLayer.AddItem(ShopApp.Models.Item)",
+   "kind": "DATA_ACCESS_METHOD",
+   "name": "ShopApp.DataAccess.ItemDataAccessLayer.AddItem(ShopApp.Models.Item)",
+   "repo": "api",
+   "synthetic": false,
+   "file": "DataAccess/ItemDataAccessLayer.cs",
+   "location": {
+    "line": 59,
+    "end_line": 83
+   }
+  },
+  {
+   "id": "api:data_access_method:ShopApp.DataAccess.ItemDataAccessLayer.DeleteItem(int)",
+   "kind": "DATA_ACCESS_METHOD",
+   "name": "ShopApp.DataAccess.ItemDataAccessLayer.DeleteItem(int)",
+   "repo": "api",
+   "synthetic": false,
+   "file": "DataAccess/ItemDataAccessLayer.cs",
+   "location": {
+    "line": 146,
+    "end_line": 167
+   }
+  },
+  {
+   "id": "api:data_access_method:ShopApp.DataAccess.ItemDataAccessLayer.GetAllItems()",
+   "kind": "DATA_ACCESS_METHOD",
+   "name": "ShopApp.DataAccess.ItemDataAccessLayer.GetAllItems()",
+   "repo": "api",
+   "synthetic": false,
+   "file": "DataAccess/ItemDataAccessLayer.cs",
+   "location": {
+    "line": 22,
+    "end_line": 56
+   }
+  },
+  {
+   "id": "api:data_access_method:ShopApp.DataAccess.ItemDataAccessLayer.GetItemData(int)",
+   "kind": "DATA_ACCESS_METHOD",
+   "name": "ShopApp.DataAccess.ItemDataAccessLayer.GetItemData(int)",
+   "repo": "api",
+   "synthetic": false,
+   "file": "DataAccess/ItemDataAccessLayer.cs",
+   "location": {
+    "line": 114,
+    "end_line": 143
+   }
+  },
+  {
+   "id": "api:data_access_method:ShopApp.DataAccess.ItemDataAccessLayer.GetPlaces()",
+   "kind": "DATA_ACCESS_METHOD",
+   "name": "ShopApp.DataAccess.ItemDataAccessLayer.GetPlaces()",
+   "repo": "api",
+   "synthetic": false,
+   "file": "DataAccess/ItemDataAccessLayer.cs",
+   "location": {
+    "line": 169,
+    "end_line": 199
+   }
+  },
+  {
+   "id": "api:data_access_method:ShopApp.DataAccess.ItemDataAccessLayer.UpdateItem(ShopApp.Models.Item)",
+   "kind": "DATA_ACCESS_METHOD",
+   "name": "ShopApp.DataAccess.ItemDataAccessLayer.UpdateItem(ShopApp.Models.Item)",
+   "repo": "api",
+   "synthetic": false,
+   "file": "DataAccess/ItemDataAccessLayer.cs",
+   "location": {
+    "line": 86,
+    "end_line": 111
+   }
+  },
+  {
+   "id": "api:data_access_method:ShopApp.Synthetic.DataAccess.GroupDataAccess.Archive(int)",
+   "kind": "DATA_ACCESS_METHOD",
+   "name": "ShopApp.Synthetic.DataAccess.GroupDataAccess.Archive(int)",
+   "repo": "api",
+   "synthetic": true,
+   "file": "Synthetic/DataAccess/GroupDataAccess.cs",
+   "location": {
+    "line": 60,
+    "end_line": 71
+   }
+  },
+  {
+   "id": "api:data_access_method:ShopApp.Synthetic.DataAccess.GroupDataAccess.ReadHeadcount()",
+   "kind": "DATA_ACCESS_METHOD",
+   "name": "ShopApp.Synthetic.DataAccess.GroupDataAccess.ReadHeadcount()",
+   "repo": "api",
+   "synthetic": true,
+   "file": "Synthetic/DataAccess/GroupDataAccess.cs",
+   "location": {
+    "line": 19,
+    "end_line": 39
+   }
+  },
+  {
+   "id": "api:data_access_method:ShopApp.Synthetic.DataAccess.GroupDataAccess.ReadItemsByGroup(string)",
+   "kind": "DATA_ACCESS_METHOD",
+   "name": "ShopApp.Synthetic.DataAccess.GroupDataAccess.ReadItemsByGroup(string)",
+   "repo": "api",
+   "synthetic": true,
+   "file": "Synthetic/DataAccess/GroupDataAccess.cs",
+   "location": {
+    "line": 41,
+    "end_line": 57
+   }
+  },
+  {
+   "id": "api:data_access_method:ShopApp.Synthetic.DataAccess.SqlPatternsDataAccess.CommandTextAssignment()",
+   "kind": "DATA_ACCESS_METHOD",
+   "name": "ShopApp.Synthetic.DataAccess.SqlPatternsDataAccess.CommandTextAssignment()",
+   "repo": "api",
+   "synthetic": true,
+   "file": "Synthetic/DataAccess/SqlPatternsDataAccess.cs",
+   "location": {
+    "line": 54,
+    "end_line": 65
+   }
+  },
+  {
+   "id": "api:data_access_method:ShopApp.Synthetic.DataAccess.SqlPatternsDataAccess.ConstantConcatenation()",
+   "kind": "DATA_ACCESS_METHOD",
+   "name": "ShopApp.Synthetic.DataAccess.SqlPatternsDataAccess.ConstantConcatenation()",
+   "repo": "api",
+   "synthetic": true,
+   "file": "Synthetic/DataAccess/SqlPatternsDataAccess.cs",
+   "location": {
+    "line": 26,
+    "end_line": 35
+   }
+  },
+  {
+   "id": "api:data_access_method:ShopApp.Synthetic.DataAccess.SqlPatternsDataAccess.ConstantField()",
+   "kind": "DATA_ACCESS_METHOD",
+   "name": "ShopApp.Synthetic.DataAccess.SqlPatternsDataAccess.ConstantField()",
+   "repo": "api",
+   "synthetic": true,
+   "file": "Synthetic/DataAccess/SqlPatternsDataAccess.cs",
+   "location": {
+    "line": 14,
+    "end_line": 23
+   }
+  },
+  {
+   "id": "api:data_access_method:ShopApp.Synthetic.DataAccess.SqlPatternsDataAccess.CtorWithInitializer()",
+   "kind": "DATA_ACCESS_METHOD",
+   "name": "ShopApp.Synthetic.DataAccess.SqlPatternsDataAccess.CtorWithInitializer()",
+   "repo": "api",
+   "synthetic": true,
+   "file": "Synthetic/DataAccess/SqlPatternsDataAccess.cs",
+   "location": {
+    "line": 80,
+    "end_line": 88
+   }
+  },
+  {
+   "id": "api:data_access_method:ShopApp.Synthetic.DataAccess.SqlPatternsDataAccess.InlineLiteralSql()",
+   "kind": "DATA_ACCESS_METHOD",
+   "name": "ShopApp.Synthetic.DataAccess.SqlPatternsDataAccess.InlineLiteralSql()",
+   "repo": "api",
+   "synthetic": true,
+   "file": "Synthetic/DataAccess/SqlPatternsDataAccess.cs",
+   "location": {
+    "line": 103,
+    "end_line": 111
+   }
+  },
+  {
+   "id": "api:data_access_method:ShopApp.Synthetic.DataAccess.SqlPatternsDataAccess.InterpolatedSql(string)",
+   "kind": "DATA_ACCESS_METHOD",
+   "name": "ShopApp.Synthetic.DataAccess.SqlPatternsDataAccess.InterpolatedSql(string)",
+   "repo": "api",
+   "synthetic": true,
+   "file": "Synthetic/DataAccess/SqlPatternsDataAccess.cs",
+   "location": {
+    "line": 91,
+    "end_line": 100
+   }
+  },
+  {
+   "id": "api:data_access_method:ShopApp.Synthetic.DataAccess.SqlPatternsDataAccess.ObjectInitializer()",
+   "kind": "DATA_ACCESS_METHOD",
+   "name": "ShopApp.Synthetic.DataAccess.SqlPatternsDataAccess.ObjectInitializer()",
+   "repo": "api",
+   "synthetic": true,
+   "file": "Synthetic/DataAccess/SqlPatternsDataAccess.cs",
+   "location": {
+    "line": 38,
+    "end_line": 51
+   }
+  },
+  {
+   "id": "api:data_access_method:ShopApp.Synthetic.DataAccess.SqlPatternsDataAccess.TargetTypedNew()",
+   "kind": "DATA_ACCESS_METHOD",
+   "name": "ShopApp.Synthetic.DataAccess.SqlPatternsDataAccess.TargetTypedNew()",
+   "repo": "api",
+   "synthetic": true,
+   "file": "Synthetic/DataAccess/SqlPatternsDataAccess.cs",
+   "location": {
+    "line": 68,
+    "end_line": 77
+   }
+  },
+  {
+   "id": "api:interface_method:ShopApp.Interfaces.IItem.AddItem(ShopApp.Models.Item)",
+   "kind": "INTERFACE_METHOD",
+   "name": "ShopApp.Interfaces.IItem.AddItem(ShopApp.Models.Item)",
+   "repo": "api",
+   "synthetic": false,
+   "file": "Interfaces/IItem.cs",
+   "location": {
+    "line": 12,
+    "end_line": 12
+   }
+  },
+  {
+   "id": "api:interface_method:ShopApp.Interfaces.IItem.DeleteItem(int)",
+   "kind": "INTERFACE_METHOD",
+   "name": "ShopApp.Interfaces.IItem.DeleteItem(int)",
+   "repo": "api",
+   "synthetic": false,
+   "file": "Interfaces/IItem.cs",
+   "location": {
+    "line": 15,
+    "end_line": 15
+   }
+  },
+  {
+   "id": "api:interface_method:ShopApp.Interfaces.IItem.GetAllItems()",
+   "kind": "INTERFACE_METHOD",
+   "name": "ShopApp.Interfaces.IItem.GetAllItems()",
+   "repo": "api",
+   "synthetic": false,
+   "file": "Interfaces/IItem.cs",
+   "location": {
+    "line": 11,
+    "end_line": 11
+   }
+  },
+  {
+   "id": "api:interface_method:ShopApp.Interfaces.IItem.GetItemData(int)",
+   "kind": "INTERFACE_METHOD",
+   "name": "ShopApp.Interfaces.IItem.GetItemData(int)",
+   "repo": "api",
+   "synthetic": false,
+   "file": "Interfaces/IItem.cs",
+   "location": {
+    "line": 14,
+    "end_line": 14
+   }
+  },
+  {
+   "id": "api:interface_method:ShopApp.Interfaces.IItem.GetPlaces()",
+   "kind": "INTERFACE_METHOD",
+   "name": "ShopApp.Interfaces.IItem.GetPlaces()",
+   "repo": "api",
+   "synthetic": false,
+   "file": "Interfaces/IItem.cs",
+   "location": {
+    "line": 16,
+    "end_line": 16
+   }
+  },
+  {
+   "id": "api:interface_method:ShopApp.Interfaces.IItem.UpdateItem(ShopApp.Models.Item)",
+   "kind": "INTERFACE_METHOD",
+   "name": "ShopApp.Interfaces.IItem.UpdateItem(ShopApp.Models.Item)",
+   "repo": "api",
+   "synthetic": false,
+   "file": "Interfaces/IItem.cs",
+   "location": {
+    "line": 13,
+    "end_line": 13
+   }
+  },
+  {
+   "id": "api:interface_method:ShopApp.Synthetic.Services.IGroupReportService.ArchiveItem(int)",
+   "kind": "INTERFACE_METHOD",
+   "name": "ShopApp.Synthetic.Services.IGroupReportService.ArchiveItem(int)",
+   "repo": "api",
+   "synthetic": true,
+   "file": "Synthetic/Services/IGroupReportService.cs",
+   "location": {
+    "line": 18,
+    "end_line": 18
+   }
+  },
+  {
+   "id": "api:interface_method:ShopApp.Synthetic.Services.IGroupReportService.GetHeadcountReport()",
+   "kind": "INTERFACE_METHOD",
+   "name": "ShopApp.Synthetic.Services.IGroupReportService.GetHeadcountReport()",
+   "repo": "api",
+   "synthetic": true,
+   "file": "Synthetic/Services/IGroupReportService.cs",
+   "location": {
+    "line": 16,
+    "end_line": 16
+   }
+  },
+  {
+   "id": "api:interface_method:ShopApp.Synthetic.Services.IGroupReportService.GetItemNames(string)",
+   "kind": "INTERFACE_METHOD",
+   "name": "ShopApp.Synthetic.Services.IGroupReportService.GetItemNames(string)",
+   "repo": "api",
+   "synthetic": true,
+   "file": "Synthetic/Services/IGroupReportService.cs",
+   "location": {
+    "line": 17,
+    "end_line": 17
+   }
+  },
+  {
+   "id": "api:method:ShopApp.Pages.ErrorModel.OnGet()",
+   "kind": "METHOD",
+   "name": "ShopApp.Pages.ErrorModel.OnGet()",
+   "repo": "api",
+   "synthetic": false,
+   "file": "Pages/Error.cshtml.cs",
+   "location": {
+    "line": 18,
+    "end_line": 21
+   }
+  },
+  {
+   "id": "api:method:ShopApp.Program.CreateWebHostBuilder(string[])",
+   "kind": "METHOD",
+   "name": "ShopApp.Program.CreateWebHostBuilder(string[])",
+   "repo": "api",
+   "synthetic": false,
+   "file": "Program.cs",
+   "location": {
+    "line": 19,
+    "end_line": 21
+   }
+  },
+  {
+   "id": "api:method:ShopApp.Program.Main(string[])",
+   "kind": "METHOD",
+   "name": "ShopApp.Program.Main(string[])",
+   "repo": "api",
+   "synthetic": false,
+   "file": "Program.cs",
+   "location": {
+    "line": 14,
+    "end_line": 17
+   }
+  },
+  {
+   "id": "api:method:ShopApp.Startup.Configure(IApplicationBuilder, IWebHostEnvironment)",
+   "kind": "METHOD",
+   "name": "ShopApp.Startup.Configure(IApplicationBuilder, IWebHostEnvironment)",
+   "repo": "api",
+   "synthetic": false,
+   "file": "Startup.cs",
+   "location": {
+    "line": 39,
+    "end_line": 75
+   }
+  },
+  {
+   "id": "api:method:ShopApp.Startup.ConfigureServices(IServiceCollection)",
+   "kind": "METHOD",
+   "name": "ShopApp.Startup.ConfigureServices(IServiceCollection)",
+   "repo": "api",
+   "synthetic": false,
+   "file": "Startup.cs",
+   "location": {
+    "line": 23,
+    "end_line": 36
+   }
+  },
+  {
+   "id": "api:service_method:ShopApp.Synthetic.Services.GroupReportService.ArchiveItem(int)",
+   "kind": "SERVICE_METHOD",
+   "name": "ShopApp.Synthetic.Services.GroupReportService.ArchiveItem(int)",
+   "repo": "api",
+   "synthetic": true,
+   "file": "Synthetic/Services/GroupReportService.cs",
+   "location": {
+    "line": 38,
+    "end_line": 41
+   }
+  },
+  {
+   "id": "api:service_method:ShopApp.Synthetic.Services.GroupReportService.GetHeadcountReport()",
+   "kind": "SERVICE_METHOD",
+   "name": "ShopApp.Synthetic.Services.GroupReportService.GetHeadcountReport()",
+   "repo": "api",
+   "synthetic": true,
+   "file": "Synthetic/Services/GroupReportService.cs",
+   "location": {
+    "line": 18,
+    "end_line": 26
+   }
+  },
+  {
+   "id": "api:service_method:ShopApp.Synthetic.Services.GroupReportService.GetItemNames(string)",
+   "kind": "SERVICE_METHOD",
+   "name": "ShopApp.Synthetic.Services.GroupReportService.GetItemNames(string)",
+   "repo": "api",
+   "synthetic": true,
+   "file": "Synthetic/Services/GroupReportService.cs",
+   "location": {
+    "line": 33,
+    "end_line": 36
+   }
+  },
+  {
+   "id": "api:service_method:ShopApp.Synthetic.Services.GroupReportService.IsOverLimit(ShopApp.Synthetic.Services.GroupHeadcount)",
+   "kind": "SERVICE_METHOD",
+   "name": "ShopApp.Synthetic.Services.GroupReportService.IsOverLimit(ShopApp.Synthetic.Services.GroupHeadcount)",
+   "repo": "api",
+   "synthetic": true,
+   "file": "Synthetic/Services/GroupReportService.cs",
+   "location": {
+    "line": 28,
+    "end_line": 31
+   }
+  },
+  {
+   "id": "api:sql_ref:dbo.spAddItem",
+   "kind": "SQL_REF",
+   "name": "dbo.spAddItem",
+   "repo": "api",
+   "synthetic": false,
+   "attrs": {
+    "expected": "procedure"
+   }
+  },
+  {
+   "id": "api:sql_ref:dbo.spArchiveItem",
+   "kind": "SQL_REF",
+   "name": "dbo.spArchiveItem",
+   "repo": "api",
+   "synthetic": false,
+   "attrs": {
+    "expected": "procedure"
+   }
+  },
+  {
+   "id": "api:sql_ref:dbo.spDeleteItem",
+   "kind": "SQL_REF",
+   "name": "dbo.spDeleteItem",
+   "repo": "api",
+   "synthetic": false,
+   "attrs": {
+    "expected": "procedure"
+   }
+  },
+  {
+   "id": "api:sql_ref:dbo.spGetAllItems",
+   "kind": "SQL_REF",
+   "name": "dbo.spGetAllItems",
+   "repo": "api",
+   "synthetic": false,
+   "attrs": {
+    "expected": "procedure"
+   }
+  },
+  {
+   "id": "api:sql_ref:dbo.spGetGroupHeadcount",
+   "kind": "SQL_REF",
+   "name": "dbo.spGetGroupHeadcount",
+   "repo": "api",
+   "synthetic": false,
+   "attrs": {
+    "expected": "procedure"
+   }
+  },
+  {
+   "id": "api:sql_ref:dbo.spGetItemsByGroup",
+   "kind": "SQL_REF",
+   "name": "dbo.spGetItemsByGroup",
+   "repo": "api",
+   "synthetic": false,
+   "attrs": {
+    "expected": "procedure"
+   }
+  },
+  {
+   "id": "api:sql_ref:dbo.spGetPlaceList",
+   "kind": "SQL_REF",
+   "name": "dbo.spGetPlaceList",
+   "repo": "api",
+   "synthetic": false,
+   "attrs": {
+    "expected": "procedure"
+   }
+  },
+  {
+   "id": "api:sql_ref:dbo.spUpdateItem",
+   "kind": "SQL_REF",
+   "name": "dbo.spUpdateItem",
+   "repo": "api",
+   "synthetic": false,
+   "attrs": {
+    "expected": "procedure"
+   }
+  },
+  {
+   "id": "api:test:Api.Tests.GroupTests.GroupController_Headcount_ReturnsRows()",
+   "kind": "TEST",
+   "name": "Api.Tests.GroupTests.GroupController_Headcount_ReturnsRows()",
+   "repo": "api",
+   "synthetic": true,
+   "file": "tests/Api.Tests/GroupTests.cs",
+   "location": {
+    "line": 21,
+    "end_line": 26
+   },
+   "attrs": {
+    "test_layer": "csharp",
+    "class": "Api.Tests.GroupTests",
+    "method_name": "GroupController_Headcount_ReturnsRows",
+    "covers_annotation": []
+   }
+  },
+  {
+   "id": "api:test:Api.Tests.GroupTests.OverLimit_flag_true_when_headcount_exceeds_limit()",
+   "kind": "TEST",
+   "name": "Api.Tests.GroupTests.OverLimit_flag_true_when_headcount_exceeds_limit()",
+   "repo": "api",
+   "synthetic": true,
+   "file": "tests/Api.Tests/GroupTests.cs",
+   "location": {
+    "line": 29,
+    "end_line": 34
+   },
+   "attrs": {
+    "test_layer": "csharp",
+    "class": "Api.Tests.GroupTests",
+    "method_name": "OverLimit_flag_true_when_headcount_exceeds_limit",
+    "covers_annotation": [
+     "ShopApp.Synthetic.Services.GroupReportService.IsOverLimit(ShopApp.Synthetic.Services.GroupHeadcount)"
+    ]
+   }
+  },
+  {
+   "id": "api:unresolved:DataAccess/ItemDataAccessLayer.cs:123",
+   "kind": "UNRESOLVED",
+   "name": "inline/dynamic SQL at DataAccess/ItemDataAccessLayer.cs:123",
+   "repo": "api",
+   "synthetic": false,
+   "file": "DataAccess/ItemDataAccessLayer.cs",
+   "location": {
+    "line": 123,
+    "end_line": 123
+   },
+   "attrs": {
+    "cause": "dynamic_sql",
+    "literal_prefix_hint": "SELECT * FROM tblItem WHERE ItemID= "
+   }
+  },
+  {
+   "id": "api:unresolved:Synthetic/DataAccess/SqlPatternsDataAccess.cs:107",
+   "kind": "UNRESOLVED",
+   "name": "inline/dynamic SQL at Synthetic/DataAccess/SqlPatternsDataAccess.cs:107",
+   "repo": "api",
+   "synthetic": true,
+   "file": "Synthetic/DataAccess/SqlPatternsDataAccess.cs",
+   "location": {
+    "line": 107,
+    "end_line": 107
+   },
+   "attrs": {
+    "cause": "inline_sql_not_parsed",
+    "literal_prefix_hint": null
+   }
+  },
+  {
+   "id": "api:unresolved:Synthetic/DataAccess/SqlPatternsDataAccess.cs:96",
+   "kind": "UNRESOLVED",
+   "name": "inline/dynamic SQL at Synthetic/DataAccess/SqlPatternsDataAccess.cs:96",
+   "repo": "api",
+   "synthetic": true,
+   "file": "Synthetic/DataAccess/SqlPatternsDataAccess.cs",
+   "location": {
+    "line": 96,
+    "end_line": 96
+   },
+   "attrs": {
+    "cause": "dynamic_sql",
+    "literal_prefix_hint": null
+   }
+  },
+  {
+   "id": "db:sql_proc:dbo.spAddItem",
+   "kind": "SQL_PROC",
+   "name": "dbo.spAddItem",
+   "repo": "db",
+   "synthetic": true,
+   "file": "synthetic/procedures/spAddItem.sql",
+   "location": {
+    "line": 3,
+    "end_line": 9
+   }
+  },
+  {
+   "id": "db:sql_proc:dbo.spDeleteItem",
+   "kind": "SQL_PROC",
+   "name": "dbo.spDeleteItem",
+   "repo": "db",
+   "synthetic": true,
+   "file": "synthetic/procedures/spDeleteItem.sql",
+   "location": {
+    "line": 3,
+    "end_line": 8
+   }
+  },
+  {
+   "id": "db:sql_proc:dbo.spGetAllItems",
+   "kind": "SQL_PROC",
+   "name": "dbo.spGetAllItems",
+   "repo": "db",
+   "synthetic": true,
+   "file": "synthetic/procedures/spGetAllItems.sql",
+   "location": {
+    "line": 3,
+    "end_line": 9
+   }
+  },
+  {
+   "id": "db:sql_proc:dbo.spGetGroupHeadcount",
+   "kind": "SQL_PROC",
+   "name": "dbo.spGetGroupHeadcount",
+   "repo": "db",
+   "synthetic": true,
+   "file": "synthetic/procedures/spGetGroupHeadcount.sql",
+   "location": {
+    "line": 3,
+    "end_line": 10
+   }
+  },
+  {
+   "id": "db:sql_proc:dbo.spGetItemsByGroup",
+   "kind": "SQL_PROC",
+   "name": "dbo.spGetItemsByGroup",
+   "repo": "db",
+   "synthetic": true,
+   "file": "synthetic/procedures/spGetItemsByGroup.sql",
+   "location": {
+    "line": 3,
+    "end_line": 9
+   }
+  },
+  {
+   "id": "db:sql_proc:dbo.spGetPlaceList",
+   "kind": "SQL_PROC",
+   "name": "dbo.spGetPlaceList",
+   "repo": "db",
+   "synthetic": true,
+   "file": "synthetic/procedures/spGetPlaceList.sql",
+   "location": {
+    "line": 3,
+    "end_line": 7
+   }
+  },
+  {
+   "id": "db:sql_proc:dbo.spSearchItems",
+   "kind": "SQL_PROC",
+   "name": "dbo.spSearchItems",
+   "repo": "db",
+   "synthetic": true,
+   "file": "synthetic/procedures/spSearchItems.sql",
+   "location": {
+    "line": 3,
+    "end_line": 10
+   }
+  },
+  {
+   "id": "db:sql_proc:dbo.spUpdateItem",
+   "kind": "SQL_PROC",
+   "name": "dbo.spUpdateItem",
+   "repo": "db",
+   "synthetic": true,
+   "file": "synthetic/procedures/spUpdateItem.sql",
+   "location": {
+    "line": 3,
+    "end_line": 10
+   }
+  },
+  {
+   "id": "db:sql_table:dbo.tblGroup",
+   "kind": "SQL_TABLE",
+   "name": "dbo.tblGroup",
+   "repo": "db",
+   "synthetic": true,
+   "file": "synthetic/tables/tblGroup.sql",
+   "location": {
+    "line": 3,
+    "end_line": 7
+   }
+  },
+  {
+   "id": "db:sql_table:dbo.tblItem",
+   "kind": "SQL_TABLE",
+   "name": "dbo.tblItem",
+   "repo": "db",
+   "synthetic": true,
+   "file": "synthetic/tables/tblItem.sql",
+   "location": {
+    "line": 3,
+    "end_line": 9
+   }
+  },
+  {
+   "id": "db:sql_table:dbo.tblPlaces",
+   "kind": "SQL_TABLE",
+   "name": "dbo.tblPlaces",
+   "repo": "db",
+   "synthetic": true,
+   "file": "synthetic/tables/tblPlaces.sql",
+   "location": {
+    "line": 3,
+    "end_line": 6
+   }
+  },
+  {
+   "id": "db:sql_view:dbo.vwItemGroup",
+   "kind": "SQL_VIEW",
+   "name": "dbo.vwItemGroup",
+   "repo": "db",
+   "synthetic": true,
+   "file": "synthetic/views/vwItemGroup.sql",
+   "location": {
+    "line": 3,
+    "end_line": 6
+   }
+  },
+  {
+   "id": "db:test:synthetic/tests/test_spGetGroupHeadcount.sql::GroupTests.test spGetGroupHeadcount counts items per group",
+   "kind": "TEST",
+   "name": "GroupTests.test spGetGroupHeadcount counts items per group",
+   "repo": "db",
+   "synthetic": true,
+   "file": "synthetic/tests/test_spGetGroupHeadcount.sql",
+   "location": {
+    "line": 4,
+    "end_line": 8
+   },
+   "attrs": {
+    "test_layer": "SQL",
+    "covers_annotation": [
+     "dbo.spGetGroupHeadcount"
+    ]
+   }
+  },
+  {
+   "id": "db:unresolved:synthetic/procedures/spSearchItems.sql:9",
+   "kind": "UNRESOLVED",
+   "name": "dynamic SQL at synthetic/procedures/spSearchItems.sql:9",
+   "repo": "db",
+   "synthetic": true,
+   "file": "synthetic/procedures/spSearchItems.sql",
+   "location": {
+    "line": 9,
+    "end_line": 9
+   },
+   "attrs": {
+    "cause": "dynamic_sql"
+   }
+  },
+  {
+   "id": "linker:unresolved:referenced_not_found:dbo.spArchiveItem",
+   "kind": "UNRESOLVED",
+   "name": "referenced procedure dbo.spArchiveItem not found",
+   "repo": "linker",
+   "synthetic": false,
+   "attrs": {
+    "cause": "referenced_not_found"
+   }
+  },
+  {
+   "id": "web:http_request:DELETE api/Item/Delete/{}",
+   "kind": "HTTP_REQUEST",
+   "name": "DELETE api/Item/Delete/{}",
+   "repo": "web",
+   "synthetic": false,
+   "file": "src/app/services/item.service.ts",
+   "location": {
+    "line": 57,
+    "end_line": 57
+   },
+   "attrs": {
+    "verb": "DELETE",
+    "url_template": "api/Item/Delete/{}"
+   }
+  },
+  {
+   "id": "web:http_request:GET api/DemoData/Readings",
+   "kind": "HTTP_REQUEST",
+   "name": "GET api/DemoData/Readings",
+   "repo": "web",
+   "synthetic": false,
+   "file": "src/app/list-data/list-data.component.ts",
+   "location": {
+    "line": 12,
+    "end_line": 12
+   },
+   "attrs": {
+    "verb": "GET",
+    "url_template": "api/DemoData/Readings"
+   }
+  },
+  {
+   "id": "web:http_request:GET api/Group/Items/{}",
+   "kind": "HTTP_REQUEST",
+   "name": "GET api/Group/Items/{}",
+   "repo": "web",
+   "synthetic": true,
+   "file": "src/synthetic/group-report.service.ts",
+   "location": {
+    "line": 21,
+    "end_line": 21
+   },
+   "attrs": {
+    "verb": "GET",
+    "url_template": "api/Group/Items/{}"
+   }
+  },
+  {
+   "id": "web:http_request:GET api/Item/Details/{}",
+   "kind": "HTTP_REQUEST",
+   "name": "GET api/Item/Details/{}",
+   "repo": "web",
+   "synthetic": false,
+   "file": "src/app/services/item.service.ts",
+   "location": {
+    "line": 33,
+    "end_line": 33
+   },
+   "attrs": {
+    "verb": "GET",
+    "url_template": "api/Item/Details/{}"
+   }
+  },
+  {
+   "id": "web:http_request:GET api/Item/GetPlaceList",
+   "kind": "HTTP_REQUEST",
+   "name": "GET api/Item/GetPlaceList",
+   "repo": "web",
+   "synthetic": false,
+   "file": "src/app/services/item.service.ts",
+   "location": {
+    "line": 18,
+    "end_line": 18
+   },
+   "attrs": {
+    "verb": "GET",
+    "url_template": "api/Item/GetPlaceList"
+   }
+  },
+  {
+   "id": "web:http_request:GET api/Item/Index",
+   "kind": "HTTP_REQUEST",
+   "name": "GET api/Item/Index",
+   "repo": "web",
+   "synthetic": false,
+   "file": "src/app/services/item.service.ts",
+   "location": {
+    "line": 26,
+    "end_line": 26
+   },
+   "attrs": {
+    "verb": "GET",
+    "url_template": "api/Item/Index"
+   }
+  },
+  {
+   "id": "web:http_request:POST api/Group/Archive/{}",
+   "kind": "HTTP_REQUEST",
+   "name": "POST api/Group/Archive/{}",
+   "repo": "web",
+   "synthetic": true,
+   "file": "src/synthetic/group-report.service.ts",
+   "location": {
+    "line": 30,
+    "end_line": 30
+   },
+   "attrs": {
+    "verb": "POST",
+    "url_template": "api/Group/Archive/{}"
+   }
+  },
+  {
+   "id": "web:http_request:POST api/Item/Create",
+   "kind": "HTTP_REQUEST",
+   "name": "POST api/Item/Create",
+   "repo": "web",
+   "synthetic": false,
+   "file": "src/app/services/item.service.ts",
+   "location": {
+    "line": 41,
+    "end_line": 41
+   },
+   "attrs": {
+    "verb": "POST",
+    "url_template": "api/Item/Create"
+   }
+  },
+  {
+   "id": "web:http_request:PUT api/Item/Edit",
+   "kind": "HTTP_REQUEST",
+   "name": "PUT api/Item/Edit",
+   "repo": "web",
+   "synthetic": false,
+   "file": "src/app/services/item.service.ts",
+   "location": {
+    "line": 49,
+    "end_line": 49
+   },
+   "attrs": {
+    "verb": "PUT",
+    "url_template": "api/Item/Edit"
+   }
+  },
+  {
+   "id": "web:test:src/app/add-item/add-item.component.spec.ts::AddItemComponent > should create",
+   "kind": "TEST",
+   "name": "AddItemComponent > should create",
+   "repo": "web",
+   "synthetic": false,
+   "file": "src/app/add-item/add-item.component.spec.ts",
+   "location": {
+    "line": 22,
+    "end_line": 24
+   },
+   "attrs": {
+    "test_layer": "UNIT",
+    "covers_annotation": [],
+    "convention_target_file": "src/app/add-item/add-item.component.ts"
+   }
+  },
+  {
+   "id": "web:test:src/app/counter/counter.component.spec.ts::CounterComponent > should display a title",
+   "kind": "TEST",
+   "name": "CounterComponent > should display a title",
+   "repo": "web",
+   "synthetic": false,
+   "file": "src/app/counter/counter.component.spec.ts",
+   "location": {
+    "line": 22,
+    "end_line": 25
+   },
+   "attrs": {
+    "test_layer": "UNIT",
+    "covers_annotation": [],
+    "convention_target_file": "src/app/counter/counter.component.ts"
+   }
+  },
+  {
+   "id": "web:test:src/app/counter/counter.component.spec.ts::CounterComponent > should start with count 0, then increments by 1 when clicked",
+   "kind": "TEST",
+   "name": "CounterComponent > should start with count 0, then increments by 1 when clicked",
+   "repo": "web",
+   "synthetic": false,
+   "file": "src/app/counter/counter.component.spec.ts",
+   "location": {
+    "line": 27,
+    "end_line": 35
+   },
+   "attrs": {
+    "test_layer": "UNIT",
+    "covers_annotation": [],
+    "convention_target_file": "src/app/counter/counter.component.ts"
+   }
+  },
+  {
+   "id": "web:test:src/app/fetch-item/fetch-item.component.spec.ts::FetchItemComponent > should create",
+   "kind": "TEST",
+   "name": "FetchItemComponent > should create",
+   "repo": "web",
+   "synthetic": false,
+   "file": "src/app/fetch-item/fetch-item.component.spec.ts",
+   "location": {
+    "line": 22,
+    "end_line": 24
+   },
+   "attrs": {
+    "test_layer": "UNIT",
+    "covers_annotation": [],
+    "convention_target_file": "src/app/fetch-item/fetch-item.component.ts"
+   }
+  },
+  {
+   "id": "web:test:src/app/services/item.service.spec.ts::ItemService > should be created",
+   "kind": "TEST",
+   "name": "ItemService > should be created",
+   "repo": "web",
+   "synthetic": false,
+   "file": "src/app/services/item.service.spec.ts",
+   "location": {
+    "line": 8,
+    "end_line": 11
+   },
+   "attrs": {
+    "test_layer": "UNIT",
+    "covers_annotation": [],
+    "convention_target_file": "src/app/services/item.service.ts"
+   }
+  },
+  {
+   "id": "web:test:src/synthetic/group-report.service.spec.ts::GroupReportComponent > is declared",
+   "kind": "TEST",
+   "name": "GroupReportComponent > is declared",
+   "repo": "web",
+   "synthetic": true,
+   "file": "src/synthetic/group-report.service.spec.ts",
+   "location": {
+    "line": 24,
+    "end_line": 26
+   },
+   "attrs": {
+    "test_layer": "UNIT",
+    "covers_annotation": [
+     "GroupReportComponent"
+    ],
+    "convention_target_file": "src/synthetic/group-report.service.ts"
+   }
+  },
+  {
+   "id": "web:test:src/synthetic/group-report.service.spec.ts::GroupReportService > archive posts to the Group API",
+   "kind": "TEST",
+   "name": "GroupReportService > archive posts to the Group API",
+   "repo": "web",
+   "synthetic": true,
+   "file": "src/synthetic/group-report.service.spec.ts",
+   "location": {
+    "line": 16,
+    "end_line": 19
+   },
+   "attrs": {
+    "test_layer": "UNIT",
+    "covers_annotation": [
+     "GroupReportService.archive"
+    ],
+    "convention_target_file": "src/synthetic/group-report.service.ts"
+   }
+  },
+  {
+   "id": "web:test:src/synthetic/group-report.service.spec.ts::GroupReportService > should be created",
+   "kind": "TEST",
+   "name": "GroupReportService > should be created",
+   "repo": "web",
+   "synthetic": true,
+   "file": "src/synthetic/group-report.service.spec.ts",
+   "location": {
+    "line": 10,
+    "end_line": 13
+   },
+   "attrs": {
+    "test_layer": "UNIT",
+    "covers_annotation": [],
+    "convention_target_file": "src/synthetic/group-report.service.ts"
+   }
+  },
+  {
+   "id": "web:ui_component:AddItemComponent",
+   "kind": "UI_COMPONENT",
+   "name": "AddItemComponent",
+   "repo": "web",
+   "synthetic": false,
+   "file": "src/app/add-item/add-item.component.ts",
+   "location": {
+    "line": 8,
+    "end_line": 77
+   },
+   "attrs": {
+    "screen_routes": [
+     "register-item",
+     "item/edit/:id"
+    ],
+    "selector": "app-add-item"
+   }
+  },
+  {
+   "id": "web:ui_component:AppComponent",
+   "kind": "UI_COMPONENT",
+   "name": "AppComponent",
+   "repo": "web",
+   "synthetic": false,
+   "file": "src/app/app.component.ts",
+   "location": {
+    "line": 3,
+    "end_line": 9
+   },
+   "attrs": {
+    "screen_routes": [],
+    "selector": "app-root"
+   }
+  },
+  {
+   "id": "web:ui_component:CounterComponent",
+   "kind": "UI_COMPONENT",
+   "name": "CounterComponent",
+   "repo": "web",
+   "synthetic": false,
+   "file": "src/app/counter/counter.component.ts",
+   "location": {
+    "line": 3,
+    "end_line": 13
+   },
+   "attrs": {
+    "screen_routes": [
+     "counter"
+    ],
+    "selector": "app-counter-component"
+   }
+  },
+  {
+   "id": "web:ui_component:FetchItemComponent",
+   "kind": "UI_COMPONENT",
+   "name": "FetchItemComponent",
+   "repo": "web",
+   "synthetic": false,
+   "file": "src/app/fetch-item/fetch-item.component.ts",
+   "location": {
+    "line": 5,
+    "end_line": 32
+   },
+   "attrs": {
+    "screen_routes": [
+     "fetch-item"
+    ],
+    "selector": "app-fetch-item"
+   }
+  },
+  {
+   "id": "web:ui_component:GroupReportComponent",
+   "kind": "UI_COMPONENT",
+   "name": "GroupReportComponent",
+   "repo": "web",
+   "synthetic": true,
+   "file": "src/synthetic/group-report/group-report.component.ts",
+   "location": {
+    "line": 5,
+    "end_line": 28
+   },
+   "attrs": {
+    "screen_routes": [
+     "group-report"
+    ],
+    "selector": "app-group-report"
+   }
+  },
+  {
+   "id": "web:ui_component:HomeComponent",
+   "kind": "UI_COMPONENT",
+   "name": "HomeComponent",
+   "repo": "web",
+   "synthetic": false,
+   "file": "src/app/home/home.component.ts",
+   "location": {
+    "line": 3,
+    "end_line": 8
+   },
+   "attrs": {
+    "screen_routes": [
+     ""
+    ],
+    "selector": "app-home"
+   }
+  },
+  {
+   "id": "web:ui_component:ListDataComponent",
+   "kind": "UI_COMPONENT",
+   "name": "ListDataComponent",
+   "repo": "web",
+   "synthetic": false,
+   "file": "src/app/list-data/list-data.component.ts",
+   "location": {
+    "line": 4,
+    "end_line": 16
+   },
+   "attrs": {
+    "screen_routes": [
+     "list-data"
+    ],
+    "selector": "app-list-data"
+   }
+  },
+  {
+   "id": "web:ui_component:NavMenuComponent",
+   "kind": "UI_COMPONENT",
+   "name": "NavMenuComponent",
+   "repo": "web",
+   "synthetic": false,
+   "file": "src/app/nav-menu/nav-menu.component.ts",
+   "location": {
+    "line": 3,
+    "end_line": 18
+   },
+   "attrs": {
+    "screen_routes": [],
+    "selector": "app-nav-menu"
+   }
+  },
+  {
+   "id": "web:ui_model:Item",
+   "kind": "UI_MODEL",
+   "name": "Item",
+   "repo": "web",
+   "synthetic": false,
+   "file": "src/models/item.ts",
+   "location": {
+    "line": 1,
+    "end_line": 7
+   }
+  },
+  {
+   "id": "web:ui_model:Place",
+   "kind": "UI_MODEL",
+   "name": "Place",
+   "repo": "web",
+   "synthetic": false,
+   "file": "src/models/place.ts",
+   "location": {
+    "line": 1,
+    "end_line": 4
+   }
+  },
+  {
+   "id": "web:ui_model:Reading",
+   "kind": "UI_MODEL",
+   "name": "Reading",
+   "repo": "web",
+   "synthetic": false,
+   "file": "src/app/list-data/list-data.component.ts",
+   "location": {
+    "line": 18,
+    "end_line": 23
+   }
+  },
+  {
+   "id": "web:ui_service_method:GroupReportService.archive",
+   "kind": "UI_SERVICE_METHOD",
+   "name": "GroupReportService.archive",
+   "repo": "web",
+   "synthetic": true,
+   "file": "src/synthetic/group-report.service.ts",
+   "location": {
+    "line": 29,
+    "end_line": 31
+   }
+  },
+  {
+   "id": "web:ui_service_method:GroupReportService.exportReport",
+   "kind": "UI_SERVICE_METHOD",
+   "name": "GroupReportService.exportReport",
+   "repo": "web",
+   "synthetic": true,
+   "file": "src/synthetic/group-report.service.ts",
+   "location": {
+    "line": 25,
+    "end_line": 27
+   }
+  },
+  {
+   "id": "web:ui_service_method:GroupReportService.getHeadcount",
+   "kind": "UI_SERVICE_METHOD",
+   "name": "GroupReportService.getHeadcount",
+   "repo": "web",
+   "synthetic": true,
+   "file": "src/synthetic/group-report.service.ts",
+   "location": {
+    "line": 15,
+    "end_line": 18
+   }
+  },
+  {
+   "id": "web:ui_service_method:GroupReportService.getItemsIn",
+   "kind": "UI_SERVICE_METHOD",
+   "name": "GroupReportService.getItemsIn",
+   "repo": "web",
+   "synthetic": true,
+   "file": "src/synthetic/group-report.service.ts",
+   "location": {
+    "line": 20,
+    "end_line": 22
+   }
+  },
+  {
+   "id": "web:ui_service_method:ItemService.deleteItem",
+   "kind": "UI_SERVICE_METHOD",
+   "name": "ItemService.deleteItem",
+   "repo": "web",
+   "synthetic": false,
+   "file": "src/app/services/item.service.ts",
+   "location": {
+    "line": 56,
+    "end_line": 62
+   }
+  },
+  {
+   "id": "web:ui_service_method:ItemService.getItemById",
+   "kind": "UI_SERVICE_METHOD",
+   "name": "ItemService.getItemById",
+   "repo": "web",
+   "synthetic": false,
+   "file": "src/app/services/item.service.ts",
+   "location": {
+    "line": 32,
+    "end_line": 38
+   }
+  },
+  {
+   "id": "web:ui_service_method:ItemService.getItems",
+   "kind": "UI_SERVICE_METHOD",
+   "name": "ItemService.getItems",
+   "repo": "web",
+   "synthetic": false,
+   "file": "src/app/services/item.service.ts",
+   "location": {
+    "line": 25,
+    "end_line": 30
+   }
+  },
+  {
+   "id": "web:ui_service_method:ItemService.getPlaceList",
+   "kind": "UI_SERVICE_METHOD",
+   "name": "ItemService.getPlaceList",
+   "repo": "web",
+   "synthetic": false,
+   "file": "src/app/services/item.service.ts",
+   "location": {
+    "line": 17,
+    "end_line": 23
+   }
+  },
+  {
+   "id": "web:ui_service_method:ItemService.saveItem",
+   "kind": "UI_SERVICE_METHOD",
+   "name": "ItemService.saveItem",
+   "repo": "web",
+   "synthetic": false,
+   "file": "src/app/services/item.service.ts",
+   "location": {
+    "line": 40,
+    "end_line": 46
+   }
+  },
+  {
+   "id": "web:ui_service_method:ItemService.updateItem",
+   "kind": "UI_SERVICE_METHOD",
+   "name": "ItemService.updateItem",
+   "repo": "web",
+   "synthetic": false,
+   "file": "src/app/services/item.service.ts",
+   "location": {
+    "line": 48,
+    "end_line": 54
+   }
+  },
+  {
+   "id": "web:ui_service_method:RuntimeConfigService.get",
+   "kind": "UI_SERVICE_METHOD",
+   "name": "RuntimeConfigService.get",
+   "repo": "web",
+   "synthetic": true,
+   "file": "src/synthetic/runtime-config.service.ts",
+   "location": {
+    "line": 13,
+    "end_line": 15
+   }
+  },
+  {
+   "id": "web:ui_service_method:RuntimeConfigService.load",
+   "kind": "UI_SERVICE_METHOD",
+   "name": "RuntimeConfigService.load",
+   "repo": "web",
+   "synthetic": true,
+   "file": "src/synthetic/runtime-config.service.ts",
+   "location": {
+    "line": 9,
+    "end_line": 11
+   }
+  },
+  {
+   "id": "web:unresolved:GET@src/synthetic/group-report.service.ts:17",
+   "kind": "UNRESOLVED",
+   "name": "GET <unresolved URL> at src/synthetic/group-report.service.ts:17",
+   "repo": "web",
+   "synthetic": true,
+   "file": "src/synthetic/group-report.service.ts",
+   "location": {
+    "line": 17,
+    "end_line": 17
+   },
+   "attrs": {
+    "cause": "config_built_route",
+    "verb": "GET"
+   }
+  },
+  {
+   "id": "web:unresolved:GET@src/synthetic/group-report.service.ts:26",
+   "kind": "UNRESOLVED",
+   "name": "GET <unresolved URL> at src/synthetic/group-report.service.ts:26",
+   "repo": "web",
+   "synthetic": true,
+   "file": "src/synthetic/group-report.service.ts",
+   "location": {
+    "line": 26,
+    "end_line": 26
+   },
+   "attrs": {
+    "cause": "config_built_route",
+    "verb": "GET"
+   }
+  }
+ ],
+ "edges": [
+  {
+   "id": "CALLS_PROCEDURE|api:data_access_method:ShopApp.DataAccess.ItemDataAccessLayer.AddItem(ShopApp.Models.Item)|api:sql_ref:dbo.spAddItem|DataAccess/ItemDataAccessLayer.cs:65:38",
+   "type": "CALLS_PROCEDURE",
+   "source": "api:data_access_method:ShopApp.DataAccess.ItemDataAccessLayer.AddItem(ShopApp.Models.Item)",
+   "target": "api:sql_ref:dbo.spAddItem",
+   "source_file": "DataAccess/ItemDataAccessLayer.cs",
+   "location": {
+    "line": 65,
+    "column": 38
+   },
+   "analysis_method": "roslyn:sqlcommand-storedprocedure",
+   "confidence": "CONFIRMED_STATIC",
+   "commit_id": "23f6a2631edd015c6912abd5f59c81c5b7ff6a8d",
+   "repo": "api",
+   "synthetic": false,
+   "evidence": "SqlCommand cmd = new SqlCommand(\"spAddItem\", con);",
+   "attrs": {
+    "text_source": "constructor-argument"
+   }
+  },
+  {
+   "id": "CALLS_PROCEDURE|api:data_access_method:ShopApp.DataAccess.ItemDataAccessLayer.DeleteItem(int)|api:sql_ref:dbo.spDeleteItem|DataAccess/ItemDataAccessLayer.cs:152:38",
+   "type": "CALLS_PROCEDURE",
+   "source": "api:data_access_method:ShopApp.DataAccess.ItemDataAccessLayer.DeleteItem(int)",
+   "target": "api:sql_ref:dbo.spDeleteItem",
+   "source_file": "DataAccess/ItemDataAccessLayer.cs",
+   "location": {
+    "line": 152,
+    "column": 38
+   },
+   "analysis_method": "roslyn:sqlcommand-storedprocedure",
+   "confidence": "CONFIRMED_STATIC",
+   "commit_id": "23f6a2631edd015c6912abd5f59c81c5b7ff6a8d",
+   "repo": "api",
+   "synthetic": false,
+   "evidence": "SqlCommand cmd = new SqlCommand(\"spDeleteItem\", con);",
+   "attrs": {
+    "text_source": "constructor-argument"
+   }
+  },
+  {
+   "id": "CALLS_PROCEDURE|api:data_access_method:ShopApp.DataAccess.ItemDataAccessLayer.GetAllItems()|api:sql_ref:dbo.spGetAllItems|DataAccess/ItemDataAccessLayer.cs:30:38",
+   "type": "CALLS_PROCEDURE",
+   "source": "api:data_access_method:ShopApp.DataAccess.ItemDataAccessLayer.GetAllItems()",
+   "target": "api:sql_ref:dbo.spGetAllItems",
+   "source_file": "DataAccess/ItemDataAccessLayer.cs",
+   "location": {
+    "line": 30,
+    "column": 38
+   },
+   "analysis_method": "roslyn:sqlcommand-storedprocedure",
+   "confidence": "CONFIRMED_STATIC",
+   "commit_id": "23f6a2631edd015c6912abd5f59c81c5b7ff6a8d",
+   "repo": "api",
+   "synthetic": false,
+   "evidence": "SqlCommand cmd = new SqlCommand(\"spGetAllItems\", con);",
+   "attrs": {
+    "text_source": "constructor-argument"
+   }
+  },
+  {
+   "id": "CALLS_PROCEDURE|api:data_access_method:ShopApp.DataAccess.ItemDataAccessLayer.GetPlaces()|api:sql_ref:dbo.spGetPlaceList|DataAccess/ItemDataAccessLayer.cs:177:38",
+   "type": "CALLS_PROCEDURE",
+   "source": "api:data_access_method:ShopApp.DataAccess.ItemDataAccessLayer.GetPlaces()",
+   "target": "api:sql_ref:dbo.spGetPlaceList",
+   "source_file": "DataAccess/ItemDataAccessLayer.cs",
+   "location": {
+    "line": 177,
+    "column": 38
+   },
+   "analysis_method": "roslyn:sqlcommand-storedprocedure",
+   "confidence": "CONFIRMED_STATIC",
+   "commit_id": "23f6a2631edd015c6912abd5f59c81c5b7ff6a8d",
+   "repo": "api",
+   "synthetic": false,
+   "evidence": "SqlCommand cmd = new SqlCommand(\"spGetPlaceList\", con);",
+   "attrs": {
+    "text_source": "constructor-argument"
+   }
+  },
+  {
+   "id": "CALLS_PROCEDURE|api:data_access_method:ShopApp.DataAccess.ItemDataAccessLayer.UpdateItem(ShopApp.Models.Item)|api:sql_ref:dbo.spUpdateItem|DataAccess/ItemDataAccessLayer.cs:92:38",
+   "type": "CALLS_PROCEDURE",
+   "source": "api:data_access_method:ShopApp.DataAccess.ItemDataAccessLayer.UpdateItem(ShopApp.Models.Item)",
+   "target": "api:sql_ref:dbo.spUpdateItem",
+   "source_file": "DataAccess/ItemDataAccessLayer.cs",
+   "location": {
+    "line": 92,
+    "column": 38
+   },
+   "analysis_method": "roslyn:sqlcommand-storedprocedure",
+   "confidence": "CONFIRMED_STATIC",
+   "commit_id": "23f6a2631edd015c6912abd5f59c81c5b7ff6a8d",
+   "repo": "api",
+   "synthetic": false,
+   "evidence": "SqlCommand cmd = new SqlCommand(\"spUpdateItem\", con);",
+   "attrs": {
+    "text_source": "constructor-argument"
+   }
+  },
+  {
+   "id": "CALLS_PROCEDURE|api:data_access_method:ShopApp.Synthetic.DataAccess.GroupDataAccess.Archive(int)|api:sql_ref:dbo.spArchiveItem|Synthetic/DataAccess/GroupDataAccess.cs:64:34",
+   "type": "CALLS_PROCEDURE",
+   "source": "api:data_access_method:ShopApp.Synthetic.DataAccess.GroupDataAccess.Archive(int)",
+   "target": "api:sql_ref:dbo.spArchiveItem",
+   "source_file": "Synthetic/DataAccess/GroupDataAccess.cs",
+   "location": {
+    "line": 64,
+    "column": 34
+   },
+   "analysis_method": "roslyn:sqlcommand-storedprocedure",
+   "confidence": "CONFIRMED_STATIC",
+   "commit_id": "23f6a2631edd015c6912abd5f59c81c5b7ff6a8d",
+   "repo": "api",
+   "synthetic": true,
+   "evidence": "SqlCommand cmd = new SqlCommand(\"spArchiveItem\", con);",
+   "attrs": {
+    "text_source": "constructor-argument"
+   }
+  },
+  {
+   "id": "CALLS_PROCEDURE|api:data_access_method:ShopApp.Synthetic.DataAccess.GroupDataAccess.ReadHeadcount()|api:sql_ref:dbo.spGetGroupHeadcount|Synthetic/DataAccess/GroupDataAccess.cs:24:34",
+   "type": "CALLS_PROCEDURE",
+   "source": "api:data_access_method:ShopApp.Synthetic.DataAccess.GroupDataAccess.ReadHeadcount()",
+   "target": "api:sql_ref:dbo.spGetGroupHeadcount",
+   "source_file": "Synthetic/DataAccess/GroupDataAccess.cs",
+   "location": {
+    "line": 24,
+    "column": 34
+   },
+   "analysis_method": "roslyn:sqlcommand-storedprocedure",
+   "confidence": "CONFIRMED_STATIC",
+   "commit_id": "23f6a2631edd015c6912abd5f59c81c5b7ff6a8d",
+   "repo": "api",
+   "synthetic": true,
+   "evidence": "SqlCommand cmd = new SqlCommand(\"spGetGroupHeadcount\", con);",
+   "attrs": {
+    "text_source": "constructor-argument"
+   }
+  },
+  {
+   "id": "CALLS_PROCEDURE|api:data_access_method:ShopApp.Synthetic.DataAccess.GroupDataAccess.ReadItemsByGroup(string)|api:sql_ref:dbo.spGetItemsByGroup|Synthetic/DataAccess/GroupDataAccess.cs:46:34",
+   "type": "CALLS_PROCEDURE",
+   "source": "api:data_access_method:ShopApp.Synthetic.DataAccess.GroupDataAccess.ReadItemsByGroup(string)",
+   "target": "api:sql_ref:dbo.spGetItemsByGroup",
+   "source_file": "Synthetic/DataAccess/GroupDataAccess.cs",
+   "location": {
+    "line": 46,
+    "column": 34
+   },
+   "analysis_method": "roslyn:sqlcommand-storedprocedure",
+   "confidence": "CONFIRMED_STATIC",
+   "commit_id": "23f6a2631edd015c6912abd5f59c81c5b7ff6a8d",
+   "repo": "api",
+   "synthetic": true,
+   "evidence": "SqlCommand cmd = new SqlCommand(\"spGetItemsByGroup\", con);",
+   "attrs": {
+    "text_source": "constructor-argument"
+   }
+  },
+  {
+   "id": "CALLS_PROCEDURE|api:data_access_method:ShopApp.Synthetic.DataAccess.SqlPatternsDataAccess.CommandTextAssignment()|api:sql_ref:dbo.spGetItemsByGroup|Synthetic/DataAccess/SqlPatternsDataAccess.cs:58:27",
+   "type": "CALLS_PROCEDURE",
+   "source": "api:data_access_method:ShopApp.Synthetic.DataAccess.SqlPatternsDataAccess.CommandTextAssignment()",
+   "target": "api:sql_ref:dbo.spGetItemsByGroup",
+   "source_file": "Synthetic/DataAccess/SqlPatternsDataAccess.cs",
+   "location": {
+    "line": 58,
+    "column": 27
+   },
+   "analysis_method": "roslyn:sqlcommand-storedprocedure",
+   "confidence": "CONFIRMED_STATIC",
+   "commit_id": "23f6a2631edd015c6912abd5f59c81c5b7ff6a8d",
+   "repo": "api",
+   "synthetic": true,
+   "evidence": "var cmd = new SqlCommand();",
+   "attrs": {
+    "text_source": "commandtext-assignment"
+   }
+  },
+  {
+   "id": "CALLS_PROCEDURE|api:data_access_method:ShopApp.Synthetic.DataAccess.SqlPatternsDataAccess.ConstantConcatenation()|api:sql_ref:dbo.spGetAllItems|Synthetic/DataAccess/SqlPatternsDataAccess.cs:30:34",
+   "type": "CALLS_PROCEDURE",
+   "source": "api:data_access_method:ShopApp.Synthetic.DataAccess.SqlPatternsDataAccess.ConstantConcatenation()",
+   "target": "api:sql_ref:dbo.spGetAllItems",
+   "source_file": "Synthetic/DataAccess/SqlPatternsDataAccess.cs",
+   "location": {
+    "line": 30,
+    "column": 34
+   },
+   "analysis_method": "roslyn:sqlcommand-storedprocedure",
+   "confidence": "CONFIRMED_STATIC",
+   "commit_id": "23f6a2631edd015c6912abd5f59c81c5b7ff6a8d",
+   "repo": "api",
+   "synthetic": true,
+   "evidence": "SqlCommand cmd = new SqlCommand(\"sp\" + \"GetAllItems\", con);",
+   "attrs": {
+    "text_source": "constructor-argument"
+   }
+  },
+  {
+   "id": "CALLS_PROCEDURE|api:data_access_method:ShopApp.Synthetic.DataAccess.SqlPatternsDataAccess.ConstantField()|api:sql_ref:dbo.spGetPlaceList|Synthetic/DataAccess/SqlPatternsDataAccess.cs:18:34",
+   "type": "CALLS_PROCEDURE",
+   "source": "api:data_access_method:ShopApp.Synthetic.DataAccess.SqlPatternsDataAccess.ConstantField()",
+   "target": "api:sql_ref:dbo.spGetPlaceList",
+   "source_file": "Synthetic/DataAccess/SqlPatternsDataAccess.cs",
+   "location": {
+    "line": 18,
+    "column": 34
+   },
+   "analysis_method": "roslyn:sqlcommand-storedprocedure",
+   "confidence": "CONFIRMED_STATIC",
+   "commit_id": "23f6a2631edd015c6912abd5f59c81c5b7ff6a8d",
+   "repo": "api",
+   "synthetic": true,
+   "evidence": "SqlCommand cmd = new SqlCommand(PlaceProc, con);",
+   "attrs": {
+    "text_source": "constructor-argument"
+   }
+  },
+  {
+   "id": "CALLS_PROCEDURE|api:data_access_method:ShopApp.Synthetic.DataAccess.SqlPatternsDataAccess.CtorWithInitializer()|api:sql_ref:dbo.spAddItem|Synthetic/DataAccess/SqlPatternsDataAccess.cs:84:27",
+   "type": "CALLS_PROCEDURE",
+   "source": "api:data_access_method:ShopApp.Synthetic.DataAccess.SqlPatternsDataAccess.CtorWithInitializer()",
+   "target": "api:sql_ref:dbo.spAddItem",
+   "source_file": "Synthetic/DataAccess/SqlPatternsDataAccess.cs",
+   "location": {
+    "line": 84,
+    "column": 27
+   },
+   "analysis_method": "roslyn:sqlcommand-storedprocedure",
+   "confidence": "CONFIRMED_STATIC",
+   "commit_id": "23f6a2631edd015c6912abd5f59c81c5b7ff6a8d",
+   "repo": "api",
+   "synthetic": true,
+   "evidence": "var cmd = new SqlCommand(\"spAddItem\", con) { CommandType = CommandType.StoredProcedure };",
+   "attrs": {
+    "text_source": "constructor-argument"
+   }
+  },
+  {
+   "id": "CALLS_PROCEDURE|api:data_access_method:ShopApp.Synthetic.DataAccess.SqlPatternsDataAccess.ObjectInitializer()|api:sql_ref:dbo.spGetGroupHeadcount|Synthetic/DataAccess/SqlPatternsDataAccess.cs:42:27",
+   "type": "CALLS_PROCEDURE",
+   "source": "api:data_access_method:ShopApp.Synthetic.DataAccess.SqlPatternsDataAccess.ObjectInitializer()",
+   "target": "api:sql_ref:dbo.spGetGroupHeadcount",
+   "source_file": "Synthetic/DataAccess/SqlPatternsDataAccess.cs",
+   "location": {
+    "line": 42,
+    "column": 27
+   },
+   "analysis_method": "roslyn:sqlcommand-storedprocedure",
+   "confidence": "CONFIRMED_STATIC",
+   "commit_id": "23f6a2631edd015c6912abd5f59c81c5b7ff6a8d",
+   "repo": "api",
+   "synthetic": true,
+   "evidence": "var cmd = new SqlCommand",
+   "attrs": {
+    "text_source": "object-initializer"
+   }
+  },
+  {
+   "id": "CALLS_PROCEDURE|api:data_access_method:ShopApp.Synthetic.DataAccess.SqlPatternsDataAccess.TargetTypedNew()|api:sql_ref:dbo.spDeleteItem|Synthetic/DataAccess/SqlPatternsDataAccess.cs:72:34",
+   "type": "CALLS_PROCEDURE",
+   "source": "api:data_access_method:ShopApp.Synthetic.DataAccess.SqlPatternsDataAccess.TargetTypedNew()",
+   "target": "api:sql_ref:dbo.spDeleteItem",
+   "source_file": "Synthetic/DataAccess/SqlPatternsDataAccess.cs",
+   "location": {
+    "line": 72,
+    "column": 34
+   },
+   "analysis_method": "roslyn:sqlcommand-storedprocedure",
+   "confidence": "CONFIRMED_STATIC",
+   "commit_id": "23f6a2631edd015c6912abd5f59c81c5b7ff6a8d",
+   "repo": "api",
+   "synthetic": true,
+   "evidence": "SqlCommand cmd = new(\"spDeleteItem\", con);",
+   "attrs": {
+    "text_source": "constructor-argument"
+   }
+  },
+  {
+   "id": "CALLS_PROCEDURE|db:test:synthetic/tests/test_spGetGroupHeadcount.sql::GroupTests.test spGetGroupHeadcount counts items per group|db:sql_proc:dbo.spGetGroupHeadcount|synthetic/tests/test_spGetGroupHeadcount.sql:7:5",
+   "type": "CALLS_PROCEDURE",
+   "source": "db:test:synthetic/tests/test_spGetGroupHeadcount.sql::GroupTests.test spGetGroupHeadcount counts items per group",
+   "target": "db:sql_proc:dbo.spGetGroupHeadcount",
+   "source_file": "synthetic/tests/test_spGetGroupHeadcount.sql",
+   "location": {
+    "line": 7,
+    "column": 5
+   },
+   "analysis_method": "scriptdom:exec-procedure",
+   "confidence": "CONFIRMED_STATIC",
+   "commit_id": "57e1a2ce0dda204615bcf29589b251e1b202e92d",
+   "repo": "db",
+   "synthetic": true,
+   "evidence": "EXEC dbo.spGetGroupHeadcount;"
+  },
+  {
+   "id": "CALLS|api:api_endpoint:ShopApp.Controllers.ItemController.Create(ShopApp.Models.Item)|api:interface_method:ShopApp.Interfaces.IItem.AddItem(ShopApp.Models.Item)|Controllers/ItemController.cs:34:20",
+   "type": "CALLS",
+   "source": "api:api_endpoint:ShopApp.Controllers.ItemController.Create(ShopApp.Models.Item)",
+   "target": "api:interface_method:ShopApp.Interfaces.IItem.AddItem(ShopApp.Models.Item)",
+   "source_file": "Controllers/ItemController.cs",
+   "location": {
+    "line": 34,
+    "column": 20
+   },
+   "analysis_method": "roslyn:semantic-invocation",
+   "confidence": "CONFIRMED_STATIC",
+   "commit_id": "23f6a2631edd015c6912abd5f59c81c5b7ff6a8d",
+   "repo": "api",
+   "synthetic": false,
+   "evidence": "return objitem.AddItem(item);"
+  },
+  {
+   "id": "CALLS|api:api_endpoint:ShopApp.Controllers.ItemController.Delete(int)|api:interface_method:ShopApp.Interfaces.IItem.DeleteItem(int)|Controllers/ItemController.cs:55:20",
+   "type": "CALLS",
+   "source": "api:api_endpoint:ShopApp.Controllers.ItemController.Delete(int)",
+   "target": "api:interface_method:ShopApp.Interfaces.IItem.DeleteItem(int)",
+   "source_file": "Controllers/ItemController.cs",
+   "location": {
+    "line": 55,
+    "column": 20
+   },
+   "analysis_method": "roslyn:semantic-invocation",
+   "confidence": "CONFIRMED_STATIC",
+   "commit_id": "23f6a2631edd015c6912abd5f59c81c5b7ff6a8d",
+   "repo": "api",
+   "synthetic": false,
+   "evidence": "return objitem.DeleteItem(id);"
+  },
+  {
+   "id": "CALLS|api:api_endpoint:ShopApp.Controllers.ItemController.Details()|api:interface_method:ShopApp.Interfaces.IItem.GetPlaces()|Controllers/ItemController.cs:62:20",
+   "type": "CALLS",
+   "source": "api:api_endpoint:ShopApp.Controllers.ItemController.Details()",
+   "target": "api:interface_method:ShopApp.Interfaces.IItem.GetPlaces()",
+   "source_file": "Controllers/ItemController.cs",
+   "location": {
+    "line": 62,
+    "column": 20
+   },
+   "analysis_method": "roslyn:semantic-invocation",
+   "confidence": "CONFIRMED_STATIC",
+   "commit_id": "23f6a2631edd015c6912abd5f59c81c5b7ff6a8d",
+   "repo": "api",
+   "synthetic": false,
+   "evidence": "return objitem.GetPlaces();"
+  },
+  {
+   "id": "CALLS|api:api_endpoint:ShopApp.Controllers.ItemController.Details(int)|api:interface_method:ShopApp.Interfaces.IItem.GetItemData(int)|Controllers/ItemController.cs:41:20",
+   "type": "CALLS",
+   "source": "api:api_endpoint:ShopApp.Controllers.ItemController.Details(int)",
+   "target": "api:interface_method:ShopApp.Interfaces.IItem.GetItemData(int)",
+   "source_file": "Controllers/ItemController.cs",
+   "location": {
+    "line": 41,
+    "column": 20
+   },
+   "analysis_method": "roslyn:semantic-invocation",
+   "confidence": "CONFIRMED_STATIC",
+   "commit_id": "23f6a2631edd015c6912abd5f59c81c5b7ff6a8d",
+   "repo": "api",
+   "synthetic": false,
+   "evidence": "return objitem.GetItemData(id);"
+  },
+  {
+   "id": "CALLS|api:api_endpoint:ShopApp.Controllers.ItemController.Edit(ShopApp.Models.Item)|api:interface_method:ShopApp.Interfaces.IItem.UpdateItem(ShopApp.Models.Item)|Controllers/ItemController.cs:48:20",
+   "type": "CALLS",
+   "source": "api:api_endpoint:ShopApp.Controllers.ItemController.Edit(ShopApp.Models.Item)",
+   "target": "api:interface_method:ShopApp.Interfaces.IItem.UpdateItem(ShopApp.Models.Item)",
+   "source_file": "Controllers/ItemController.cs",
+   "location": {
+    "line": 48,
+    "column": 20
+   },
+   "analysis_method": "roslyn:semantic-invocation",
+   "confidence": "CONFIRMED_STATIC",
+   "commit_id": "23f6a2631edd015c6912abd5f59c81c5b7ff6a8d",
+   "repo": "api",
+   "synthetic": false,
+   "evidence": "return objitem.UpdateItem(item);"
+  },
+  {
+   "id": "CALLS|api:api_endpoint:ShopApp.Controllers.ItemController.Index()|api:interface_method:ShopApp.Interfaces.IItem.GetAllItems()|Controllers/ItemController.cs:27:20",
+   "type": "CALLS",
+   "source": "api:api_endpoint:ShopApp.Controllers.ItemController.Index()",
+   "target": "api:interface_method:ShopApp.Interfaces.IItem.GetAllItems()",
+   "source_file": "Controllers/ItemController.cs",
+   "location": {
+    "line": 27,
+    "column": 20
+   },
+   "analysis_method": "roslyn:semantic-invocation",
+   "confidence": "CONFIRMED_STATIC",
+   "commit_id": "23f6a2631edd015c6912abd5f59c81c5b7ff6a8d",
+   "repo": "api",
+   "synthetic": false,
+   "evidence": "return objitem.GetAllItems();"
+  },
+  {
+   "id": "CALLS|api:api_endpoint:ShopApp.Synthetic.Controllers.GroupController.Archive(int)|api:interface_method:ShopApp.Synthetic.Services.IGroupReportService.ArchiveItem(int)|Synthetic/Controllers/GroupController.cs:36:20",
+   "type": "CALLS",
+   "source": "api:api_endpoint:ShopApp.Synthetic.Controllers.GroupController.Archive(int)",
+   "target": "api:interface_method:ShopApp.Synthetic.Services.IGroupReportService.ArchiveItem(int)",
+   "source_file": "Synthetic/Controllers/GroupController.cs",
+   "location": {
+    "line": 36,
+    "column": 20
+   },
+   "analysis_method": "roslyn:semantic-invocation",
+   "confidence": "CONFIRMED_STATIC",
+   "commit_id": "23f6a2631edd015c6912abd5f59c81c5b7ff6a8d",
+   "repo": "api",
+   "synthetic": true,
+   "evidence": "return report.ArchiveItem(id);"
+  },
+  {
+   "id": "CALLS|api:api_endpoint:ShopApp.Synthetic.Controllers.GroupController.Headcount()|api:interface_method:ShopApp.Synthetic.Services.IGroupReportService.GetHeadcountReport()|Synthetic/Controllers/GroupController.cs:22:20",
+   "type": "CALLS",
+   "source": "api:api_endpoint:ShopApp.Synthetic.Controllers.GroupController.Headcount()",
+   "target": "api:interface_method:ShopApp.Synthetic.Services.IGroupReportService.GetHeadcountReport()",
+   "source_file": "Synthetic/Controllers/GroupController.cs",
+   "location": {
+    "line": 22,
+    "column": 20
+   },
+   "analysis_method": "roslyn:semantic-invocation",
+   "confidence": "CONFIRMED_STATIC",
+   "commit_id": "23f6a2631edd015c6912abd5f59c81c5b7ff6a8d",
+   "repo": "api",
+   "synthetic": true,
+   "evidence": "return report.GetHeadcountReport();"
+  },
+  {
+   "id": "CALLS|api:api_endpoint:ShopApp.Synthetic.Controllers.GroupController.ItemsIn(string)|api:interface_method:ShopApp.Synthetic.Services.IGroupReportService.GetItemNames(string)|Synthetic/Controllers/GroupController.cs:29:20",
+   "type": "CALLS",
+   "source": "api:api_endpoint:ShopApp.Synthetic.Controllers.GroupController.ItemsIn(string)",
+   "target": "api:interface_method:ShopApp.Synthetic.Services.IGroupReportService.GetItemNames(string)",
+   "source_file": "Synthetic/Controllers/GroupController.cs",
+   "location": {
+    "line": 29,
+    "column": 20
+   },
+   "analysis_method": "roslyn:semantic-invocation",
+   "confidence": "CONFIRMED_STATIC",
+   "commit_id": "23f6a2631edd015c6912abd5f59c81c5b7ff6a8d",
+   "repo": "api",
+   "synthetic": true,
+   "evidence": "return report.GetItemNames(group);"
+  },
+  {
+   "id": "CALLS|api:method:ShopApp.Program.Main(string[])|api:method:ShopApp.Program.CreateWebHostBuilder(string[])|Program.cs:16:13",
+   "type": "CALLS",
+   "source": "api:method:ShopApp.Program.Main(string[])",
+   "target": "api:method:ShopApp.Program.CreateWebHostBuilder(string[])",
+   "source_file": "Program.cs",
+   "location": {
+    "line": 16,
+    "column": 13
+   },
+   "analysis_method": "roslyn:semantic-invocation",
+   "confidence": "CONFIRMED_STATIC",
+   "commit_id": "23f6a2631edd015c6912abd5f59c81c5b7ff6a8d",
+   "repo": "api",
+   "synthetic": false,
+   "evidence": "CreateWebHostBuilder(args).Build().Run();"
+  },
+  {
+   "id": "CALLS|api:service_method:ShopApp.Synthetic.Services.GroupReportService.ArchiveItem(int)|api:data_access_method:ShopApp.Synthetic.DataAccess.GroupDataAccess.Archive(int)|Synthetic/Services/GroupReportService.cs:40:20",
+   "type": "CALLS",
+   "source": "api:service_method:ShopApp.Synthetic.Services.GroupReportService.ArchiveItem(int)",
+   "target": "api:data_access_method:ShopApp.Synthetic.DataAccess.GroupDataAccess.Archive(int)",
+   "source_file": "Synthetic/Services/GroupReportService.cs",
+   "location": {
+    "line": 40,
+    "column": 20
+   },
+   "analysis_method": "roslyn:semantic-invocation",
+   "confidence": "CONFIRMED_STATIC",
+   "commit_id": "23f6a2631edd015c6912abd5f59c81c5b7ff6a8d",
+   "repo": "api",
+   "synthetic": true,
+   "evidence": "return dal.Archive(id);"
+  },
+  {
+   "id": "CALLS|api:service_method:ShopApp.Synthetic.Services.GroupReportService.GetHeadcountReport()|api:data_access_method:ShopApp.Synthetic.DataAccess.GroupDataAccess.ReadHeadcount()|Synthetic/Services/GroupReportService.cs:20:24",
+   "type": "CALLS",
+   "source": "api:service_method:ShopApp.Synthetic.Services.GroupReportService.GetHeadcountReport()",
+   "target": "api:data_access_method:ShopApp.Synthetic.DataAccess.GroupDataAccess.ReadHeadcount()",
+   "source_file": "Synthetic/Services/GroupReportService.cs",
+   "location": {
+    "line": 20,
+    "column": 24
+   },
+   "analysis_method": "roslyn:semantic-invocation",
+   "confidence": "CONFIRMED_STATIC",
+   "commit_id": "23f6a2631edd015c6912abd5f59c81c5b7ff6a8d",
+   "repo": "api",
+   "synthetic": true,
+   "evidence": "var rows = dal.ReadHeadcount().ToList();"
+  },
+  {
+   "id": "CALLS|api:service_method:ShopApp.Synthetic.Services.GroupReportService.GetHeadcountReport()|api:service_method:ShopApp.Synthetic.Services.GroupReportService.IsOverLimit(ShopApp.Synthetic.Services.GroupHeadcount)|Synthetic/Services/GroupReportService.cs:23:31",
+   "type": "CALLS",
+   "source": "api:service_method:ShopApp.Synthetic.Services.GroupReportService.GetHeadcountReport()",
+   "target": "api:service_method:ShopApp.Synthetic.Services.GroupReportService.IsOverLimit(ShopApp.Synthetic.Services.GroupHeadcount)",
+   "source_file": "Synthetic/Services/GroupReportService.cs",
+   "location": {
+    "line": 23,
+    "column": 31
+   },
+   "analysis_method": "roslyn:semantic-invocation",
+   "confidence": "CONFIRMED_STATIC",
+   "commit_id": "23f6a2631edd015c6912abd5f59c81c5b7ff6a8d",
+   "repo": "api",
+   "synthetic": true,
+   "evidence": "r.OverLimit = IsOverLimit(r);"
+  },
+  {
+   "id": "CALLS|api:service_method:ShopApp.Synthetic.Services.GroupReportService.GetItemNames(string)|api:data_access_method:ShopApp.Synthetic.DataAccess.GroupDataAccess.ReadItemsByGroup(string)|Synthetic/Services/GroupReportService.cs:35:20",
+   "type": "CALLS",
+   "source": "api:service_method:ShopApp.Synthetic.Services.GroupReportService.GetItemNames(string)",
+   "target": "api:data_access_method:ShopApp.Synthetic.DataAccess.GroupDataAccess.ReadItemsByGroup(string)",
+   "source_file": "Synthetic/Services/GroupReportService.cs",
+   "location": {
+    "line": 35,
+    "column": 20
+   },
+   "analysis_method": "roslyn:semantic-invocation",
+   "confidence": "CONFIRMED_STATIC",
+   "commit_id": "23f6a2631edd015c6912abd5f59c81c5b7ff6a8d",
+   "repo": "api",
+   "synthetic": true,
+   "evidence": "return dal.ReadItemsByGroup(group);"
+  },
+  {
+   "id": "CALLS|web:ui_component:AddItemComponent|web:ui_service_method:ItemService.getItemById|src/app/add-item/add-item.component.ts:43:7",
+   "type": "CALLS",
+   "source": "web:ui_component:AddItemComponent",
+   "target": "web:ui_service_method:ItemService.getItemById",
+   "source_file": "src/app/add-item/add-item.component.ts",
+   "location": {
+    "line": 43,
+    "column": 7
+   },
+   "analysis_method": "tsmorph:type-resolved-call",
+   "confidence": "CONFIRMED_STATIC",
+   "commit_id": "23f6a2631edd015c6912abd5f59c81c5b7ff6a8d",
+   "repo": "web",
+   "synthetic": false,
+   "evidence": "this._itemService.getItemById(this.itemId)"
+  },
+  {
+   "id": "CALLS|web:ui_component:AddItemComponent|web:ui_service_method:ItemService.getPlaceList|src/app/add-item/add-item.component.ts:37:5",
+   "type": "CALLS",
+   "source": "web:ui_component:AddItemComponent",
+   "target": "web:ui_service_method:ItemService.getPlaceList",
+   "source_file": "src/app/add-item/add-item.component.ts",
+   "location": {
+    "line": 37,
+    "column": 5
+   },
+   "analysis_method": "tsmorph:type-resolved-call",
+   "confidence": "CONFIRMED_STATIC",
+   "commit_id": "23f6a2631edd015c6912abd5f59c81c5b7ff6a8d",
+   "repo": "web",
+   "synthetic": false,
+   "evidence": "this._itemService.getPlaceList().subscribe("
+  },
+  {
+   "id": "CALLS|web:ui_component:AddItemComponent|web:ui_service_method:ItemService.saveItem|src/app/add-item/add-item.component.ts:57:7",
+   "type": "CALLS",
+   "source": "web:ui_component:AddItemComponent",
+   "target": "web:ui_service_method:ItemService.saveItem",
+   "source_file": "src/app/add-item/add-item.component.ts",
+   "location": {
+    "line": 57,
+    "column": 7
+   },
+   "analysis_method": "tsmorph:type-resolved-call",
+   "confidence": "CONFIRMED_STATIC",
+   "commit_id": "23f6a2631edd015c6912abd5f59c81c5b7ff6a8d",
+   "repo": "web",
+   "synthetic": false,
+   "evidence": "this._itemService.saveItem(this.itemForm.value)"
+  },
+  {
+   "id": "CALLS|web:ui_component:AddItemComponent|web:ui_service_method:ItemService.updateItem|src/app/add-item/add-item.component.ts:62:7",
+   "type": "CALLS",
+   "source": "web:ui_component:AddItemComponent",
+   "target": "web:ui_service_method:ItemService.updateItem",
+   "source_file": "src/app/add-item/add-item.component.ts",
+   "location": {
+    "line": 62,
+    "column": 7
+   },
+   "analysis_method": "tsmorph:type-resolved-call",
+   "confidence": "CONFIRMED_STATIC",
+   "commit_id": "23f6a2631edd015c6912abd5f59c81c5b7ff6a8d",
+   "repo": "web",
+   "synthetic": false,
+   "evidence": "this._itemService.updateItem(this.itemForm.value)"
+  },
+  {
+   "id": "CALLS|web:ui_component:FetchItemComponent|web:ui_service_method:ItemService.deleteItem|src/app/fetch-item/fetch-item.component.ts:27:7",
+   "type": "CALLS",
+   "source": "web:ui_component:FetchItemComponent",
+   "target": "web:ui_service_method:ItemService.deleteItem",
+   "source_file": "src/app/fetch-item/fetch-item.component.ts",
+   "location": {
+    "line": 27,
+    "column": 7
+   },
+   "analysis_method": "tsmorph:type-resolved-call",
+   "confidence": "CONFIRMED_STATIC",
+   "commit_id": "23f6a2631edd015c6912abd5f59c81c5b7ff6a8d",
+   "repo": "web",
+   "synthetic": false,
+   "evidence": "this._itemService.deleteItem(itemID).subscribe(() => {"
+  },
+  {
+   "id": "CALLS|web:ui_component:FetchItemComponent|web:ui_service_method:ItemService.getItems|src/app/fetch-item/fetch-item.component.ts:19:5",
+   "type": "CALLS",
+   "source": "web:ui_component:FetchItemComponent",
+   "target": "web:ui_service_method:ItemService.getItems",
+   "source_file": "src/app/fetch-item/fetch-item.component.ts",
+   "location": {
+    "line": 19,
+    "column": 5
+   },
+   "analysis_method": "tsmorph:type-resolved-call",
+   "confidence": "CONFIRMED_STATIC",
+   "commit_id": "23f6a2631edd015c6912abd5f59c81c5b7ff6a8d",
+   "repo": "web",
+   "synthetic": false,
+   "evidence": "this._itemService.getItems().subscribe("
+  },
+  {
+   "id": "CALLS|web:ui_component:GroupReportComponent|web:ui_service_method:GroupReportService.archive|src/synthetic/group-report/group-report.component.ts:26:5",
+   "type": "CALLS",
+   "source": "web:ui_component:GroupReportComponent",
+   "target": "web:ui_service_method:GroupReportService.archive",
+   "source_file": "src/synthetic/group-report/group-report.component.ts",
+   "location": {
+    "line": 26,
+    "column": 5
+   },
+   "analysis_method": "tsmorph:type-resolved-call",
+   "confidence": "CONFIRMED_STATIC",
+   "commit_id": "23f6a2631edd015c6912abd5f59c81c5b7ff6a8d",
+   "repo": "web",
+   "synthetic": true,
+   "evidence": "this._report.archive(id).subscribe(() => this.loadHeadcount());"
+  },
+  {
+   "id": "CALLS|web:ui_component:GroupReportComponent|web:ui_service_method:GroupReportService.getHeadcount|src/synthetic/group-report/group-report.component.ts:18:5",
+   "type": "CALLS",
+   "source": "web:ui_component:GroupReportComponent",
+   "target": "web:ui_service_method:GroupReportService.getHeadcount",
+   "source_file": "src/synthetic/group-report/group-report.component.ts",
+   "location": {
+    "line": 18,
+    "column": 5
+   },
+   "analysis_method": "tsmorph:type-resolved-call",
+   "confidence": "CONFIRMED_STATIC",
+   "commit_id": "23f6a2631edd015c6912abd5f59c81c5b7ff6a8d",
+   "repo": "web",
+   "synthetic": true,
+   "evidence": "this._report.getHeadcount().subscribe((data: any[]) => this.rows = data);"
+  },
+  {
+   "id": "CALLS|web:ui_component:GroupReportComponent|web:ui_service_method:GroupReportService.getItemsIn|src/synthetic/group-report/group-report.component.ts:22:5",
+   "type": "CALLS",
+   "source": "web:ui_component:GroupReportComponent",
+   "target": "web:ui_service_method:GroupReportService.getItemsIn",
+   "source_file": "src/synthetic/group-report/group-report.component.ts",
+   "location": {
+    "line": 22,
+    "column": 5
+   },
+   "analysis_method": "tsmorph:type-resolved-call",
+   "confidence": "CONFIRMED_STATIC",
+   "commit_id": "23f6a2631edd015c6912abd5f59c81c5b7ff6a8d",
+   "repo": "web",
+   "synthetic": true,
+   "evidence": "this._report.getItemsIn(group).subscribe((data: string[]) => this.names = data);"
+  },
+  {
+   "id": "CALLS|web:ui_service_method:GroupReportService.getHeadcount|web:ui_service_method:RuntimeConfigService.get|src/synthetic/group-report.service.ts:16:32",
+   "type": "CALLS",
+   "source": "web:ui_service_method:GroupReportService.getHeadcount",
+   "target": "web:ui_service_method:RuntimeConfigService.get",
+   "source_file": "src/synthetic/group-report.service.ts",
+   "location": {
+    "line": 16,
+    "column": 32
+   },
+   "analysis_method": "tsmorph:type-resolved-call",
+   "confidence": "CONFIRMED_STATIC",
+   "commit_id": "23f6a2631edd015c6912abd5f59c81c5b7ff6a8d",
+   "repo": "web",
+   "synthetic": true,
+   "evidence": "const url = this.baseUrl + this._config.get('reportsRoute') + 'Headcount';"
+  },
+  {
+   "id": "DISPATCHES_TO|api:interface_method:ShopApp.Interfaces.IItem.AddItem(ShopApp.Models.Item)|api:data_access_method:ShopApp.DataAccess.ItemDataAccessLayer.AddItem(ShopApp.Models.Item)|DataAccess/ItemDataAccessLayer.cs:59:9",
+   "type": "DISPATCHES_TO",
+   "source": "api:interface_method:ShopApp.Interfaces.IItem.AddItem(ShopApp.Models.Item)",
+   "target": "api:data_access_method:ShopApp.DataAccess.ItemDataAccessLayer.AddItem(ShopApp.Models.Item)",
+   "source_file": "DataAccess/ItemDataAccessLayer.cs",
+   "location": {
+    "line": 59,
+    "column": 9
+   },
+   "analysis_method": "roslyn:interface-implementation+di-registration",
+   "confidence": "INFERRED",
+   "commit_id": "23f6a2631edd015c6912abd5f59c81c5b7ff6a8d",
+   "repo": "api",
+   "synthetic": false,
+   "evidence": "public int AddItem(Item item)",
+   "reason": "interface call dispatched to implementing type; actual binding is a runtime DI decision (registration seen at Startup.cs:25)",
+   "attrs": {
+    "di_registration": "Startup.cs:25"
+   }
+  },
+  {
+   "id": "DISPATCHES_TO|api:interface_method:ShopApp.Interfaces.IItem.DeleteItem(int)|api:data_access_method:ShopApp.DataAccess.ItemDataAccessLayer.DeleteItem(int)|DataAccess/ItemDataAccessLayer.cs:146:9",
+   "type": "DISPATCHES_TO",
+   "source": "api:interface_method:ShopApp.Interfaces.IItem.DeleteItem(int)",
+   "target": "api:data_access_method:ShopApp.DataAccess.ItemDataAccessLayer.DeleteItem(int)",
+   "source_file": "DataAccess/ItemDataAccessLayer.cs",
+   "location": {
+    "line": 146,
+    "column": 9
+   },
+   "analysis_method": "roslyn:interface-implementation+di-registration",
+   "confidence": "INFERRED",
+   "commit_id": "23f6a2631edd015c6912abd5f59c81c5b7ff6a8d",
+   "repo": "api",
+   "synthetic": false,
+   "evidence": "public int DeleteItem(int id)",
+   "reason": "interface call dispatched to implementing type; actual binding is a runtime DI decision (registration seen at Startup.cs:25)",
+   "attrs": {
+    "di_registration": "Startup.cs:25"
+   }
+  },
+  {
+   "id": "DISPATCHES_TO|api:interface_method:ShopApp.Interfaces.IItem.GetAllItems()|api:data_access_method:ShopApp.DataAccess.ItemDataAccessLayer.GetAllItems()|DataAccess/ItemDataAccessLayer.cs:22:9",
+   "type": "DISPATCHES_TO",
+   "source": "api:interface_method:ShopApp.Interfaces.IItem.GetAllItems()",
+   "target": "api:data_access_method:ShopApp.DataAccess.ItemDataAccessLayer.GetAllItems()",
+   "source_file": "DataAccess/ItemDataAccessLayer.cs",
+   "location": {
+    "line": 22,
+    "column": 9
+   },
+   "analysis_method": "roslyn:interface-implementation+di-registration",
+   "confidence": "INFERRED",
+   "commit_id": "23f6a2631edd015c6912abd5f59c81c5b7ff6a8d",
+   "repo": "api",
+   "synthetic": false,
+   "evidence": "public IEnumerable<Item> GetAllItems()",
+   "reason": "interface call dispatched to implementing type; actual binding is a runtime DI decision (registration seen at Startup.cs:25)",
+   "attrs": {
+    "di_registration": "Startup.cs:25"
+   }
+  },
+  {
+   "id": "DISPATCHES_TO|api:interface_method:ShopApp.Interfaces.IItem.GetItemData(int)|api:data_access_method:ShopApp.DataAccess.ItemDataAccessLayer.GetItemData(int)|DataAccess/ItemDataAccessLayer.cs:114:9",
+   "type": "DISPATCHES_TO",
+   "source": "api:interface_method:ShopApp.Interfaces.IItem.GetItemData(int)",
+   "target": "api:data_access_method:ShopApp.DataAccess.ItemDataAccessLayer.GetItemData(int)",
+   "source_file": "DataAccess/ItemDataAccessLayer.cs",
+   "location": {
+    "line": 114,
+    "column": 9
+   },
+   "analysis_method": "roslyn:interface-implementation+di-registration",
+   "confidence": "INFERRED",
+   "commit_id": "23f6a2631edd015c6912abd5f59c81c5b7ff6a8d",
+   "repo": "api",
+   "synthetic": false,
+   "evidence": "public Item GetItemData(int id)",
+   "reason": "interface call dispatched to implementing type; actual binding is a runtime DI decision (registration seen at Startup.cs:25)",
+   "attrs": {
+    "di_registration": "Startup.cs:25"
+   }
+  },
+  {
+   "id": "DISPATCHES_TO|api:interface_method:ShopApp.Interfaces.IItem.GetPlaces()|api:data_access_method:ShopApp.DataAccess.ItemDataAccessLayer.GetPlaces()|DataAccess/ItemDataAccessLayer.cs:169:9",
+   "type": "DISPATCHES_TO",
+   "source": "api:interface_method:ShopApp.Interfaces.IItem.GetPlaces()",
+   "target": "api:data_access_method:ShopApp.DataAccess.ItemDataAccessLayer.GetPlaces()",
+   "source_file": "DataAccess/ItemDataAccessLayer.cs",
+   "location": {
+    "line": 169,
+    "column": 9
+   },
+   "analysis_method": "roslyn:interface-implementation+di-registration",
+   "confidence": "INFERRED",
+   "commit_id": "23f6a2631edd015c6912abd5f59c81c5b7ff6a8d",
+   "repo": "api",
+   "synthetic": false,
+   "evidence": "public List<Place> GetPlaces()",
+   "reason": "interface call dispatched to implementing type; actual binding is a runtime DI decision (registration seen at Startup.cs:25)",
+   "attrs": {
+    "di_registration": "Startup.cs:25"
+   }
+  },
+  {
+   "id": "DISPATCHES_TO|api:interface_method:ShopApp.Interfaces.IItem.UpdateItem(ShopApp.Models.Item)|api:data_access_method:ShopApp.DataAccess.ItemDataAccessLayer.UpdateItem(ShopApp.Models.Item)|DataAccess/ItemDataAccessLayer.cs:86:9",
+   "type": "DISPATCHES_TO",
+   "source": "api:interface_method:ShopApp.Interfaces.IItem.UpdateItem(ShopApp.Models.Item)",
+   "target": "api:data_access_method:ShopApp.DataAccess.ItemDataAccessLayer.UpdateItem(ShopApp.Models.Item)",
+   "source_file": "DataAccess/ItemDataAccessLayer.cs",
+   "location": {
+    "line": 86,
+    "column": 9
+   },
+   "analysis_method": "roslyn:interface-implementation+di-registration",
+   "confidence": "INFERRED",
+   "commit_id": "23f6a2631edd015c6912abd5f59c81c5b7ff6a8d",
+   "repo": "api",
+   "synthetic": false,
+   "evidence": "public int UpdateItem(Item item)",
+   "reason": "interface call dispatched to implementing type; actual binding is a runtime DI decision (registration seen at Startup.cs:25)",
+   "attrs": {
+    "di_registration": "Startup.cs:25"
+   }
+  },
+  {
+   "id": "DISPATCHES_TO|api:interface_method:ShopApp.Synthetic.Services.IGroupReportService.ArchiveItem(int)|api:service_method:ShopApp.Synthetic.Services.GroupReportService.ArchiveItem(int)|Synthetic/Services/GroupReportService.cs:38:9",
+   "type": "DISPATCHES_TO",
+   "source": "api:interface_method:ShopApp.Synthetic.Services.IGroupReportService.ArchiveItem(int)",
+   "target": "api:service_method:ShopApp.Synthetic.Services.GroupReportService.ArchiveItem(int)",
+   "source_file": "Synthetic/Services/GroupReportService.cs",
+   "location": {
+    "line": 38,
+    "column": 9
+   },
+   "analysis_method": "roslyn:interface-implementation+di-registration",
+   "confidence": "INFERRED",
+   "commit_id": "23f6a2631edd015c6912abd5f59c81c5b7ff6a8d",
+   "repo": "api",
+   "synthetic": true,
+   "evidence": "public int ArchiveItem(int id)",
+   "reason": "interface call dispatched to implementing type; actual binding is a runtime DI decision (registration seen at Startup.cs:28)",
+   "attrs": {
+    "di_registration": "Startup.cs:28"
+   }
+  },
+  {
+   "id": "DISPATCHES_TO|api:interface_method:ShopApp.Synthetic.Services.IGroupReportService.GetHeadcountReport()|api:service_method:ShopApp.Synthetic.Services.GroupReportService.GetHeadcountReport()|Synthetic/Services/GroupReportService.cs:18:9",
+   "type": "DISPATCHES_TO",
+   "source": "api:interface_method:ShopApp.Synthetic.Services.IGroupReportService.GetHeadcountReport()",
+   "target": "api:service_method:ShopApp.Synthetic.Services.GroupReportService.GetHeadcountReport()",
+   "source_file": "Synthetic/Services/GroupReportService.cs",
+   "location": {
+    "line": 18,
+    "column": 9
+   },
+   "analysis_method": "roslyn:interface-implementation+di-registration",
+   "confidence": "INFERRED",
+   "commit_id": "23f6a2631edd015c6912abd5f59c81c5b7ff6a8d",
+   "repo": "api",
+   "synthetic": true,
+   "evidence": "public IEnumerable<GroupHeadcount> GetHeadcountReport()",
+   "reason": "interface call dispatched to implementing type; actual binding is a runtime DI decision (registration seen at Startup.cs:28)",
+   "attrs": {
+    "di_registration": "Startup.cs:28"
+   }
+  },
+  {
+   "id": "DISPATCHES_TO|api:interface_method:ShopApp.Synthetic.Services.IGroupReportService.GetItemNames(string)|api:service_method:ShopApp.Synthetic.Services.GroupReportService.GetItemNames(string)|Synthetic/Services/GroupReportService.cs:33:9",
+   "type": "DISPATCHES_TO",
+   "source": "api:interface_method:ShopApp.Synthetic.Services.IGroupReportService.GetItemNames(string)",
+   "target": "api:service_method:ShopApp.Synthetic.Services.GroupReportService.GetItemNames(string)",
+   "source_file": "Synthetic/Services/GroupReportService.cs",
+   "location": {
+    "line": 33,
+    "column": 9
+   },
+   "analysis_method": "roslyn:interface-implementation+di-registration",
+   "confidence": "INFERRED",
+   "commit_id": "23f6a2631edd015c6912abd5f59c81c5b7ff6a8d",
+   "repo": "api",
+   "synthetic": true,
+   "evidence": "public IEnumerable<string> GetItemNames(string group)",
+   "reason": "interface call dispatched to implementing type; actual binding is a runtime DI decision (registration seen at Startup.cs:28)",
+   "attrs": {
+    "di_registration": "Startup.cs:28"
+   }
+  },
+  {
+   "id": "EXECUTES_DYNAMIC_SQL|api:data_access_method:ShopApp.DataAccess.ItemDataAccessLayer.GetItemData(int)|api:unresolved:DataAccess/ItemDataAccessLayer.cs:123|DataAccess/ItemDataAccessLayer.cs:123:38",
+   "type": "EXECUTES_DYNAMIC_SQL",
+   "source": "api:data_access_method:ShopApp.DataAccess.ItemDataAccessLayer.GetItemData(int)",
+   "target": "api:unresolved:DataAccess/ItemDataAccessLayer.cs:123",
+   "source_file": "DataAccess/ItemDataAccessLayer.cs",
+   "location": {
+    "line": 123,
+    "column": 38
+   },
+   "analysis_method": "roslyn:sqlcommand-text",
+   "confidence": "UNRESOLVED",
+   "commit_id": "23f6a2631edd015c6912abd5f59c81c5b7ff6a8d",
+   "repo": "api",
+   "synthetic": false,
+   "evidence": "SqlCommand cmd = new SqlCommand(sqlQuery, con);",
+   "reason": "SQL text built by string concatenation with a runtime value; tables it touches cannot be resolved statically"
+  },
+  {
+   "id": "EXECUTES_DYNAMIC_SQL|api:data_access_method:ShopApp.Synthetic.DataAccess.SqlPatternsDataAccess.InlineLiteralSql()|api:unresolved:Synthetic/DataAccess/SqlPatternsDataAccess.cs:107|Synthetic/DataAccess/SqlPatternsDataAccess.cs:107:34",
+   "type": "EXECUTES_DYNAMIC_SQL",
+   "source": "api:data_access_method:ShopApp.Synthetic.DataAccess.SqlPatternsDataAccess.InlineLiteralSql()",
+   "target": "api:unresolved:Synthetic/DataAccess/SqlPatternsDataAccess.cs:107",
+   "source_file": "Synthetic/DataAccess/SqlPatternsDataAccess.cs",
+   "location": {
+    "line": 107,
+    "column": 34
+   },
+   "analysis_method": "roslyn:sqlcommand-text",
+   "confidence": "UNRESOLVED",
+   "commit_id": "23f6a2631edd015c6912abd5f59c81c5b7ff6a8d",
+   "repo": "api",
+   "synthetic": true,
+   "evidence": "SqlCommand cmd = new SqlCommand(\"SELECT COUNT(*) FROM dbo.tblItem\", con);",
+   "reason": "inline SQL text (not a stored-procedure call); this PoC resolves stored-procedure calls only"
+  },
+  {
+   "id": "EXECUTES_DYNAMIC_SQL|api:data_access_method:ShopApp.Synthetic.DataAccess.SqlPatternsDataAccess.InterpolatedSql(string)|api:unresolved:Synthetic/DataAccess/SqlPatternsDataAccess.cs:96|Synthetic/DataAccess/SqlPatternsDataAccess.cs:96:34",
+   "type": "EXECUTES_DYNAMIC_SQL",
+   "source": "api:data_access_method:ShopApp.Synthetic.DataAccess.SqlPatternsDataAccess.InterpolatedSql(string)",
+   "target": "api:unresolved:Synthetic/DataAccess/SqlPatternsDataAccess.cs:96",
+   "source_file": "Synthetic/DataAccess/SqlPatternsDataAccess.cs",
+   "location": {
+    "line": 96,
+    "column": 34
+   },
+   "analysis_method": "roslyn:sqlcommand-text",
+   "confidence": "UNRESOLVED",
+   "commit_id": "23f6a2631edd015c6912abd5f59c81c5b7ff6a8d",
+   "repo": "api",
+   "synthetic": true,
+   "evidence": "SqlCommand cmd = new SqlCommand(sql, con);",
+   "reason": "SQL text is an interpolated string with runtime values; tables it touches cannot be resolved statically"
+  },
+  {
+   "id": "EXECUTES_DYNAMIC_SQL|db:sql_proc:dbo.spSearchItems|db:unresolved:synthetic/procedures/spSearchItems.sql:9|synthetic/procedures/spSearchItems.sql:9:5",
+   "type": "EXECUTES_DYNAMIC_SQL",
+   "source": "db:sql_proc:dbo.spSearchItems",
+   "target": "db:unresolved:synthetic/procedures/spSearchItems.sql:9",
+   "source_file": "synthetic/procedures/spSearchItems.sql",
+   "location": {
+    "line": 9,
+    "column": 5
+   },
+   "analysis_method": "scriptdom:exec-string",
+   "confidence": "UNRESOLVED",
+   "commit_id": "57e1a2ce0dda204615bcf29589b251e1b202e92d",
+   "repo": "db",
+   "synthetic": true,
+   "evidence": "EXEC sp_executesql @sql, N'@t VARCHAR(50)', @t = @Term;",
+   "reason": "dynamic SQL: statement text is built at runtime (string concatenation/variable); tables it touches cannot be resolved statically"
+  },
+  {
+   "id": "MAKES_REQUEST|web:ui_component:ListDataComponent|web:http_request:GET api/DemoData/Readings|src/app/list-data/list-data.component.ts:12:5",
+   "type": "MAKES_REQUEST",
+   "source": "web:ui_component:ListDataComponent",
+   "target": "web:http_request:GET api/DemoData/Readings",
+   "source_file": "src/app/list-data/list-data.component.ts",
+   "location": {
+    "line": 12,
+    "column": 5
+   },
+   "analysis_method": "tsmorph:http-url-fold",
+   "confidence": "CONFIRMED_STATIC",
+   "commit_id": "23f6a2631edd015c6912abd5f59c81c5b7ff6a8d",
+   "repo": "web",
+   "synthetic": false,
+   "evidence": "http.get<Reading[]>(baseUrl + 'api/DemoData/Readings').subscribe(result => {"
+  },
+  {
+   "id": "MAKES_REQUEST|web:ui_service_method:GroupReportService.archive|web:http_request:POST api/Group/Archive/{}|src/synthetic/group-report.service.ts:30:12",
+   "type": "MAKES_REQUEST",
+   "source": "web:ui_service_method:GroupReportService.archive",
+   "target": "web:http_request:POST api/Group/Archive/{}",
+   "source_file": "src/synthetic/group-report.service.ts",
+   "location": {
+    "line": 30,
+    "column": 12
+   },
+   "analysis_method": "tsmorph:http-url-fold",
+   "confidence": "CONFIRMED_STATIC",
+   "commit_id": "23f6a2631edd015c6912abd5f59c81c5b7ff6a8d",
+   "repo": "web",
+   "synthetic": true,
+   "evidence": "return this._http.post(this.baseUrl + 'api/Group/Archive/' + id, {});"
+  },
+  {
+   "id": "MAKES_REQUEST|web:ui_service_method:GroupReportService.exportReport|web:unresolved:GET@src/synthetic/group-report.service.ts:26|src/synthetic/group-report.service.ts:26:12",
+   "type": "MAKES_REQUEST",
+   "source": "web:ui_service_method:GroupReportService.exportReport",
+   "target": "web:unresolved:GET@src/synthetic/group-report.service.ts:26",
+   "source_file": "src/synthetic/group-report.service.ts",
+   "location": {
+    "line": 26,
+    "column": 12
+   },
+   "analysis_method": "tsmorph:http-url-fold",
+   "confidence": "UNRESOLVED",
+   "commit_id": "23f6a2631edd015c6912abd5f59c81c5b7ff6a8d",
+   "repo": "web",
+   "synthetic": true,
+   "evidence": "return this._http.get(url);",
+   "reason": "URL is entirely a runtime value (url); no static path to match"
+  },
+  {
+   "id": "MAKES_REQUEST|web:ui_service_method:GroupReportService.getHeadcount|web:unresolved:GET@src/synthetic/group-report.service.ts:17|src/synthetic/group-report.service.ts:17:12",
+   "type": "MAKES_REQUEST",
+   "source": "web:ui_service_method:GroupReportService.getHeadcount",
+   "target": "web:unresolved:GET@src/synthetic/group-report.service.ts:17",
+   "source_file": "src/synthetic/group-report.service.ts",
+   "location": {
+    "line": 17,
+    "column": 12
+   },
+   "analysis_method": "tsmorph:http-url-fold",
+   "confidence": "UNRESOLVED",
+   "commit_id": "23f6a2631edd015c6912abd5f59c81c5b7ff6a8d",
+   "repo": "web",
+   "synthetic": true,
+   "evidence": "return this._http.get(url);",
+   "reason": "URL part comes from runtime configuration (this._config.get('reportsRoute')); not statically resolvable"
+  },
+  {
+   "id": "MAKES_REQUEST|web:ui_service_method:GroupReportService.getItemsIn|web:http_request:GET api/Group/Items/{}|src/synthetic/group-report.service.ts:21:12",
+   "type": "MAKES_REQUEST",
+   "source": "web:ui_service_method:GroupReportService.getItemsIn",
+   "target": "web:http_request:GET api/Group/Items/{}",
+   "source_file": "src/synthetic/group-report.service.ts",
+   "location": {
+    "line": 21,
+    "column": 12
+   },
+   "analysis_method": "tsmorph:http-url-fold",
+   "confidence": "CONFIRMED_STATIC",
+   "commit_id": "23f6a2631edd015c6912abd5f59c81c5b7ff6a8d",
+   "repo": "web",
+   "synthetic": true,
+   "evidence": "return this._http.get(this.baseUrl + 'api/Group/Items/' + group);"
+  },
+  {
+   "id": "MAKES_REQUEST|web:ui_service_method:ItemService.deleteItem|web:http_request:DELETE api/Item/Delete/{}|src/app/services/item.service.ts:57:12",
+   "type": "MAKES_REQUEST",
+   "source": "web:ui_service_method:ItemService.deleteItem",
+   "target": "web:http_request:DELETE api/Item/Delete/{}",
+   "source_file": "src/app/services/item.service.ts",
+   "location": {
+    "line": 57,
+    "column": 12
+   },
+   "analysis_method": "tsmorph:http-url-fold",
+   "confidence": "CONFIRMED_STATIC",
+   "commit_id": "23f6a2631edd015c6912abd5f59c81c5b7ff6a8d",
+   "repo": "web",
+   "synthetic": false,
+   "evidence": "return this._http.delete(this.myAppUrl + 'Delete/' + id)"
+  },
+  {
+   "id": "MAKES_REQUEST|web:ui_service_method:ItemService.getItemById|web:http_request:GET api/Item/Details/{}|src/app/services/item.service.ts:33:12",
+   "type": "MAKES_REQUEST",
+   "source": "web:ui_service_method:ItemService.getItemById",
+   "target": "web:http_request:GET api/Item/Details/{}",
+   "source_file": "src/app/services/item.service.ts",
+   "location": {
+    "line": 33,
+    "column": 12
+   },
+   "analysis_method": "tsmorph:http-url-fold",
+   "confidence": "CONFIRMED_STATIC",
+   "commit_id": "23f6a2631edd015c6912abd5f59c81c5b7ff6a8d",
+   "repo": "web",
+   "synthetic": false,
+   "evidence": "return this._http.get(this.myAppUrl + 'Details/' + id)"
+  },
+  {
+   "id": "MAKES_REQUEST|web:ui_service_method:ItemService.getItems|web:http_request:GET api/Item/Index|src/app/services/item.service.ts:26:12",
+   "type": "MAKES_REQUEST",
+   "source": "web:ui_service_method:ItemService.getItems",
+   "target": "web:http_request:GET api/Item/Index",
+   "source_file": "src/app/services/item.service.ts",
+   "location": {
+    "line": 26,
+    "column": 12
+   },
+   "analysis_method": "tsmorph:http-url-fold",
+   "confidence": "CONFIRMED_STATIC",
+   "commit_id": "23f6a2631edd015c6912abd5f59c81c5b7ff6a8d",
+   "repo": "web",
+   "synthetic": false,
+   "evidence": "return this._http.get(this.myAppUrl + 'Index').pipe(map("
+  },
+  {
+   "id": "MAKES_REQUEST|web:ui_service_method:ItemService.getPlaceList|web:http_request:GET api/Item/GetPlaceList|src/app/services/item.service.ts:18:12",
+   "type": "MAKES_REQUEST",
+   "source": "web:ui_service_method:ItemService.getPlaceList",
+   "target": "web:http_request:GET api/Item/GetPlaceList",
+   "source_file": "src/app/services/item.service.ts",
+   "location": {
+    "line": 18,
+    "column": 12
+   },
+   "analysis_method": "tsmorph:http-url-fold",
+   "confidence": "CONFIRMED_STATIC",
+   "commit_id": "23f6a2631edd015c6912abd5f59c81c5b7ff6a8d",
+   "repo": "web",
+   "synthetic": false,
+   "evidence": "return this._http.get(this.myAppUrl + 'GetPlaceList')"
+  },
+  {
+   "id": "MAKES_REQUEST|web:ui_service_method:ItemService.saveItem|web:http_request:POST api/Item/Create|src/app/services/item.service.ts:41:12",
+   "type": "MAKES_REQUEST",
+   "source": "web:ui_service_method:ItemService.saveItem",
+   "target": "web:http_request:POST api/Item/Create",
+   "source_file": "src/app/services/item.service.ts",
+   "location": {
+    "line": 41,
+    "column": 12
+   },
+   "analysis_method": "tsmorph:http-url-fold",
+   "confidence": "CONFIRMED_STATIC",
+   "commit_id": "23f6a2631edd015c6912abd5f59c81c5b7ff6a8d",
+   "repo": "web",
+   "synthetic": false,
+   "evidence": "return this._http.post(this.myAppUrl + 'Create', item)"
+  },
+  {
+   "id": "MAKES_REQUEST|web:ui_service_method:ItemService.updateItem|web:http_request:PUT api/Item/Edit|src/app/services/item.service.ts:49:12",
+   "type": "MAKES_REQUEST",
+   "source": "web:ui_service_method:ItemService.updateItem",
+   "target": "web:http_request:PUT api/Item/Edit",
+   "source_file": "src/app/services/item.service.ts",
+   "location": {
+    "line": 49,
+    "column": 12
+   },
+   "analysis_method": "tsmorph:http-url-fold",
+   "confidence": "CONFIRMED_STATIC",
+   "commit_id": "23f6a2631edd015c6912abd5f59c81c5b7ff6a8d",
+   "repo": "web",
+   "synthetic": false,
+   "evidence": "return this._http.put(this.myAppUrl + 'Edit', item)"
+  },
+  {
+   "id": "READS_TABLE|db:sql_proc:dbo.spGetAllItems|db:sql_table:dbo.tblItem|synthetic/procedures/spGetAllItems.sql:7:10",
+   "type": "READS_TABLE",
+   "source": "db:sql_proc:dbo.spGetAllItems",
+   "target": "db:sql_table:dbo.tblItem",
+   "source_file": "synthetic/procedures/spGetAllItems.sql",
+   "location": {
+    "line": 7,
+    "column": 10
+   },
+   "analysis_method": "scriptdom:table-reference",
+   "confidence": "CONFIRMED_STATIC",
+   "commit_id": "57e1a2ce0dda204615bcf29589b251e1b202e92d",
+   "repo": "db",
+   "synthetic": true,
+   "evidence": "FROM dbo.tblItem"
+  },
+  {
+   "id": "READS_TABLE|db:sql_proc:dbo.spGetGroupHeadcount|db:sql_table:dbo.tblGroup|synthetic/procedures/spGetGroupHeadcount.sql:7:10",
+   "type": "READS_TABLE",
+   "source": "db:sql_proc:dbo.spGetGroupHeadcount",
+   "target": "db:sql_table:dbo.tblGroup",
+   "source_file": "synthetic/procedures/spGetGroupHeadcount.sql",
+   "location": {
+    "line": 7,
+    "column": 10
+   },
+   "analysis_method": "scriptdom:table-reference",
+   "confidence": "CONFIRMED_STATIC",
+   "commit_id": "57e1a2ce0dda204615bcf29589b251e1b202e92d",
+   "repo": "db",
+   "synthetic": true,
+   "evidence": "FROM dbo.tblGroup d"
+  },
+  {
+   "id": "READS_TABLE|db:sql_proc:dbo.spGetGroupHeadcount|db:sql_table:dbo.tblItem|synthetic/procedures/spGetGroupHeadcount.sql:8:15",
+   "type": "READS_TABLE",
+   "source": "db:sql_proc:dbo.spGetGroupHeadcount",
+   "target": "db:sql_table:dbo.tblItem",
+   "source_file": "synthetic/procedures/spGetGroupHeadcount.sql",
+   "location": {
+    "line": 8,
+    "column": 15
+   },
+   "analysis_method": "scriptdom:table-reference",
+   "confidence": "CONFIRMED_STATIC",
+   "commit_id": "57e1a2ce0dda204615bcf29589b251e1b202e92d",
+   "repo": "db",
+   "synthetic": true,
+   "evidence": "LEFT JOIN dbo.tblItem e ON e.Group = d.GroupName"
+  },
+  {
+   "id": "READS_TABLE|db:sql_proc:dbo.spGetPlaceList|db:sql_table:dbo.tblPlaces|synthetic/procedures/spGetPlaceList.sql:6:34",
+   "type": "READS_TABLE",
+   "source": "db:sql_proc:dbo.spGetPlaceList",
+   "target": "db:sql_table:dbo.tblPlaces",
+   "source_file": "synthetic/procedures/spGetPlaceList.sql",
+   "location": {
+    "line": 6,
+    "column": 34
+   },
+   "analysis_method": "scriptdom:table-reference",
+   "confidence": "CONFIRMED_STATIC",
+   "commit_id": "57e1a2ce0dda204615bcf29589b251e1b202e92d",
+   "repo": "db",
+   "synthetic": true,
+   "evidence": "SELECT PlaceID, PlaceName FROM dbo.tblPlaces;"
+  },
+  {
+   "id": "READS_TABLE|db:sql_view:dbo.vwItemGroup|db:sql_table:dbo.tblGroup|synthetic/views/vwItemGroup.sql:6:12",
+   "type": "READS_TABLE",
+   "source": "db:sql_view:dbo.vwItemGroup",
+   "target": "db:sql_table:dbo.tblGroup",
+   "source_file": "synthetic/views/vwItemGroup.sql",
+   "location": {
+    "line": 6,
+    "column": 12
+   },
+   "analysis_method": "scriptdom:table-reference",
+   "confidence": "CONFIRMED_STATIC",
+   "commit_id": "57e1a2ce0dda204615bcf29589b251e1b202e92d",
+   "repo": "db",
+   "synthetic": true,
+   "evidence": "INNER JOIN dbo.tblGroup d ON d.GroupName = e.Group;"
+  },
+  {
+   "id": "READS_TABLE|db:sql_view:dbo.vwItemGroup|db:sql_table:dbo.tblItem|synthetic/views/vwItemGroup.sql:5:6",
+   "type": "READS_TABLE",
+   "source": "db:sql_view:dbo.vwItemGroup",
+   "target": "db:sql_table:dbo.tblItem",
+   "source_file": "synthetic/views/vwItemGroup.sql",
+   "location": {
+    "line": 5,
+    "column": 6
+   },
+   "analysis_method": "scriptdom:table-reference",
+   "confidence": "CONFIRMED_STATIC",
+   "commit_id": "57e1a2ce0dda204615bcf29589b251e1b202e92d",
+   "repo": "db",
+   "synthetic": true,
+   "evidence": "FROM dbo.tblItem e"
+  },
+  {
+   "id": "READS_VIEW|db:sql_proc:dbo.spGetItemsByGroup|db:sql_view:dbo.vwItemGroup|synthetic/procedures/spGetItemsByGroup.sql:7:46",
+   "type": "READS_VIEW",
+   "source": "db:sql_proc:dbo.spGetItemsByGroup",
+   "target": "db:sql_view:dbo.vwItemGroup",
+   "source_file": "synthetic/procedures/spGetItemsByGroup.sql",
+   "location": {
+    "line": 7,
+    "column": 46
+   },
+   "analysis_method": "scriptdom:table-reference",
+   "confidence": "CONFIRMED_STATIC",
+   "commit_id": "57e1a2ce0dda204615bcf29589b251e1b202e92d",
+   "repo": "db",
+   "synthetic": true,
+   "evidence": "SELECT ItemID, Name, Group FROM dbo.vwItemGroup"
+  },
+  {
+   "id": "RESOLVES_TO|api:sql_ref:dbo.spAddItem|db:sql_proc:dbo.spAddItem|DataAccess/ItemDataAccessLayer.cs:65:38",
+   "type": "RESOLVES_TO",
+   "source": "api:sql_ref:dbo.spAddItem",
+   "target": "db:sql_proc:dbo.spAddItem",
+   "source_file": "DataAccess/ItemDataAccessLayer.cs",
+   "location": {
+    "line": 65,
+    "column": 38
+   },
+   "analysis_method": "linker:sql-name-match",
+   "confidence": "CONFIRMED_STATIC",
+   "commit_id": "23f6a2631edd015c6912abd5f59c81c5b7ff6a8d",
+   "repo": "api",
+   "synthetic": false,
+   "evidence": "SqlCommand cmd = new SqlCommand(\"spAddItem\", con);",
+   "attrs": {
+    "referenced_from": [
+     "api:DataAccess/ItemDataAccessLayer.cs:65",
+     "api:Synthetic/DataAccess/SqlPatternsDataAccess.cs:84"
+    ],
+    "target_location": "synthetic/procedures/spAddItem.sql:3"
+   }
+  },
+  {
+   "id": "RESOLVES_TO|api:sql_ref:dbo.spArchiveItem|linker:unresolved:referenced_not_found:dbo.spArchiveItem|Synthetic/DataAccess/GroupDataAccess.cs:64:34",
+   "type": "RESOLVES_TO",
+   "source": "api:sql_ref:dbo.spArchiveItem",
+   "target": "linker:unresolved:referenced_not_found:dbo.spArchiveItem",
+   "source_file": "Synthetic/DataAccess/GroupDataAccess.cs",
+   "location": {
+    "line": 64,
+    "column": 34
+   },
+   "analysis_method": "linker:sql-name-match",
+   "confidence": "UNRESOLVED",
+   "commit_id": "23f6a2631edd015c6912abd5f59c81c5b7ff6a8d",
+   "repo": "api",
+   "synthetic": true,
+   "evidence": "SqlCommand cmd = new SqlCommand(\"spArchiveItem\", con);",
+   "reason": "referenced procedure 'dbo.spArchiveItem' is called/used but no definition was found in any scanned repo",
+   "attrs": {
+    "referenced_from": [
+     "api:Synthetic/DataAccess/GroupDataAccess.cs:64"
+    ]
+   }
+  },
+  {
+   "id": "RESOLVES_TO|api:sql_ref:dbo.spDeleteItem|db:sql_proc:dbo.spDeleteItem|DataAccess/ItemDataAccessLayer.cs:152:38",
+   "type": "RESOLVES_TO",
+   "source": "api:sql_ref:dbo.spDeleteItem",
+   "target": "db:sql_proc:dbo.spDeleteItem",
+   "source_file": "DataAccess/ItemDataAccessLayer.cs",
+   "location": {
+    "line": 152,
+    "column": 38
+   },
+   "analysis_method": "linker:sql-name-match",
+   "confidence": "CONFIRMED_STATIC",
+   "commit_id": "23f6a2631edd015c6912abd5f59c81c5b7ff6a8d",
+   "repo": "api",
+   "synthetic": false,
+   "evidence": "SqlCommand cmd = new SqlCommand(\"spDeleteItem\", con);",
+   "attrs": {
+    "referenced_from": [
+     "api:DataAccess/ItemDataAccessLayer.cs:152",
+     "api:Synthetic/DataAccess/SqlPatternsDataAccess.cs:72"
+    ],
+    "target_location": "synthetic/procedures/spDeleteItem.sql:3"
+   }
+  },
+  {
+   "id": "RESOLVES_TO|api:sql_ref:dbo.spGetAllItems|db:sql_proc:dbo.spGetAllItems|DataAccess/ItemDataAccessLayer.cs:30:38",
+   "type": "RESOLVES_TO",
+   "source": "api:sql_ref:dbo.spGetAllItems",
+   "target": "db:sql_proc:dbo.spGetAllItems",
+   "source_file": "DataAccess/ItemDataAccessLayer.cs",
+   "location": {
+    "line": 30,
+    "column": 38
+   },
+   "analysis_method": "linker:sql-name-match",
+   "confidence": "CONFIRMED_STATIC",
+   "commit_id": "23f6a2631edd015c6912abd5f59c81c5b7ff6a8d",
+   "repo": "api",
+   "synthetic": false,
+   "evidence": "SqlCommand cmd = new SqlCommand(\"spGetAllItems\", con);",
+   "attrs": {
+    "referenced_from": [
+     "api:DataAccess/ItemDataAccessLayer.cs:30",
+     "api:Synthetic/DataAccess/SqlPatternsDataAccess.cs:30"
+    ],
+    "target_location": "synthetic/procedures/spGetAllItems.sql:3"
+   }
+  },
+  {
+   "id": "RESOLVES_TO|api:sql_ref:dbo.spGetGroupHeadcount|db:sql_proc:dbo.spGetGroupHeadcount|Synthetic/DataAccess/GroupDataAccess.cs:24:34",
+   "type": "RESOLVES_TO",
+   "source": "api:sql_ref:dbo.spGetGroupHeadcount",
+   "target": "db:sql_proc:dbo.spGetGroupHeadcount",
+   "source_file": "Synthetic/DataAccess/GroupDataAccess.cs",
+   "location": {
+    "line": 24,
+    "column": 34
+   },
+   "analysis_method": "linker:sql-name-match",
+   "confidence": "CONFIRMED_STATIC",
+   "commit_id": "23f6a2631edd015c6912abd5f59c81c5b7ff6a8d",
+   "repo": "api",
+   "synthetic": true,
+   "evidence": "SqlCommand cmd = new SqlCommand(\"spGetGroupHeadcount\", con);",
+   "attrs": {
+    "referenced_from": [
+     "api:Synthetic/DataAccess/GroupDataAccess.cs:24",
+     "api:Synthetic/DataAccess/SqlPatternsDataAccess.cs:42"
+    ],
+    "target_location": "synthetic/procedures/spGetGroupHeadcount.sql:3"
+   }
+  },
+  {
+   "id": "RESOLVES_TO|api:sql_ref:dbo.spGetItemsByGroup|db:sql_proc:dbo.spGetItemsByGroup|Synthetic/DataAccess/GroupDataAccess.cs:46:34",
+   "type": "RESOLVES_TO",
+   "source": "api:sql_ref:dbo.spGetItemsByGroup",
+   "target": "db:sql_proc:dbo.spGetItemsByGroup",
+   "source_file": "Synthetic/DataAccess/GroupDataAccess.cs",
+   "location": {
+    "line": 46,
+    "column": 34
+   },
+   "analysis_method": "linker:sql-name-match",
+   "confidence": "CONFIRMED_STATIC",
+   "commit_id": "23f6a2631edd015c6912abd5f59c81c5b7ff6a8d",
+   "repo": "api",
+   "synthetic": true,
+   "evidence": "SqlCommand cmd = new SqlCommand(\"spGetItemsByGroup\", con);",
+   "attrs": {
+    "referenced_from": [
+     "api:Synthetic/DataAccess/GroupDataAccess.cs:46",
+     "api:Synthetic/DataAccess/SqlPatternsDataAccess.cs:58"
+    ],
+    "target_location": "synthetic/procedures/spGetItemsByGroup.sql:3"
+   }
+  },
+  {
+   "id": "RESOLVES_TO|api:sql_ref:dbo.spGetPlaceList|db:sql_proc:dbo.spGetPlaceList|DataAccess/ItemDataAccessLayer.cs:177:38",
+   "type": "RESOLVES_TO",
+   "source": "api:sql_ref:dbo.spGetPlaceList",
+   "target": "db:sql_proc:dbo.spGetPlaceList",
+   "source_file": "DataAccess/ItemDataAccessLayer.cs",
+   "location": {
+    "line": 177,
+    "column": 38
+   },
+   "analysis_method": "linker:sql-name-match",
+   "confidence": "CONFIRMED_STATIC",
+   "commit_id": "23f6a2631edd015c6912abd5f59c81c5b7ff6a8d",
+   "repo": "api",
+   "synthetic": false,
+   "evidence": "SqlCommand cmd = new SqlCommand(\"spGetPlaceList\", con);",
+   "attrs": {
+    "referenced_from": [
+     "api:DataAccess/ItemDataAccessLayer.cs:177",
+     "api:Synthetic/DataAccess/SqlPatternsDataAccess.cs:18"
+    ],
+    "target_location": "synthetic/procedures/spGetPlaceList.sql:3"
+   }
+  },
+  {
+   "id": "RESOLVES_TO|api:sql_ref:dbo.spUpdateItem|db:sql_proc:dbo.spUpdateItem|DataAccess/ItemDataAccessLayer.cs:92:38",
+   "type": "RESOLVES_TO",
+   "source": "api:sql_ref:dbo.spUpdateItem",
+   "target": "db:sql_proc:dbo.spUpdateItem",
+   "source_file": "DataAccess/ItemDataAccessLayer.cs",
+   "location": {
+    "line": 92,
+    "column": 38
+   },
+   "analysis_method": "linker:sql-name-match",
+   "confidence": "CONFIRMED_STATIC",
+   "commit_id": "23f6a2631edd015c6912abd5f59c81c5b7ff6a8d",
+   "repo": "api",
+   "synthetic": false,
+   "evidence": "SqlCommand cmd = new SqlCommand(\"spUpdateItem\", con);",
+   "attrs": {
+    "referenced_from": [
+     "api:DataAccess/ItemDataAccessLayer.cs:92"
+    ],
+    "target_location": "synthetic/procedures/spUpdateItem.sql:3"
+   }
+  },
+  {
+   "id": "ROUTES_TO|web:http_request:DELETE api/Item/Delete/{}|api:api_endpoint:ShopApp.Controllers.ItemController.Delete(int)|src/app/services/item.service.ts:57:12",
+   "type": "ROUTES_TO",
+   "source": "web:http_request:DELETE api/Item/Delete/{}",
+   "target": "api:api_endpoint:ShopApp.Controllers.ItemController.Delete(int)",
+   "source_file": "src/app/services/item.service.ts",
+   "location": {
+    "line": 57,
+    "column": 12
+   },
+   "analysis_method": "linker:route-match",
+   "confidence": "CONFIRMED_STATIC",
+   "commit_id": "23f6a2631edd015c6912abd5f59c81c5b7ff6a8d",
+   "repo": "web",
+   "synthetic": false,
+   "evidence": "return this._http.delete(this.myAppUrl + 'Delete/' + id)",
+   "attrs": {
+    "target_location": "Controllers/ItemController.cs:51",
+    "route_template": "api/Item/Delete/{id}",
+    "request_template": "api/Item/Delete/{}"
+   }
+  },
+  {
+   "id": "ROUTES_TO|web:http_request:GET api/DemoData/Readings|api:api_endpoint:ShopApp.Controllers.DemoDataController.Readings()|src/app/list-data/list-data.component.ts:12:5",
+   "type": "ROUTES_TO",
+   "source": "web:http_request:GET api/DemoData/Readings",
+   "target": "api:api_endpoint:ShopApp.Controllers.DemoDataController.Readings()",
+   "source_file": "src/app/list-data/list-data.component.ts",
+   "location": {
+    "line": 12,
+    "column": 5
+   },
+   "analysis_method": "linker:route-match",
+   "confidence": "CONFIRMED_STATIC",
+   "commit_id": "23f6a2631edd015c6912abd5f59c81c5b7ff6a8d",
+   "repo": "web",
+   "synthetic": false,
+   "evidence": "http.get<Reading[]>(baseUrl + 'api/DemoData/Readings').subscribe(result => {",
+   "attrs": {
+    "target_location": "Controllers/DemoDataController.cs:17",
+    "route_template": "api/DemoData/Readings",
+    "request_template": "api/DemoData/Readings"
+   }
+  },
+  {
+   "id": "ROUTES_TO|web:http_request:GET api/Group/Items/{}|api:api_endpoint:ShopApp.Synthetic.Controllers.GroupController.ItemsIn(string)|src/synthetic/group-report.service.ts:21:12",
+   "type": "ROUTES_TO",
+   "source": "web:http_request:GET api/Group/Items/{}",
+   "target": "api:api_endpoint:ShopApp.Synthetic.Controllers.GroupController.ItemsIn(string)",
+   "source_file": "src/synthetic/group-report.service.ts",
+   "location": {
+    "line": 21,
+    "column": 12
+   },
+   "analysis_method": "linker:route-match",
+   "confidence": "CONFIRMED_STATIC",
+   "commit_id": "23f6a2631edd015c6912abd5f59c81c5b7ff6a8d",
+   "repo": "web",
+   "synthetic": true,
+   "evidence": "return this._http.get(this.baseUrl + 'api/Group/Items/' + group);",
+   "attrs": {
+    "target_location": "Synthetic/Controllers/GroupController.cs:25",
+    "route_template": "api/Group/Items/{group}",
+    "request_template": "api/Group/Items/{}"
+   }
+  },
+  {
+   "id": "ROUTES_TO|web:http_request:GET api/Item/Details/{}|api:api_endpoint:ShopApp.Controllers.ItemController.Details(int)|src/app/services/item.service.ts:33:12",
+   "type": "ROUTES_TO",
+   "source": "web:http_request:GET api/Item/Details/{}",
+   "target": "api:api_endpoint:ShopApp.Controllers.ItemController.Details(int)",
+   "source_file": "src/app/services/item.service.ts",
+   "location": {
+    "line": 33,
+    "column": 12
+   },
+   "analysis_method": "linker:route-match",
+   "confidence": "CONFIRMED_STATIC",
+   "commit_id": "23f6a2631edd015c6912abd5f59c81c5b7ff6a8d",
+   "repo": "web",
+   "synthetic": false,
+   "evidence": "return this._http.get(this.myAppUrl + 'Details/' + id)",
+   "attrs": {
+    "target_location": "Controllers/ItemController.cs:37",
+    "route_template": "api/Item/Details/{id}",
+    "request_template": "api/Item/Details/{}"
+   }
+  },
+  {
+   "id": "ROUTES_TO|web:http_request:GET api/Item/GetPlaceList|api:api_endpoint:ShopApp.Controllers.ItemController.Details()|src/app/services/item.service.ts:18:12",
+   "type": "ROUTES_TO",
+   "source": "web:http_request:GET api/Item/GetPlaceList",
+   "target": "api:api_endpoint:ShopApp.Controllers.ItemController.Details()",
+   "source_file": "src/app/services/item.service.ts",
+   "location": {
+    "line": 18,
+    "column": 12
+   },
+   "analysis_method": "linker:route-match",
+   "confidence": "CONFIRMED_STATIC",
+   "commit_id": "23f6a2631edd015c6912abd5f59c81c5b7ff6a8d",
+   "repo": "web",
+   "synthetic": false,
+   "evidence": "return this._http.get(this.myAppUrl + 'GetPlaceList')",
+   "attrs": {
+    "target_location": "Controllers/ItemController.cs:58",
+    "route_template": "api/Item/GetPlaceList",
+    "request_template": "api/Item/GetPlaceList"
+   }
+  },
+  {
+   "id": "ROUTES_TO|web:http_request:GET api/Item/Index|api:api_endpoint:ShopApp.Controllers.ItemController.Index()|src/app/services/item.service.ts:26:12",
+   "type": "ROUTES_TO",
+   "source": "web:http_request:GET api/Item/Index",
+   "target": "api:api_endpoint:ShopApp.Controllers.ItemController.Index()",
+   "source_file": "src/app/services/item.service.ts",
+   "location": {
+    "line": 26,
+    "column": 12
+   },
+   "analysis_method": "linker:route-match",
+   "confidence": "CONFIRMED_STATIC",
+   "commit_id": "23f6a2631edd015c6912abd5f59c81c5b7ff6a8d",
+   "repo": "web",
+   "synthetic": false,
+   "evidence": "return this._http.get(this.myAppUrl + 'Index').pipe(map(",
+   "attrs": {
+    "target_location": "Controllers/ItemController.cs:23",
+    "route_template": "api/Item/Index",
+    "request_template": "api/Item/Index"
+   }
+  },
+  {
+   "id": "ROUTES_TO|web:http_request:POST api/Group/Archive/{}|api:api_endpoint:ShopApp.Synthetic.Controllers.GroupController.Archive(int)|src/synthetic/group-report.service.ts:30:12",
+   "type": "ROUTES_TO",
+   "source": "web:http_request:POST api/Group/Archive/{}",
+   "target": "api:api_endpoint:ShopApp.Synthetic.Controllers.GroupController.Archive(int)",
+   "source_file": "src/synthetic/group-report.service.ts",
+   "location": {
+    "line": 30,
+    "column": 12
+   },
+   "analysis_method": "linker:route-match",
+   "confidence": "CONFIRMED_STATIC",
+   "commit_id": "23f6a2631edd015c6912abd5f59c81c5b7ff6a8d",
+   "repo": "web",
+   "synthetic": true,
+   "evidence": "return this._http.post(this.baseUrl + 'api/Group/Archive/' + id, {});",
+   "attrs": {
+    "target_location": "Synthetic/Controllers/GroupController.cs:32",
+    "route_template": "api/Group/Archive/{id}",
+    "request_template": "api/Group/Archive/{}"
+   }
+  },
+  {
+   "id": "ROUTES_TO|web:http_request:POST api/Item/Create|api:api_endpoint:ShopApp.Controllers.ItemController.Create(ShopApp.Models.Item)|src/app/services/item.service.ts:41:12",
+   "type": "ROUTES_TO",
+   "source": "web:http_request:POST api/Item/Create",
+   "target": "api:api_endpoint:ShopApp.Controllers.ItemController.Create(ShopApp.Models.Item)",
+   "source_file": "src/app/services/item.service.ts",
+   "location": {
+    "line": 41,
+    "column": 12
+   },
+   "analysis_method": "linker:route-match",
+   "confidence": "CONFIRMED_STATIC",
+   "commit_id": "23f6a2631edd015c6912abd5f59c81c5b7ff6a8d",
+   "repo": "web",
+   "synthetic": false,
+   "evidence": "return this._http.post(this.myAppUrl + 'Create', item)",
+   "attrs": {
+    "target_location": "Controllers/ItemController.cs:30",
+    "route_template": "api/Item/Create",
+    "request_template": "api/Item/Create"
+   }
+  },
+  {
+   "id": "ROUTES_TO|web:http_request:PUT api/Item/Edit|api:api_endpoint:ShopApp.Controllers.ItemController.Edit(ShopApp.Models.Item)|src/app/services/item.service.ts:49:12",
+   "type": "ROUTES_TO",
+   "source": "web:http_request:PUT api/Item/Edit",
+   "target": "api:api_endpoint:ShopApp.Controllers.ItemController.Edit(ShopApp.Models.Item)",
+   "source_file": "src/app/services/item.service.ts",
+   "location": {
+    "line": 49,
+    "column": 12
+   },
+   "analysis_method": "linker:route-match",
+   "confidence": "CONFIRMED_STATIC",
+   "commit_id": "23f6a2631edd015c6912abd5f59c81c5b7ff6a8d",
+   "repo": "web",
+   "synthetic": false,
+   "evidence": "return this._http.put(this.myAppUrl + 'Edit', item)",
+   "attrs": {
+    "target_location": "Controllers/ItemController.cs:44",
+    "route_template": "api/Item/Edit",
+    "request_template": "api/Item/Edit"
+   }
+  },
+  {
+   "id": "TESTS|api:test:Api.Tests.GroupTests.GroupController_Headcount_ReturnsRows()|api:api_endpoint:ShopApp.Synthetic.Controllers.GroupController.Headcount()|tests/Api.Tests/GroupTests.cs:21:0",
+   "type": "TESTS",
+   "source": "api:test:Api.Tests.GroupTests.GroupController_Headcount_ReturnsRows()",
+   "target": "api:api_endpoint:ShopApp.Synthetic.Controllers.GroupController.Headcount()",
+   "source_file": "tests/Api.Tests/GroupTests.cs",
+   "location": {
+    "line": 21
+   },
+   "analysis_method": "naming-convention",
+   "confidence": "INFERRED",
+   "commit_id": "23f6a2631edd015c6912abd5f59c81c5b7ff6a8d",
+   "repo": "api",
+   "synthetic": true,
+   "evidence": "",
+   "reason": "mapped by naming convention (not by symbol reference or annotation)",
+   "attrs": {
+    "mapping_method": "naming-convention"
+   }
+  },
+  {
+   "id": "TESTS|api:test:Api.Tests.GroupTests.OverLimit_flag_true_when_headcount_exceeds_limit()|api:service_method:ShopApp.Synthetic.Services.GroupReportService.IsOverLimit(ShopApp.Synthetic.Services.GroupHeadcount)|tests/Api.Tests/GroupTests.cs:29:0",
+   "type": "TESTS",
+   "source": "api:test:Api.Tests.GroupTests.OverLimit_flag_true_when_headcount_exceeds_limit()",
+   "target": "api:service_method:ShopApp.Synthetic.Services.GroupReportService.IsOverLimit(ShopApp.Synthetic.Services.GroupHeadcount)",
+   "source_file": "tests/Api.Tests/GroupTests.cs",
+   "location": {
+    "line": 29
+   },
+   "analysis_method": "annotation",
+   "confidence": "CONFIRMED_STATIC",
+   "commit_id": "23f6a2631edd015c6912abd5f59c81c5b7ff6a8d",
+   "repo": "api",
+   "synthetic": true,
+   "evidence": "",
+   "attrs": {
+    "mapping_method": "annotation"
+   }
+  },
+  {
+   "id": "TESTS|db:test:synthetic/tests/test_spGetGroupHeadcount.sql::GroupTests.test spGetGroupHeadcount counts items per group|db:sql_proc:dbo.spGetGroupHeadcount|synthetic/tests/test_spGetGroupHeadcount.sql:4:0",
+   "type": "TESTS",
+   "source": "db:test:synthetic/tests/test_spGetGroupHeadcount.sql::GroupTests.test spGetGroupHeadcount counts items per group",
+   "target": "db:sql_proc:dbo.spGetGroupHeadcount",
+   "source_file": "synthetic/tests/test_spGetGroupHeadcount.sql",
+   "location": {
+    "line": 4
+   },
+   "analysis_method": "annotation",
+   "confidence": "CONFIRMED_STATIC",
+   "commit_id": "57e1a2ce0dda204615bcf29589b251e1b202e92d",
+   "repo": "db",
+   "synthetic": true,
+   "evidence": "",
+   "attrs": {
+    "mapping_method": "annotation"
+   }
+  },
+  {
+   "id": "TESTS|web:test:src/app/add-item/add-item.component.spec.ts::AddItemComponent > should create|web:ui_component:AddItemComponent|src/app/add-item/add-item.component.spec.ts:22:0",
+   "type": "TESTS",
+   "source": "web:test:src/app/add-item/add-item.component.spec.ts::AddItemComponent > should create",
+   "target": "web:ui_component:AddItemComponent",
+   "source_file": "src/app/add-item/add-item.component.spec.ts",
+   "location": {
+    "line": 22
+   },
+   "analysis_method": "naming-convention",
+   "confidence": "INFERRED",
+   "commit_id": "23f6a2631edd015c6912abd5f59c81c5b7ff6a8d",
+   "repo": "web",
+   "synthetic": false,
+   "evidence": "",
+   "reason": "mapped by naming convention (not by symbol reference or annotation)",
+   "attrs": {
+    "mapping_method": "naming-convention"
+   }
+  },
+  {
+   "id": "TESTS|web:test:src/app/counter/counter.component.spec.ts::CounterComponent > should display a title|web:ui_component:CounterComponent|src/app/counter/counter.component.spec.ts:22:0",
+   "type": "TESTS",
+   "source": "web:test:src/app/counter/counter.component.spec.ts::CounterComponent > should display a title",
+   "target": "web:ui_component:CounterComponent",
+   "source_file": "src/app/counter/counter.component.spec.ts",
+   "location": {
+    "line": 22
+   },
+   "analysis_method": "naming-convention",
+   "confidence": "INFERRED",
+   "commit_id": "23f6a2631edd015c6912abd5f59c81c5b7ff6a8d",
+   "repo": "web",
+   "synthetic": false,
+   "evidence": "",
+   "reason": "mapped by naming convention (not by symbol reference or annotation)",
+   "attrs": {
+    "mapping_method": "naming-convention"
+   }
+  },
+  {
+   "id": "TESTS|web:test:src/app/counter/counter.component.spec.ts::CounterComponent > should start with count 0, then increments by 1 when clicked|web:ui_component:CounterComponent|src/app/counter/counter.component.spec.ts:27:0",
+   "type": "TESTS",
+   "source": "web:test:src/app/counter/counter.component.spec.ts::CounterComponent > should start with count 0, then increments by 1 when clicked",
+   "target": "web:ui_component:CounterComponent",
+   "source_file": "src/app/counter/counter.component.spec.ts",
+   "location": {
+    "line": 27
+   },
+   "analysis_method": "naming-convention",
+   "confidence": "INFERRED",
+   "commit_id": "23f6a2631edd015c6912abd5f59c81c5b7ff6a8d",
+   "repo": "web",
+   "synthetic": false,
+   "evidence": "",
+   "reason": "mapped by naming convention (not by symbol reference or annotation)",
+   "attrs": {
+    "mapping_method": "naming-convention"
+   }
+  },
+  {
+   "id": "TESTS|web:test:src/app/fetch-item/fetch-item.component.spec.ts::FetchItemComponent > should create|web:ui_component:FetchItemComponent|src/app/fetch-item/fetch-item.component.spec.ts:22:0",
+   "type": "TESTS",
+   "source": "web:test:src/app/fetch-item/fetch-item.component.spec.ts::FetchItemComponent > should create",
+   "target": "web:ui_component:FetchItemComponent",
+   "source_file": "src/app/fetch-item/fetch-item.component.spec.ts",
+   "location": {
+    "line": 22
+   },
+   "analysis_method": "naming-convention",
+   "confidence": "INFERRED",
+   "commit_id": "23f6a2631edd015c6912abd5f59c81c5b7ff6a8d",
+   "repo": "web",
+   "synthetic": false,
+   "evidence": "",
+   "reason": "mapped by naming convention (not by symbol reference or annotation)",
+   "attrs": {
+    "mapping_method": "naming-convention"
+   }
+  },
+  {
+   "id": "TESTS|web:test:src/app/services/item.service.spec.ts::ItemService > should be created|web:ui_service_method:ItemService.deleteItem|src/app/services/item.service.spec.ts:8:0",
+   "type": "TESTS",
+   "source": "web:test:src/app/services/item.service.spec.ts::ItemService > should be created",
+   "target": "web:ui_service_method:ItemService.deleteItem",
+   "source_file": "src/app/services/item.service.spec.ts",
+   "location": {
+    "line": 8
+   },
+   "analysis_method": "naming-convention",
+   "confidence": "INFERRED",
+   "commit_id": "23f6a2631edd015c6912abd5f59c81c5b7ff6a8d",
+   "repo": "web",
+   "synthetic": false,
+   "evidence": "",
+   "reason": "mapped by naming convention (not by symbol reference or annotation)",
+   "attrs": {
+    "mapping_method": "naming-convention"
+   }
+  },
+  {
+   "id": "TESTS|web:test:src/app/services/item.service.spec.ts::ItemService > should be created|web:ui_service_method:ItemService.getItemById|src/app/services/item.service.spec.ts:8:0",
+   "type": "TESTS",
+   "source": "web:test:src/app/services/item.service.spec.ts::ItemService > should be created",
+   "target": "web:ui_service_method:ItemService.getItemById",
+   "source_file": "src/app/services/item.service.spec.ts",
+   "location": {
+    "line": 8
+   },
+   "analysis_method": "naming-convention",
+   "confidence": "INFERRED",
+   "commit_id": "23f6a2631edd015c6912abd5f59c81c5b7ff6a8d",
+   "repo": "web",
+   "synthetic": false,
+   "evidence": "",
+   "reason": "mapped by naming convention (not by symbol reference or annotation)",
+   "attrs": {
+    "mapping_method": "naming-convention"
+   }
+  },
+  {
+   "id": "TESTS|web:test:src/app/services/item.service.spec.ts::ItemService > should be created|web:ui_service_method:ItemService.getItems|src/app/services/item.service.spec.ts:8:0",
+   "type": "TESTS",
+   "source": "web:test:src/app/services/item.service.spec.ts::ItemService > should be created",
+   "target": "web:ui_service_method:ItemService.getItems",
+   "source_file": "src/app/services/item.service.spec.ts",
+   "location": {
+    "line": 8
+   },
+   "analysis_method": "naming-convention",
+   "confidence": "INFERRED",
+   "commit_id": "23f6a2631edd015c6912abd5f59c81c5b7ff6a8d",
+   "repo": "web",
+   "synthetic": false,
+   "evidence": "",
+   "reason": "mapped by naming convention (not by symbol reference or annotation)",
+   "attrs": {
+    "mapping_method": "naming-convention"
+   }
+  },
+  {
+   "id": "TESTS|web:test:src/app/services/item.service.spec.ts::ItemService > should be created|web:ui_service_method:ItemService.getPlaceList|src/app/services/item.service.spec.ts:8:0",
+   "type": "TESTS",
+   "source": "web:test:src/app/services/item.service.spec.ts::ItemService > should be created",
+   "target": "web:ui_service_method:ItemService.getPlaceList",
+   "source_file": "src/app/services/item.service.spec.ts",
+   "location": {
+    "line": 8
+   },
+   "analysis_method": "naming-convention",
+   "confidence": "INFERRED",
+   "commit_id": "23f6a2631edd015c6912abd5f59c81c5b7ff6a8d",
+   "repo": "web",
+   "synthetic": false,
+   "evidence": "",
+   "reason": "mapped by naming convention (not by symbol reference or annotation)",
+   "attrs": {
+    "mapping_method": "naming-convention"
+   }
+  },
+  {
+   "id": "TESTS|web:test:src/app/services/item.service.spec.ts::ItemService > should be created|web:ui_service_method:ItemService.saveItem|src/app/services/item.service.spec.ts:8:0",
+   "type": "TESTS",
+   "source": "web:test:src/app/services/item.service.spec.ts::ItemService > should be created",
+   "target": "web:ui_service_method:ItemService.saveItem",
+   "source_file": "src/app/services/item.service.spec.ts",
+   "location": {
+    "line": 8
+   },
+   "analysis_method": "naming-convention",
+   "confidence": "INFERRED",
+   "commit_id": "23f6a2631edd015c6912abd5f59c81c5b7ff6a8d",
+   "repo": "web",
+   "synthetic": false,
+   "evidence": "",
+   "reason": "mapped by naming convention (not by symbol reference or annotation)",
+   "attrs": {
+    "mapping_method": "naming-convention"
+   }
+  },
+  {
+   "id": "TESTS|web:test:src/app/services/item.service.spec.ts::ItemService > should be created|web:ui_service_method:ItemService.updateItem|src/app/services/item.service.spec.ts:8:0",
+   "type": "TESTS",
+   "source": "web:test:src/app/services/item.service.spec.ts::ItemService > should be created",
+   "target": "web:ui_service_method:ItemService.updateItem",
+   "source_file": "src/app/services/item.service.spec.ts",
+   "location": {
+    "line": 8
+   },
+   "analysis_method": "naming-convention",
+   "confidence": "INFERRED",
+   "commit_id": "23f6a2631edd015c6912abd5f59c81c5b7ff6a8d",
+   "repo": "web",
+   "synthetic": false,
+   "evidence": "",
+   "reason": "mapped by naming convention (not by symbol reference or annotation)",
+   "attrs": {
+    "mapping_method": "naming-convention"
+   }
+  },
+  {
+   "id": "TESTS|web:test:src/synthetic/group-report.service.spec.ts::GroupReportComponent > is declared|web:ui_component:GroupReportComponent|src/synthetic/group-report.service.spec.ts:24:0",
+   "type": "TESTS",
+   "source": "web:test:src/synthetic/group-report.service.spec.ts::GroupReportComponent > is declared",
+   "target": "web:ui_component:GroupReportComponent",
+   "source_file": "src/synthetic/group-report.service.spec.ts",
+   "location": {
+    "line": 24
+   },
+   "analysis_method": "annotation",
+   "confidence": "CONFIRMED_STATIC",
+   "commit_id": "23f6a2631edd015c6912abd5f59c81c5b7ff6a8d",
+   "repo": "web",
+   "synthetic": true,
+   "evidence": "",
+   "attrs": {
+    "mapping_method": "annotation"
+   }
+  },
+  {
+   "id": "TESTS|web:test:src/synthetic/group-report.service.spec.ts::GroupReportComponent > is declared|web:ui_service_method:GroupReportService.archive|src/synthetic/group-report.service.spec.ts:24:0",
+   "type": "TESTS",
+   "source": "web:test:src/synthetic/group-report.service.spec.ts::GroupReportComponent > is declared",
+   "target": "web:ui_service_method:GroupReportService.archive",
+   "source_file": "src/synthetic/group-report.service.spec.ts",
+   "location": {
+    "line": 24
+   },
+   "analysis_method": "naming-convention",
+   "confidence": "INFERRED",
+   "commit_id": "23f6a2631edd015c6912abd5f59c81c5b7ff6a8d",
+   "repo": "web",
+   "synthetic": true,
+   "evidence": "",
+   "reason": "mapped by naming convention (not by symbol reference or annotation)",
+   "attrs": {
+    "mapping_method": "naming-convention"
+   }
+  },
+  {
+   "id": "TESTS|web:test:src/synthetic/group-report.service.spec.ts::GroupReportComponent > is declared|web:ui_service_method:GroupReportService.exportReport|src/synthetic/group-report.service.spec.ts:24:0",
+   "type": "TESTS",
+   "source": "web:test:src/synthetic/group-report.service.spec.ts::GroupReportComponent > is declared",
+   "target": "web:ui_service_method:GroupReportService.exportReport",
+   "source_file": "src/synthetic/group-report.service.spec.ts",
+   "location": {
+    "line": 24
+   },
+   "analysis_method": "naming-convention",
+   "confidence": "INFERRED",
+   "commit_id": "23f6a2631edd015c6912abd5f59c81c5b7ff6a8d",
+   "repo": "web",
+   "synthetic": true,
+   "evidence": "",
+   "reason": "mapped by naming convention (not by symbol reference or annotation)",
+   "attrs": {
+    "mapping_method": "naming-convention"
+   }
+  },
+  {
+   "id": "TESTS|web:test:src/synthetic/group-report.service.spec.ts::GroupReportComponent > is declared|web:ui_service_method:GroupReportService.getHeadcount|src/synthetic/group-report.service.spec.ts:24:0",
+   "type": "TESTS",
+   "source": "web:test:src/synthetic/group-report.service.spec.ts::GroupReportComponent > is declared",
+   "target": "web:ui_service_method:GroupReportService.getHeadcount",
+   "source_file": "src/synthetic/group-report.service.spec.ts",
+   "location": {
+    "line": 24
+   },
+   "analysis_method": "naming-convention",
+   "confidence": "INFERRED",
+   "commit_id": "23f6a2631edd015c6912abd5f59c81c5b7ff6a8d",
+   "repo": "web",
+   "synthetic": true,
+   "evidence": "",
+   "reason": "mapped by naming convention (not by symbol reference or annotation)",
+   "attrs": {
+    "mapping_method": "naming-convention"
+   }
+  },
+  {
+   "id": "TESTS|web:test:src/synthetic/group-report.service.spec.ts::GroupReportComponent > is declared|web:ui_service_method:GroupReportService.getItemsIn|src/synthetic/group-report.service.spec.ts:24:0",
+   "type": "TESTS",
+   "source": "web:test:src/synthetic/group-report.service.spec.ts::GroupReportComponent > is declared",
+   "target": "web:ui_service_method:GroupReportService.getItemsIn",
+   "source_file": "src/synthetic/group-report.service.spec.ts",
+   "location": {
+    "line": 24
+   },
+   "analysis_method": "naming-convention",
+   "confidence": "INFERRED",
+   "commit_id": "23f6a2631edd015c6912abd5f59c81c5b7ff6a8d",
+   "repo": "web",
+   "synthetic": true,
+   "evidence": "",
+   "reason": "mapped by naming convention (not by symbol reference or annotation)",
+   "attrs": {
+    "mapping_method": "naming-convention"
+   }
+  },
+  {
+   "id": "TESTS|web:test:src/synthetic/group-report.service.spec.ts::GroupReportService > archive posts to the Group API|web:ui_service_method:GroupReportService.archive|src/synthetic/group-report.service.spec.ts:16:0",
+   "type": "TESTS",
+   "source": "web:test:src/synthetic/group-report.service.spec.ts::GroupReportService > archive posts to the Group API",
+   "target": "web:ui_service_method:GroupReportService.archive",
+   "source_file": "src/synthetic/group-report.service.spec.ts",
+   "location": {
+    "line": 16
+   },
+   "analysis_method": "annotation",
+   "confidence": "CONFIRMED_STATIC",
+   "commit_id": "23f6a2631edd015c6912abd5f59c81c5b7ff6a8d",
+   "repo": "web",
+   "synthetic": true,
+   "evidence": "",
+   "attrs": {
+    "mapping_method": "annotation"
+   }
+  },
+  {
+   "id": "TESTS|web:test:src/synthetic/group-report.service.spec.ts::GroupReportService > archive posts to the Group API|web:ui_service_method:GroupReportService.exportReport|src/synthetic/group-report.service.spec.ts:16:0",
+   "type": "TESTS",
+   "source": "web:test:src/synthetic/group-report.service.spec.ts::GroupReportService > archive posts to the Group API",
+   "target": "web:ui_service_method:GroupReportService.exportReport",
+   "source_file": "src/synthetic/group-report.service.spec.ts",
+   "location": {
+    "line": 16
+   },
+   "analysis_method": "naming-convention",
+   "confidence": "INFERRED",
+   "commit_id": "23f6a2631edd015c6912abd5f59c81c5b7ff6a8d",
+   "repo": "web",
+   "synthetic": true,
+   "evidence": "",
+   "reason": "mapped by naming convention (not by symbol reference or annotation)",
+   "attrs": {
+    "mapping_method": "naming-convention"
+   }
+  },
+  {
+   "id": "TESTS|web:test:src/synthetic/group-report.service.spec.ts::GroupReportService > archive posts to the Group API|web:ui_service_method:GroupReportService.getHeadcount|src/synthetic/group-report.service.spec.ts:16:0",
+   "type": "TESTS",
+   "source": "web:test:src/synthetic/group-report.service.spec.ts::GroupReportService > archive posts to the Group API",
+   "target": "web:ui_service_method:GroupReportService.getHeadcount",
+   "source_file": "src/synthetic/group-report.service.spec.ts",
+   "location": {
+    "line": 16
+   },
+   "analysis_method": "naming-convention",
+   "confidence": "INFERRED",
+   "commit_id": "23f6a2631edd015c6912abd5f59c81c5b7ff6a8d",
+   "repo": "web",
+   "synthetic": true,
+   "evidence": "",
+   "reason": "mapped by naming convention (not by symbol reference or annotation)",
+   "attrs": {
+    "mapping_method": "naming-convention"
+   }
+  },
+  {
+   "id": "TESTS|web:test:src/synthetic/group-report.service.spec.ts::GroupReportService > archive posts to the Group API|web:ui_service_method:GroupReportService.getItemsIn|src/synthetic/group-report.service.spec.ts:16:0",
+   "type": "TESTS",
+   "source": "web:test:src/synthetic/group-report.service.spec.ts::GroupReportService > archive posts to the Group API",
+   "target": "web:ui_service_method:GroupReportService.getItemsIn",
+   "source_file": "src/synthetic/group-report.service.spec.ts",
+   "location": {
+    "line": 16
+   },
+   "analysis_method": "naming-convention",
+   "confidence": "INFERRED",
+   "commit_id": "23f6a2631edd015c6912abd5f59c81c5b7ff6a8d",
+   "repo": "web",
+   "synthetic": true,
+   "evidence": "",
+   "reason": "mapped by naming convention (not by symbol reference or annotation)",
+   "attrs": {
+    "mapping_method": "naming-convention"
+   }
+  },
+  {
+   "id": "TESTS|web:test:src/synthetic/group-report.service.spec.ts::GroupReportService > should be created|web:ui_service_method:GroupReportService.archive|src/synthetic/group-report.service.spec.ts:10:0",
+   "type": "TESTS",
+   "source": "web:test:src/synthetic/group-report.service.spec.ts::GroupReportService > should be created",
+   "target": "web:ui_service_method:GroupReportService.archive",
+   "source_file": "src/synthetic/group-report.service.spec.ts",
+   "location": {
+    "line": 10
+   },
+   "analysis_method": "naming-convention",
+   "confidence": "INFERRED",
+   "commit_id": "23f6a2631edd015c6912abd5f59c81c5b7ff6a8d",
+   "repo": "web",
+   "synthetic": true,
+   "evidence": "",
+   "reason": "mapped by naming convention (not by symbol reference or annotation)",
+   "attrs": {
+    "mapping_method": "naming-convention"
+   }
+  },
+  {
+   "id": "TESTS|web:test:src/synthetic/group-report.service.spec.ts::GroupReportService > should be created|web:ui_service_method:GroupReportService.exportReport|src/synthetic/group-report.service.spec.ts:10:0",
+   "type": "TESTS",
+   "source": "web:test:src/synthetic/group-report.service.spec.ts::GroupReportService > should be created",
+   "target": "web:ui_service_method:GroupReportService.exportReport",
+   "source_file": "src/synthetic/group-report.service.spec.ts",
+   "location": {
+    "line": 10
+   },
+   "analysis_method": "naming-convention",
+   "confidence": "INFERRED",
+   "commit_id": "23f6a2631edd015c6912abd5f59c81c5b7ff6a8d",
+   "repo": "web",
+   "synthetic": true,
+   "evidence": "",
+   "reason": "mapped by naming convention (not by symbol reference or annotation)",
+   "attrs": {
+    "mapping_method": "naming-convention"
+   }
+  },
+  {
+   "id": "TESTS|web:test:src/synthetic/group-report.service.spec.ts::GroupReportService > should be created|web:ui_service_method:GroupReportService.getHeadcount|src/synthetic/group-report.service.spec.ts:10:0",
+   "type": "TESTS",
+   "source": "web:test:src/synthetic/group-report.service.spec.ts::GroupReportService > should be created",
+   "target": "web:ui_service_method:GroupReportService.getHeadcount",
+   "source_file": "src/synthetic/group-report.service.spec.ts",
+   "location": {
+    "line": 10
+   },
+   "analysis_method": "naming-convention",
+   "confidence": "INFERRED",
+   "commit_id": "23f6a2631edd015c6912abd5f59c81c5b7ff6a8d",
+   "repo": "web",
+   "synthetic": true,
+   "evidence": "",
+   "reason": "mapped by naming convention (not by symbol reference or annotation)",
+   "attrs": {
+    "mapping_method": "naming-convention"
+   }
+  },
+  {
+   "id": "TESTS|web:test:src/synthetic/group-report.service.spec.ts::GroupReportService > should be created|web:ui_service_method:GroupReportService.getItemsIn|src/synthetic/group-report.service.spec.ts:10:0",
+   "type": "TESTS",
+   "source": "web:test:src/synthetic/group-report.service.spec.ts::GroupReportService > should be created",
+   "target": "web:ui_service_method:GroupReportService.getItemsIn",
+   "source_file": "src/synthetic/group-report.service.spec.ts",
+   "location": {
+    "line": 10
+   },
+   "analysis_method": "naming-convention",
+   "confidence": "INFERRED",
+   "commit_id": "23f6a2631edd015c6912abd5f59c81c5b7ff6a8d",
+   "repo": "web",
+   "synthetic": true,
+   "evidence": "",
+   "reason": "mapped by naming convention (not by symbol reference or annotation)",
+   "attrs": {
+    "mapping_method": "naming-convention"
+   }
+  },
+  {
+   "id": "USES_TYPE|web:ui_component:AddItemComponent|web:ui_model:Item|src/app/add-item/add-item.component.ts:44:31",
+   "type": "USES_TYPE",
+   "source": "web:ui_component:AddItemComponent",
+   "target": "web:ui_model:Item",
+   "source_file": "src/app/add-item/add-item.component.ts",
+   "location": {
+    "line": 44,
+    "column": 31
+   },
+   "analysis_method": "tsmorph:type-reference",
+   "confidence": "CONFIRMED_STATIC",
+   "commit_id": "23f6a2631edd015c6912abd5f59c81c5b7ff6a8d",
+   "repo": "web",
+   "synthetic": false,
+   "evidence": ".subscribe((response: Item) => {"
+  },
+  {
+   "id": "USES_TYPE|web:ui_component:AddItemComponent|web:ui_model:Place|src/app/add-item/add-item.component.ts:19:13",
+   "type": "USES_TYPE",
+   "source": "web:ui_component:AddItemComponent",
+   "target": "web:ui_model:Place",
+   "source_file": "src/app/add-item/add-item.component.ts",
+   "location": {
+    "line": 19,
+    "column": 13
+   },
+   "analysis_method": "tsmorph:type-reference",
+   "confidence": "CONFIRMED_STATIC",
+   "commit_id": "23f6a2631edd015c6912abd5f59c81c5b7ff6a8d",
+   "repo": "web",
+   "synthetic": false,
+   "evidence": "placeList: Place[];"
+  },
+  {
+   "id": "USES_TYPE|web:ui_component:AddItemComponent|web:ui_model:Place|src/app/add-item/add-item.component.ts:38:14",
+   "type": "USES_TYPE",
+   "source": "web:ui_component:AddItemComponent",
+   "target": "web:ui_model:Place",
+   "source_file": "src/app/add-item/add-item.component.ts",
+   "location": {
+    "line": 38,
+    "column": 14
+   },
+   "analysis_method": "tsmorph:type-reference",
+   "confidence": "CONFIRMED_STATIC",
+   "commit_id": "23f6a2631edd015c6912abd5f59c81c5b7ff6a8d",
+   "repo": "web",
+   "synthetic": false,
+   "evidence": "(data: Place[]) => this.placeList = data"
+  },
+  {
+   "id": "USES_TYPE|web:ui_component:FetchItemComponent|web:ui_model:Item|src/app/fetch-item/fetch-item.component.ts:12:19",
+   "type": "USES_TYPE",
+   "source": "web:ui_component:FetchItemComponent",
+   "target": "web:ui_model:Item",
+   "source_file": "src/app/fetch-item/fetch-item.component.ts",
+   "location": {
+    "line": 12,
+    "column": 19
+   },
+   "analysis_method": "tsmorph:type-reference",
+   "confidence": "CONFIRMED_STATIC",
+   "commit_id": "23f6a2631edd015c6912abd5f59c81c5b7ff6a8d",
+   "repo": "web",
+   "synthetic": false,
+   "evidence": "public empList: Item[];"
+  },
+  {
+   "id": "USES_TYPE|web:ui_component:FetchItemComponent|web:ui_model:Item|src/app/fetch-item/fetch-item.component.ts:20:14",
+   "type": "USES_TYPE",
+   "source": "web:ui_component:FetchItemComponent",
+   "target": "web:ui_model:Item",
+   "source_file": "src/app/fetch-item/fetch-item.component.ts",
+   "location": {
+    "line": 20,
+    "column": 14
+   },
+   "analysis_method": "tsmorph:type-reference",
+   "confidence": "CONFIRMED_STATIC",
+   "commit_id": "23f6a2631edd015c6912abd5f59c81c5b7ff6a8d",
+   "repo": "web",
+   "synthetic": false,
+   "evidence": "(data: Item[]) => this.empList = data"
+  },
+  {
+   "id": "USES_TYPE|web:ui_component:ListDataComponent|web:ui_model:Reading|src/app/list-data/list-data.component.ts:12:14",
+   "type": "USES_TYPE",
+   "source": "web:ui_component:ListDataComponent",
+   "target": "web:ui_model:Reading",
+   "source_file": "src/app/list-data/list-data.component.ts",
+   "location": {
+    "line": 12,
+    "column": 14
+   },
+   "analysis_method": "tsmorph:type-reference",
+   "confidence": "CONFIRMED_STATIC",
+   "commit_id": "23f6a2631edd015c6912abd5f59c81c5b7ff6a8d",
+   "repo": "web",
+   "synthetic": false,
+   "evidence": "http.get<Reading[]>(baseUrl + 'api/DemoData/Readings').subscribe(result => {"
+  },
+  {
+   "id": "USES_TYPE|web:ui_component:ListDataComponent|web:ui_model:Reading|src/app/list-data/list-data.component.ts:9:21",
+   "type": "USES_TYPE",
+   "source": "web:ui_component:ListDataComponent",
+   "target": "web:ui_model:Reading",
+   "source_file": "src/app/list-data/list-data.component.ts",
+   "location": {
+    "line": 9,
+    "column": 21
+   },
+   "analysis_method": "tsmorph:type-reference",
+   "confidence": "CONFIRMED_STATIC",
+   "commit_id": "23f6a2631edd015c6912abd5f59c81c5b7ff6a8d",
+   "repo": "web",
+   "synthetic": false,
+   "evidence": "public forecasts: Reading[];"
+  },
+  {
+   "id": "USES_TYPE|web:ui_service_method:ItemService.saveItem|web:ui_model:Item|src/app/services/item.service.ts:40:26",
+   "type": "USES_TYPE",
+   "source": "web:ui_service_method:ItemService.saveItem",
+   "target": "web:ui_model:Item",
+   "source_file": "src/app/services/item.service.ts",
+   "location": {
+    "line": 40,
+    "column": 26
+   },
+   "analysis_method": "tsmorph:type-reference",
+   "confidence": "CONFIRMED_STATIC",
+   "commit_id": "23f6a2631edd015c6912abd5f59c81c5b7ff6a8d",
+   "repo": "web",
+   "synthetic": false,
+   "evidence": "saveItem(item: Item) {"
+  },
+  {
+   "id": "USES_TYPE|web:ui_service_method:ItemService.updateItem|web:ui_model:Item|src/app/services/item.service.ts:48:28",
+   "type": "USES_TYPE",
+   "source": "web:ui_service_method:ItemService.updateItem",
+   "target": "web:ui_model:Item",
+   "source_file": "src/app/services/item.service.ts",
+   "location": {
+    "line": 48,
+    "column": 28
+   },
+   "analysis_method": "tsmorph:type-reference",
+   "confidence": "CONFIRMED_STATIC",
+   "commit_id": "23f6a2631edd015c6912abd5f59c81c5b7ff6a8d",
+   "repo": "web",
+   "synthetic": false,
+   "evidence": "updateItem(item: Item) {"
+  },
+  {
+   "id": "WRITES_TABLE|db:sql_proc:dbo.spAddItem|db:sql_table:dbo.tblItem|synthetic/procedures/spAddItem.sql:7:17",
+   "type": "WRITES_TABLE",
+   "source": "db:sql_proc:dbo.spAddItem",
+   "target": "db:sql_table:dbo.tblItem",
+   "source_file": "synthetic/procedures/spAddItem.sql",
+   "location": {
+    "line": 7,
+    "column": 17
+   },
+   "analysis_method": "scriptdom:table-reference",
+   "confidence": "CONFIRMED_STATIC",
+   "commit_id": "57e1a2ce0dda204615bcf29589b251e1b202e92d",
+   "repo": "db",
+   "synthetic": true,
+   "evidence": "INSERT INTO dbo.tblItem (Name, Place, Group, Gender)"
+  },
+  {
+   "id": "WRITES_TABLE|db:sql_proc:dbo.spDeleteItem|db:sql_table:dbo.tblItem|synthetic/procedures/spDeleteItem.sql:7:17",
+   "type": "WRITES_TABLE",
+   "source": "db:sql_proc:dbo.spDeleteItem",
+   "target": "db:sql_table:dbo.tblItem",
+   "source_file": "synthetic/procedures/spDeleteItem.sql",
+   "location": {
+    "line": 7,
+    "column": 17
+   },
+   "analysis_method": "scriptdom:table-reference",
+   "confidence": "CONFIRMED_STATIC",
+   "commit_id": "57e1a2ce0dda204615bcf29589b251e1b202e92d",
+   "repo": "db",
+   "synthetic": true,
+   "evidence": "DELETE FROM dbo.tblItem WHERE ItemID = @EmpId;"
+  },
+  {
+   "id": "WRITES_TABLE|db:sql_proc:dbo.spUpdateItem|db:sql_table:dbo.tblItem|synthetic/procedures/spUpdateItem.sql:7:12",
+   "type": "WRITES_TABLE",
+   "source": "db:sql_proc:dbo.spUpdateItem",
+   "target": "db:sql_table:dbo.tblItem",
+   "source_file": "synthetic/procedures/spUpdateItem.sql",
+   "location": {
+    "line": 7,
+    "column": 12
+   },
+   "analysis_method": "scriptdom:table-reference",
+   "confidence": "CONFIRMED_STATIC",
+   "commit_id": "57e1a2ce0dda204615bcf29589b251e1b202e92d",
+   "repo": "db",
+   "synthetic": true,
+   "evidence": "UPDATE dbo.tblItem"
+  }
+ ]
+}

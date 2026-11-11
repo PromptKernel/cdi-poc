@@ -33,6 +33,13 @@ class JsonStore(GraphStore):
             raise StoreError(f"baseline file {self.path} carries no per-repo commit ids; rebuild the baseline")
         return doc
 
+    def fingerprint(self):
+        try:
+            st = self.path.stat()
+        except OSError:
+            return None
+        return (st.st_mtime_ns, st.st_size)
+
     def read(self):
         doc = self._load()
         g = Graph()

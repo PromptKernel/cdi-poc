@@ -43,18 +43,30 @@ def load_graph(source, cfg, store_path=None):
     raise SystemExit(f"no usable baseline store: {last}")
 
 
+def graph_document(g, fresh, cfg, source):
+    """The explorer's graph.json shape (also served by the API): {meta, nodes, edges}."""
+    return {"meta": {"generated_at": datetime.datetime.now(datetime.timezone.utc).isoformat(timespec="seconds"), "source": source,
+                     "baseline": fresh, "notice": NOTICE,
+                     "repos": {r["name"]: {"path": r["path"], "kind": r["kind"]} for r in cfg["repos"]["repos"]},
+                     "counts": {"nodes": len(g.nodes), "edges": len(g.edges)}},
+            "nodes": sorted((node_json(n) for n in g.nodes.values()), key=lambda n: n["id"]),
+            "edges": sorted((edge_json(e) for e in g.edges.values()), key=lambda e: e["id"])}
+
+
+def report_summary(js_text):
+    d = json.loads(js_text)
+    return {"objects": len(d.get("objects", [])), "pr": d.get("meta", {}).get("pr"),
+            "labels": sorted({o["risk"]["label"] for o in d.get("objects", []) if o.get("risk")}),
+            "warnings": len(d.get("meta", {}).get("warnings", []))}
+
+
 def export(source="auto", out="out/explorer", store_path=None, config=None, reports_dir="out"):
     cfg = load_config(config)
     g, fresh, actual = load_graph(source, cfg, store_path)
     out = pathlib.Path(out)
     (out / "reports").mkdir(parents=True, exist_ok=True)
     (out / "pr").mkdir(parents=True, exist_ok=True)
-    data = {"meta": {"generated_at": datetime.datetime.now(datetime.timezone.utc).isoformat(timespec="seconds"), "source": actual,
-                     "baseline": fresh, "notice": NOTICE,
-                     "repos": {r["name"]: {"path": r["path"], "kind": r["kind"]} for r in cfg["repos"]["repos"]},
-                     "counts": {"nodes": len(g.nodes), "edges": len(g.edges)}},
-            "nodes": sorted((node_json(n) for n in g.nodes.values()), key=lambda n: n["id"]),
-            "edges": sorted((edge_json(e) for e in g.edges.values()), key=lambda e: e["id"])}
+    data = graph_document(g, fresh, cfg, actual)
     (out / "graph.json").write_text(json.dumps(data, indent=1))
     rd = pathlib.Path(reports_dir)
     reports = []

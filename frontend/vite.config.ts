@@ -12,6 +12,12 @@ const types: Record<string, string> = { '.json': 'application/json', '.md': 'tex
 
 function serveData(): Plugin {
   const mw = (req: { url?: string }, res: any, next: () => void) => {
+    // Test-only hook: EXPLORER_RUNTIME_CONFIG makes this server answer /config.json from another file (the Playwright live-API projects use it).
+    // A real deployment just edits config.json in the served folder.
+    if (req.url?.split('?')[0] === '/config.json' && process.env.EXPLORER_RUNTIME_CONFIG) {
+      res.setHeader('Content-Type', 'application/json'); res.setHeader('Cache-Control', 'no-store')
+      return res.end(fs.readFileSync(process.env.EXPLORER_RUNTIME_CONFIG))
+    }
     if (!req.url?.startsWith('/data/')) return next()
     const rel = decodeURIComponent(req.url.slice('/data/'.length).split('?')[0])
     const file = path.resolve(dataDir, rel)

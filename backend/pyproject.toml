@@ -14,7 +14,8 @@ cdi = "cdi.cli:main"
 
 [project.optional-dependencies]
 neo4j = ["neo4j==5.28.1"]
-dev = ["pytest==8.3.4"]
+api = ["fastapi==0.162.4", "uvicorn==0.54.0"]
+dev = ["pytest==8.3.4", "httpx==0.28.1"]
 
 [tool.setuptools.package-data]
 cdi = ["config/profiles/*.yml"]
