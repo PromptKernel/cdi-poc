@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """Synthetic PR scenarios for the impact engine demo and tests. Each scenario is ONE commit on a local branch off `main` (never pushed).
-usage: python tools/scenarios.py [--base main] [--prefix ""]   creates the local branches (existing ones are re-pointed with `-B`; they hold only these commits)
+usage: python cdi/eval/scenarios.py [--base main] [--prefix ""]   creates the local branches (existing ones are re-pointed with `-B`; they hold only these commits)
 Worktrees are created at named paths under out/work and removed again with `git worktree remove` on exactly those paths."""
 import argparse, pathlib, subprocess, sys
 

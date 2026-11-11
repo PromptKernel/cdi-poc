@@ -3,7 +3,8 @@ so they can exercise commit_id, the dirty-tree check and --only overlays without
 import json, os, pathlib, shutil, subprocess, sys
 import pytest
 
-ROOT = pathlib.Path(__file__).resolve().parents[2]
+ROOT = pathlib.Path(__file__).resolve().parents[2]    # repository root (config/, samples/ still live here until the fixture switch)
+BACKEND = ROOT / "backend"
 sys.path.insert(0, str(ROOT / "tools"))
 ENV = {**os.environ, "DOTNET_CLI_TELEMETRY_OPTOUT": "1"}
 if "DOTNET_ROOT" not in ENV and pathlib.Path("/opt/homebrew/opt/dotnet/libexec").is_dir():
@@ -18,7 +19,7 @@ def sh(cmd, cwd=None, check=True):
 @pytest.fixture(scope="session", autouse=True)
 def built_scanners():
     for proj in ("sql-scriptdom", "dotnet-roslyn"):
-        sh(["dotnet", "build", "-nologo", "-v", "q", str(ROOT / "backend/scanners" / proj)])
+        sh(["dotnet", "build", "-nologo", "-v", "q", str(BACKEND / "scanners" / proj)])
 
 
 def scan_cmd(project, repo, out, only=None):
@@ -27,9 +28,9 @@ def scan_cmd(project, repo, out, only=None):
     if only is not None:
         base += ["--only", str(only)]
     if kind == "ts":
-        return ["node", str(ROOT / "backend/scanners/ts-morph/scan.mjs")] + base
+        return ["node", str(BACKEND / "scanners/ts-morph/scan.mjs")] + base
     dll = {"cs": "dotnet-roslyn/bin/Debug/net10.0/CsScanner.dll", "sql": "sql-scriptdom/bin/Debug/net10.0/SqlScanner.dll"}[kind]
-    return ["dotnet", str(ROOT / "backend/scanners" / dll)] + base
+    return ["dotnet", str(BACKEND / "scanners" / dll)] + base
 
 
 class Project:
@@ -79,5 +80,5 @@ def names(frag):
 
 
 def make_branch(project, branch, edits, base="main"):
-    from scenarios import make_branch as mb
+    from cdi.eval.scenarios import make_branch as mb
     return mb(project.path, branch, edits, base, workdir=project.path.parent, ident=GIT_ID)

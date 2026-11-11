@@ -1,16 +1,16 @@
 """Incremental baseline update must equal a full rebuild of the same commit (same node ids, same edge ids), linker edges included."""
 import pathlib, pytest
-from conftest import ROOT, Project, sh, GIT_ID
-from linker.graphio import load_config
-from pipeline import baseline as B
-from pipeline.scanrun import ScanRunner
+from conftest import ROOT, BACKEND, Project, sh, GIT_ID
+from cdi.linker.graphio import load_config
+from cdi.pipeline import baseline as B
+from cdi.pipeline.scanrun import ScanRunner
 
 
 @pytest.fixture(scope="module")
 def world(tmp_path_factory):
     p = Project(tmp_path_factory.mktemp("inc"))
     cfg = load_config(p.path / "config")
-    runner = ScanRunner(ROOT, p.path / "config", p.path / "out/work")
+    runner = ScanRunner(BACKEND, p.path / "config", p.path / "out/work")
     c0 = sh(["git", "rev-parse", "HEAD"], cwd=p.path).stdout.strip()
     frags0, linked0, g0, meta0 = B.full(runner, p.path, cfg)
     return p, cfg, runner, c0, g0, meta0

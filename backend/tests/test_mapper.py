@@ -1,5 +1,5 @@
 """Hunk -> node mapping: old side vs baseline locations, new side vs overlay locations."""
-from impact import diff as D, mapper
+from cdi.impact import diff as D, mapper
 
 
 def n(name, a, b, kind="METHOD", file="f.cs", repo="r"):

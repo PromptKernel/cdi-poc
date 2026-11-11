@@ -6,16 +6,16 @@
 Advisory by default: the exit code is 0 in every case, including tool failures (those are written as an `error` status and a comment saying the
 analysis did not run). Blocking is OFF unless config/ci.yml `blocking.enabled` is true or --blocking is given; even then only a deterministic policy
 hit (ci/policy.py) exits 1, never a risk label and never a tool failure.
-usage: python -m pipeline.run_pr --target main --pr <branch-or-sha> [--name pr-17] [--baseline neo4j|files] [--out out]
+usage: python -m cdi.pipeline.run_pr --target main --pr <branch-or-sha> [--name pr-17] [--baseline neo4j|files] [--out out]
        [--adapter file|azure] [--enable-azure-adapter --pull-request-id N] [--blocking]"""
 from __future__ import annotations
 import argparse, json, pathlib, sys, time, traceback
 import yaml
-from ci import adapters, comment, payloads, policy
-from impact import cli as impact_cli, diff as D, engine, report
-from linker.graphio import load_config
+from cdi.ci import adapters, comment, payloads, policy
+from cdi.impact import cli as impact_cli, diff as D, engine, report
+from cdi.linker.graphio import load_config
 
-TOOL_ROOT = pathlib.Path(__file__).resolve().parents[1]
+from cdi.paths import BACKEND_ROOT as TOOL_ROOT
 
 
 class BaselineMissing(Exception):

@@ -1,5 +1,5 @@
 import pytest
-from impact import engine, traverse as T
+from cdi.impact import engine, traverse as T
 from helpers import node, edge, graph
 
 

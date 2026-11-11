@@ -1,18 +1,18 @@
 """PR impact analysis.
-usage: python -m impact.cli --target main --pr <branch> [--name pr-a] [--baseline neo4j|files] [--out out]
+usage: python -m cdi.impact.cli --target main --pr <branch> [--name pr-a] [--baseline neo4j|files] [--out out]
 Reads the baseline graph read-only (Neo4j or out/graph files), never writes to it. Output: out/report-<name>.md and .json."""
 from __future__ import annotations
 import argparse, json, pathlib, sys
-from linker.graphio import Graph, load_config
+from cdi.linker.graphio import Graph, load_config
 from . import engine, report
 
-TOOL_ROOT = pathlib.Path(__file__).resolve().parents[1]
+from cdi.paths import BACKEND_ROOT as TOOL_ROOT
 
 
 def load_baseline(cfg, source, graph_dir):
     if source == "neo4j":
-        from graph.load_neo4j import connect
-        from graph import store
+        from cdi.graph.load_neo4j import connect
+        from cdi.graph import store
         driver, db = connect(cfg)
         g, fresh = store.read_graph(driver, db)
         driver.close()

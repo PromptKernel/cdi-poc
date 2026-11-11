@@ -2,8 +2,8 @@
 miss explanations, report labelling, and one end-to-end run on a TEST-ONLY fixture ground truth (never the real eval/ground_truth.yml)."""
 import json, pathlib, subprocess
 import pytest, yaml
-from conftest import ROOT, Project, sh, GIT_ID
-from eval import ground_truth as G, metrics as M, report, run_eval as R
+from conftest import ROOT, BACKEND, Project, sh, GIT_ID
+from cdi.eval import ground_truth as G, metrics as M, report, run_eval as R
 from helpers import node, edge, graph
 
 
@@ -262,7 +262,7 @@ def e2e(tmp_path_factory):
     gt.write_text(yaml.safe_dump(FIXTURE_GT))
     p.commit_all("test-only ground truth")
     out = tmp_path_factory.mktemp("evalout")
-    return p, gt, R.run(source=p.path, gt_path=gt, out=out, baseline="memory", tool_root=ROOT), out
+    return p, gt, R.run(source=p.path, gt_path=gt, out=out, baseline="memory", tool_root=BACKEND), out
 
 
 def sc(summary, name):
@@ -308,7 +308,7 @@ def test_e2e_run_is_refused_when_ground_truth_is_edited_after_commit(e2e, tmp_pa
     gt.write_text(orig.replace("TEST FIXTURE (empty on purpose)", "edited to fit"))
     try:
         with pytest.raises(R.GroundTruthNotCommitted):
-            R.run(source=p.path, gt_path=gt, out=tmp_path, tool_root=ROOT)
+            R.run(source=p.path, gt_path=gt, out=tmp_path, tool_root=BACKEND)
         assert not (tmp_path / "summary.json").exists(), "a refused run writes no results"
     finally:
         gt.write_text(orig)
@@ -319,4 +319,4 @@ def test_e2e_unknown_scenario_in_ground_truth_is_an_error_not_a_skip(tmp_path_fa
     gt = p.path / "gt.yml"; gt.write_text(yaml.safe_dump({"version": 1, "workflow_kinds": KINDS, "scenarios": {"pr-nope": {"affected_workflows": []}}}))
     p.commit_all("gt")
     with pytest.raises(SystemExit, match="does not define"):
-        R.run(source=p.path, gt_path=gt, out=tmp_path_factory.mktemp("o"), tool_root=ROOT)
+        R.run(source=p.path, gt_path=gt, out=tmp_path_factory.mktemp("o"), tool_root=BACKEND)

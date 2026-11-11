@@ -1,5 +1,5 @@
 """Tiny graph builders for unit tests (no scanners involved)."""
-from linker.graphio import Graph
+from cdi.linker.graphio import Graph
 
 
 def node(repo, kind, name, file="f.x", line=1, attrs=None, synthetic=False):

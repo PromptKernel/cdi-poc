@@ -2,13 +2,13 @@
 No test here touches the network: urllib.request.urlopen is replaced by a function that fails the test."""
 import argparse, copy, json, pathlib, re
 import pytest, yaml
-from conftest import ROOT, Project, make_branch
-from scenarios import SCENARIOS
-from ci import adapters, comment, payloads, policy
-from impact import engine
-from linker.graphio import Graph, load_config
-from pipeline import baseline as B, run_pr
-from pipeline.scanrun import ScanRunner
+from conftest import ROOT, BACKEND, Project, make_branch
+from cdi.eval.scenarios import SCENARIOS
+from cdi.ci import adapters, comment, payloads, policy
+from cdi.impact import engine
+from cdi.linker.graphio import Graph, load_config
+from cdi.pipeline import baseline as B, run_pr
+from cdi.pipeline.scanrun import ScanRunner
 
 CI = yaml.safe_load((ROOT / "config/ci.yml").read_text())
 
@@ -25,7 +25,7 @@ def no_network(monkeypatch):
 def world(tmp_path_factory):
     p = Project(tmp_path_factory.mktemp("ci"))
     cfg = load_config(p.path / "config")
-    runner = ScanRunner(ROOT, p.path / "config", p.path / "out/work")
+    runner = ScanRunner(BACKEND, p.path / "config", p.path / "out/work")
     _, _, g, meta = B.full(runner, p.path, cfg)
     fresh = {"commits": meta["commits"], "loaded_at": "2026-01-01T00:00:00+00:00", "mode": "full"}
     for n in ("pr-a-sp-body", "pr-c-ts-service", "pr-e-delete-proc", "pr-f-route"):
@@ -46,7 +46,7 @@ def go(world, branch, out, loader=None, **kw):
     ci_override = kw.pop("ci_override", None)
     adapter = kw.pop("adapter_obj", None)
     loader = loader or (lambda cfg, src, gd: (copy.deepcopy(g), fresh))
-    return run_pr.run(args_for(world, branch, out, **kw), root=p.path, tool_root=ROOT, load_baseline=loader, ci_override=ci_override, adapter=adapter)
+    return run_pr.run(args_for(world, branch, out, **kw), root=p.path, tool_root=BACKEND, load_baseline=loader, ci_override=ci_override, adapter=adapter)
 
 
 # ------------------------------------------------------------------ file sink
@@ -183,7 +183,7 @@ def test_missing_baseline_posts_skipped_comment_not_applicable_and_does_not_buil
 def test_absent_baseline_files_count_as_missing_baseline_not_as_a_tool_error(world, tmp_path):
     p, g, fresh = world
     args = args_for(world, "pr-f-route", tmp_path, baseline="files", graph=str(tmp_path / "no-such-graph-dir"))
-    summary, code = run_pr.run(args, root=p.path, tool_root=ROOT)         # real loader, files that do not exist
+    summary, code = run_pr.run(args, root=p.path, tool_root=BACKEND)         # real loader, files that do not exist
     assert code == 0 and summary["state"] == "notApplicable" and summary["skipped"] and summary["error"] is None
     assert "Baseline missing, analysis skipped" in (tmp_path / "pr-comment.md").read_text()
 

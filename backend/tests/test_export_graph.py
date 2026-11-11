@@ -1,7 +1,7 @@
 """tools/export_graph.py: shape of graph.json, files fallback, read-only Neo4j source (skipped without NEO4J_PASSWORD), copied reports and PR files."""
 import json, os, pathlib, shutil
 import pytest
-import export_graph as X
+from cdi import export as X
 
 ROOT = pathlib.Path(__file__).resolve().parents[2]
 CFG = ROOT / "config"
@@ -10,8 +10,8 @@ CFG = ROOT / "config"
 @pytest.fixture()
 def files_env(full, tmp_path):
     """A temp 'out' layout built from the real scanners' output (the `full` fixture): out/graph, a report and PR files."""
-    from linker.graphio import Graph, load_config
-    from linker.link import Linker, build_fragment
+    from cdi.linker.graphio import Graph, load_config
+    from cdi.linker.link import Linker, build_fragment
     cfg = load_config(CFG)
     g = Graph.from_fragments([full["web"], full["api"], full["db"]])
     linked = build_fragment(Linker(g, cfg).run())
@@ -108,9 +108,9 @@ def test_auto_falls_back_to_files_when_no_password(files_env, monkeypatch):
 
 @pytest.mark.skipif(not os.environ.get("NEO4J_PASSWORD"), reason="NEO4J_PASSWORD not set")
 def test_neo4j_source_is_read_only_and_matches_the_stored_graph(files_env):
-    from graph.load_neo4j import connect
-    from graph import store
-    from linker.graphio import load_config
+    from cdi.graph.load_neo4j import connect
+    from cdi.graph import store
+    from cdi.linker.graphio import load_config
     drv, db = connect(load_config(CFG), wait=10)
     before = store.snapshot(drv, db)
     res, out = run_export(files_env, source="neo4j")

@@ -2,7 +2,7 @@
 from __future__ import annotations
 import datetime, json
 import neo4j
-from linker.graphio import Graph
+from cdi.linker.graphio import Graph
 from .load_neo4j import load
 
 

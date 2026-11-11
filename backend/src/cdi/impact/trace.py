@@ -1,10 +1,10 @@
 """Trace a node through the graph in one or both directions, with file:line evidence for every hop.
-usage: python -m impact.trace <node id|name|substring> [--direction forward|reverse|both] [--backend memory|neo4j]
+usage: python -m cdi.impact.trace <node id|name|substring> [--direction forward|reverse|both] [--backend memory|neo4j]
                               [--include-types USES_TYPE,...] [--graph out/graph] [--config config]
 forward = what the node depends on (UI -> API -> SQL);  reverse = what depends on the node (SQL -> API -> UI, plus tests)."""
 from __future__ import annotations
 import argparse, collections, sys
-from linker.graphio import Graph, load_config, load_fragments
+from cdi.linker.graphio import Graph, load_config, load_fragments
 from . import traverse as T
 
 
@@ -57,8 +57,8 @@ def main(argv=None):
     reached = {start["id"]}
     driver = db = None
     if a.backend == "neo4j":
-        from graph.load_neo4j import connect
-        from graph import neo4j_query as NQ
+        from cdi.graph.load_neo4j import connect
+        from cdi.graph import neo4j_query as NQ
         driver, db = connect(cfg)
     for d in dirs:
         paths = T.paths(g, start["id"], d, a.max_depth, excl) if a.backend == "memory" else NQ.paths(driver, db, start["id"], d, a.max_depth, excl)

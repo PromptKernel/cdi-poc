@@ -1,19 +1,19 @@
 """End-to-end impact analysis on the synthetic scenarios (tmp git copy of the sample; baseline built in memory, no Neo4j)."""
 import pathlib, re
 import pytest
-from conftest import ROOT, Project, sh, make_branch
-from scenarios import SCENARIOS
-from impact import engine, report
-from linker.graphio import load_config
-from pipeline import baseline as B
-from pipeline.scanrun import ScanRunner
+from conftest import ROOT, BACKEND, Project, sh, make_branch
+from cdi.eval.scenarios import SCENARIOS
+from cdi.impact import engine, report
+from cdi.linker.graphio import load_config
+from cdi.pipeline import baseline as B
+from cdi.pipeline.scanrun import ScanRunner
 
 
 @pytest.fixture(scope="module")
 def world(tmp_path_factory):
     p = Project(tmp_path_factory.mktemp("scen"))
     cfg = load_config(p.path / "config")
-    runner = ScanRunner(ROOT, p.path / "config", p.path / "out/work")
+    runner = ScanRunner(BACKEND, p.path / "config", p.path / "out/work")
     _, _, g, meta = B.full(runner, p.path, cfg)
     fresh = {"commits": meta["commits"], "loaded_at": "test", "mode": "full"}
     for name, edits in SCENARIOS.items():
@@ -24,7 +24,7 @@ def world(tmp_path_factory):
 def run(world, branch, **kw):
     p, runner, g, fresh = world
     n_before = (len(g.nodes), len(g.edges))
-    res = engine.analyze(p.path, ROOT, p.path / "config", "main", branch, g, kw.get("fresh", fresh), name=branch, runner=runner)
+    res = engine.analyze(p.path, BACKEND, p.path / "config", "main", branch, g, kw.get("fresh", fresh), name=branch, runner=runner)
     assert (len(g.nodes), len(g.edges)) == n_before, "the baseline graph object must not be modified by a PR run"
     return res
 
@@ -198,10 +198,10 @@ def test_depth_limit_is_reported_when_a_traversal_is_cut_off(tmp_path_factory):
         f.write_text(f.read_text().replace("max_depth_downstream: 12", "max_depth_downstream: 3"))
     p = Project(tmp_path_factory.mktemp("depth"), tweak)
     cfg = load_config(p.path / "config")
-    runner = ScanRunner(ROOT, p.path / "config", p.path / "out/work")
+    runner = ScanRunner(BACKEND, p.path / "config", p.path / "out/work")
     _, _, g, meta = B.full(runner, p.path, cfg)
     make_branch(p, "pr-a-sp-body", SCENARIOS["pr-a-sp-body"])
-    res = engine.analyze(p.path, ROOT, p.path / "config", "main", "pr-a-sp-body", g, {"commits": meta["commits"], "loaded_at": "t", "mode": "full"}, runner=runner)
+    res = engine.analyze(p.path, BACKEND, p.path / "config", "main", "pr-a-sp-body", g, {"commits": meta["commits"], "loaded_at": "t", "mode": "full"}, runner=runner)
     o = obj(res, "dbo.spGetAllEmployees")
     assert o["depth"]["downstream_limit"] == 3 and o["depth"]["downstream_truncated"] and o["depth"]["downstream_stopped_at"]
     assert "FetchEmployeeComponent" not in {c["name"] for c in o["consumers"].get("screen", [])}, "the screen is beyond depth 3"

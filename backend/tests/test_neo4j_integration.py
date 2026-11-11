@@ -1,8 +1,8 @@
 """Runs only when NEO4J_PASSWORD is set and the container from graph/docker-compose.yml is reachable."""
 import os, pathlib, pytest
-from linker.graphio import Graph, load_config
-from linker.link import Linker, build_fragment
-from impact import traverse as T
+from cdi.linker.graphio import Graph, load_config
+from cdi.linker.link import Linker, build_fragment
+from cdi.impact import traverse as T
 
 ROOT = pathlib.Path(__file__).resolve().parents[2]
 pytestmark = pytest.mark.skipif(not os.environ.get("NEO4J_PASSWORD"), reason="NEO4J_PASSWORD not set")
@@ -10,7 +10,7 @@ pytestmark = pytest.mark.skipif(not os.environ.get("NEO4J_PASSWORD"), reason="NE
 
 @pytest.fixture(scope="module")
 def db(full):
-    from graph.load_neo4j import connect, load
+    from cdi.graph.load_neo4j import connect, load
     cfg = load_config(ROOT / "config")
     try:
         drv, name = connect(cfg, wait=10)
@@ -33,7 +33,7 @@ def test_everything_loaded_and_nothing_dropped(db):
 
 
 def test_loading_twice_is_idempotent(db):
-    from graph.load_neo4j import load
+    from cdi.graph.load_neo4j import load
     g, drv, name, _ = db
     load(g, drv, name)
     with drv.session(database=name) as s:
@@ -43,7 +43,7 @@ def test_loading_twice_is_idempotent(db):
 @pytest.mark.parametrize("name_,kind,direction", [("FetchEmployeeComponent", "UI_COMPONENT", "forward"), ("dbo.tblEmployee", "SQL_TABLE", "reverse"),
                                                   ("dbo.tblDepartment", "SQL_TABLE", "reverse")])
 def test_cypher_paths_equal_in_memory_paths(db, name_, kind, direction):
-    from graph import neo4j_query as NQ
+    from cdi.graph import neo4j_query as NQ
     g, drv, name, _ = db
     n = T.find_nodes(g, name_, [kind])[0]
     mem = {tuple(h["edge_id"] for h in p) for p in T.paths(g, n["id"], direction, 25, ("USES_TYPE",))}

@@ -3,8 +3,8 @@
 import json, sys, pathlib
 from jsonschema import Draft202012Validator
 
-root = pathlib.Path(__file__).resolve().parents[1]
-schema = json.loads((root / "backend/schema/graph.schema.json").read_text())
+from cdi.paths import SCHEMA_DIR
+schema = json.loads((SCHEMA_DIR / "graph.schema.json").read_text())
 v = Draft202012Validator(schema)
 bad = 0
 frags = {p: json.loads(pathlib.Path(p).read_text()) for p in sys.argv[1:]}

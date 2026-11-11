@@ -3,9 +3,9 @@
 The ground truth is fixed BEFORE any evaluation run: eval/ground_truth.yml is committed first, the harness refuses to run unless that file is committed and
 unmodified, and it is never edited to match tool output. A workflow is identified by a graph node NAME of one of the workflow kinds (default: screens = UI_COMPONENT,
 and API endpoints = API_ENDPOINT).
-usage: python -m eval.ground_truth convert  <input.md> <ground_truth.yml>
-       python -m eval.ground_truth validate <ground_truth.yml> [--graph out/graph]
-       python -m eval.ground_truth list-workflows [--graph out/graph]"""
+usage: python -m cdi.eval.ground_truth convert  <input.md> <ground_truth.yml>
+       python -m cdi.eval.ground_truth validate <ground_truth.yml> [--graph out/graph]
+       python -m cdi.eval.ground_truth list-workflows [--graph out/graph]"""
 from __future__ import annotations
 import argparse, difflib, pathlib, re, sys
 import yaml
@@ -87,7 +87,7 @@ def validate(gt: dict, graph, known_scenarios) -> list[str]:
     problems = []
     for sc, s in gt["scenarios"].items():
         if sc not in known_scenarios:
-            problems.append(f"scenario '{sc}' is not defined in tools/scenarios.py")
+            problems.append(f"scenario '{sc}' is not defined in cdi/eval/scenarios.py")
         seen = set()
         for w in s["affected_workflows"]:
             if w in seen:
@@ -101,7 +101,7 @@ def validate(gt: dict, graph, known_scenarios) -> list[str]:
 
 
 def _graph(graph_dir):
-    from linker.graphio import Graph, load_config, load_fragments
+    from cdi.linker.graphio import Graph, load_config, load_fragments
     cfg = load_config("config")
     return Graph.from_fragments(load_fragments(graph_dir, [r["name"] for r in cfg["repos"]["repos"]], include_linked=True))
 
@@ -120,8 +120,7 @@ def main(argv=None):
         pathlib.Path(a.output).write_text(to_yaml(parsed, a.input))
         print(f"wrote {a.output}: {len(parsed['scenarios'])} scenario(s). Next: validate, commit it, and only then run the evaluation.")
     elif a.cmd == "validate":
-        sys.path.insert(0, "tools")
-        import scenarios
+        from cdi.eval import scenarios
         probs = validate(load(a.gt), _graph(a.graph), set(scenarios.SCENARIOS))
         print("\n".join(probs) if probs else "ground truth is consistent with the graph and the scenario list")
         sys.exit(1 if probs else 0)

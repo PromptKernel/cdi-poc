@@ -1,26 +1,26 @@
 """Neo4j-dependent baseline tests. Skipped cleanly when NEO4J_PASSWORD is unset. NOTE: they REPLACE the graph in the local database."""
 import os, pathlib
 import pytest
-from conftest import ROOT, Project, sh, make_branch
-from scenarios import SCENARIOS
-from linker.graphio import load_config
-from pipeline import baseline as B
-from pipeline.scanrun import ScanRunner
+from conftest import ROOT, BACKEND, Project, sh, make_branch
+from cdi.eval.scenarios import SCENARIOS
+from cdi.linker.graphio import load_config
+from cdi.pipeline import baseline as B
+from cdi.pipeline.scanrun import ScanRunner
 
 pytestmark = pytest.mark.skipif(not os.environ.get("NEO4J_PASSWORD"), reason="NEO4J_PASSWORD not set")
 
 
 @pytest.fixture(scope="module")
 def env(tmp_path_factory):
-    from graph.load_neo4j import connect
-    from graph import store
+    from cdi.graph.load_neo4j import connect
+    from cdi.graph import store
     p = Project(tmp_path_factory.mktemp("n4j"))
     cfg = load_config(p.path / "config")
     try:
         drv, db = connect(cfg, wait=10)
     except Exception as e:
         pytest.skip(f"neo4j not reachable: {e}")
-    runner = ScanRunner(ROOT, p.path / "config", p.path / "out/work")
+    runner = ScanRunner(BACKEND, p.path / "config", p.path / "out/work")
     yield p, cfg, runner, drv, db, store
     drv.close()
 
@@ -53,7 +53,7 @@ def test_full_replace_then_incremental_sync_equals_full_rebuild_in_neo4j(env):
 
 
 def test_pr_run_never_writes_to_the_baseline_graph(env):
-    from impact import engine
+    from cdi.impact import engine
     p, cfg, runner, drv, db, store = env
     base, fresh = store.read_graph(drv, db)
     before = store.snapshot(drv, db)
@@ -61,7 +61,7 @@ def test_pr_run_never_writes_to_the_baseline_graph(env):
         before_fresh = s.run("MATCH (f:Freshness) RETURN f.loaded_at AS t, f.commits AS c").data()
     for name in ("pr-a-sp-body", "pr-f-route"):   # (the proc deleted by the previous test is already gone on main)
         make_branch(p, name, SCENARIOS[name], base="main")
-        res = engine.analyze(p.path, ROOT, p.path / "config", "main", name, base, fresh, name=name, runner=runner)
+        res = engine.analyze(p.path, BACKEND, p.path / "config", "main", name, base, fresh, name=name, runner=runner)
         assert res["graph_counts"]["after_pr"] != res["graph_counts"]["baseline"], "the PR changes the in-memory graph..."
     after = store.snapshot(drv, db)
     assert after == before, "...but the stored baseline (node ids and edge ids) is identical before and after PR runs"

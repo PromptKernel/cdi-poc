@@ -2,13 +2,11 @@
 """Export the graph for the local explorer: out/explorer/graph.json, plus copies of the impact reports and the latest simulated PR comment/status.
 Source: the baseline in Neo4j via a READ-ONLY session when NEO4J_PASSWORD is set (and the store has a baseline), else the scan/linker files in out/graph.
 Generated data stays under out/ (git-ignored). Nothing is deleted: files are overwritten, never removed.
-usage: python tools/export_graph.py [--source auto|neo4j|files] [--out out/explorer] [--graph out/graph] [--config config] [--reports-dir out]"""
+usage: python -m cdi.export [--source auto|neo4j|files] [--out out/explorer] [--graph out/graph] [--config config] [--reports-dir out]"""
 from __future__ import annotations
 import argparse, datetime, json, os, pathlib, shutil, sys
 
-ROOT = pathlib.Path(__file__).resolve().parents[1]
-sys.path.insert(0, str(ROOT))
-from linker.graphio import Graph, load_config, load_fragments          # noqa: E402
+from cdi.linker.graphio import Graph, load_config, load_fragments          # noqa: E402
 
 NOTICE = ("Structure only: static-analysis evidence from a small SYNTHETIC-extended sample (upstream sample code plus clearly marked synthetic additions). "
           "It says nothing about real code bases.")
@@ -31,8 +29,8 @@ def load_graph(source, cfg, graph_dir):
     """Return (graph, baseline_info|None, actual_source)."""
     if source in ("auto", "neo4j") and os.environ.get(cfg["graph"]["neo4j"]["password_env"]):
         try:
-            from graph.load_neo4j import connect
-            from graph import store
+            from cdi.graph.load_neo4j import connect
+            from cdi.graph import store
             driver, db = connect(cfg, wait=5)
             try:
                 g, fresh = store.read_graph(driver, db)          # read-only session

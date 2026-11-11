@@ -1,10 +1,10 @@
 """Impact engine: PR diff -> changed objects -> consumers / dependencies / tests -> risk. Read-only with respect to the baseline graph."""
 from __future__ import annotations
 import collections, pathlib, time
-from linker import merge as M
-from linker.graphio import Graph, RANK, load_config
-from pipeline.baseline import checkout, repo_entries
-from pipeline.scanrun import ScanRunner
+from cdi.linker import merge as M
+from cdi.linker.graphio import Graph, RANK, load_config
+from cdi.pipeline.baseline import checkout, repo_entries
+from cdi.pipeline.scanrun import ScanRunner
 from . import diff as D, mapper, risk
 from . import traverse as T
 

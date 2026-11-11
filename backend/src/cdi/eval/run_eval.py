@@ -5,15 +5,14 @@ Rules enforced here:
   * The run happens in a temporary local clone of the repository (scenario branches are created there, never in the real repo) and, by default, with an in-memory
     baseline built from that clone, so nothing is written to Neo4j and no branch of yours is touched.
 ALL numbers are 'measured on synthetic data' (the synthetic-extended sample). They are not compared with any outside target in this repository.
-usage: python -m eval.run_eval [--source .] [--gt eval/ground_truth.yml] [--out out/eval] [--baseline memory|neo4j]"""
+usage: python -m cdi.eval.run_eval [--source .] [--gt eval/ground_truth.yml] [--out out/eval] [--baseline memory|neo4j]"""
 from __future__ import annotations
 import argparse, copy, datetime, json, pathlib, subprocess, sys, tempfile, time
-ROOT = pathlib.Path(__file__).resolve().parents[1]
-sys.path[:0] = [str(ROOT), str(ROOT / "tools")]
-from eval import ground_truth as G, metrics as M          # noqa: E402
-from impact import diff as D, engine                       # noqa: E402
-from impact import traverse as T                           # noqa: E402
-from linker.graphio import load_config                     # noqa: E402
+from cdi.paths import BACKEND_ROOT as ROOT           # noqa: E402  (the directory holding scanners/)
+from cdi.eval import ground_truth as G, metrics as M          # noqa: E402
+from cdi.impact import diff as D, engine                       # noqa: E402
+from cdi.impact import traverse as T                           # noqa: E402
+from cdi.linker.graphio import load_config                     # noqa: E402
 
 LABEL = "Measured on synthetic data (the synthetic-extended sample). Not a statement about real code bases."
 NOT_FOUND_CAUSES = {"referenced_not_found", "no_matching_route", "annotation_target_not_found"}
@@ -128,13 +127,13 @@ def run(source=".", gt_path="eval/ground_truth.yml", out="out/eval", baseline="m
     gt_file = gt_file if gt_file.is_absolute() else source / gt_file
     gtc = ground_truth_commit(source, gt_file)                     # refuses to run unless committed and unmodified
     gt = G.load(gt_file)
-    import scenarios as S
-    from pipeline import baseline as B
-    from pipeline.scanrun import ScanRunner
+    from cdi.eval import scenarios as S
+    from cdi.pipeline import baseline as B
+    from cdi.pipeline.scanrun import ScanRunner
     names = [n for n in gt["scenarios"] if not scenarios_only or n in scenarios_only]
     unknown = [n for n in names if n not in S.SCENARIOS]
     if unknown:
-        raise SystemExit(f"ground truth names scenarios that tools/scenarios.py does not define: {unknown}")
+        raise SystemExit(f"ground truth names scenarios that cdi/eval/scenarios.py does not define: {unknown}")
     kinds = gt["workflow_kinds"]
     with tempfile.TemporaryDirectory(prefix="cdi-eval-") as td:
         td = pathlib.Path(td)
@@ -143,8 +142,8 @@ def run(source=".", gt_path="eval/ground_truth.yml", out="out/eval", baseline="m
         cfg = load_config(clone / "config")
         runner = ScanRunner(tool_root, clone / "config", clone / "out/work")
         if baseline == "neo4j":
-            from graph import store
-            from graph.load_neo4j import connect
+            from cdi.graph import store
+            from cdi.graph.load_neo4j import connect
             drv, db = connect(load_config(source / "config"))
             base, fresh = store.read_graph(drv, db); drv.close()
             if not fresh:
@@ -174,7 +173,7 @@ def run(source=".", gt_path="eval/ground_truth.yml", out="out/eval", baseline="m
         "timing": {"baseline_build_s": baseline_build_s, "pr_run_s": durs, "pr_run_mean_s": round(sum(durs) / len(durs), 3) if durs else None, "pr_run_max_s": max(durs) if durs else None},
     }
     out = pathlib.Path(out); out.mkdir(parents=True, exist_ok=True)
-    from eval import report
+    from cdi.eval import report
     (out / "summary.json").write_text(json.dumps(summary, indent=2, default=list))
     (out / "summary.md").write_text(report.render(summary))
     return summary

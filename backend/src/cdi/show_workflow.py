@@ -2,7 +2,7 @@
 """Evidence helper: print scanner edges for one workflow and re-read the cited source line from disk for comparison.
 usage: show_workflow.py <substring> [<substring> ...]   (substrings identify the workflow's nodes)"""
 import json, sys, pathlib, yaml
-root = pathlib.Path(__file__).resolve().parents[1]
+root = pathlib.Path.cwd()   # the target repository (the tool is installed elsewhere)
 repos = {r["name"]: r["path"] for r in yaml.safe_load((root / "config/repos.yml").read_text())["repos"]}
 keys = sys.argv[1:]
 for r, rpath in repos.items():

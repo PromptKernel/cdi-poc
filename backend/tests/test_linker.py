@@ -1,7 +1,7 @@
 import json, pathlib
 import pytest
-from linker.link import Linker, build_fragment
-from linker.graphio import Graph, load_config
+from cdi.linker.link import Linker, build_fragment
+from cdi.linker.graphio import Graph, load_config
 from helpers import node, edge, graph
 
 ROOT = pathlib.Path(__file__).resolve().parents[2]

@@ -1,8 +1,8 @@
 import pathlib, pytest
-from impact import traverse as T
-from linker.graphio import Graph
-from linker.link import Linker
-from linker.graphio import load_config
+from cdi.impact import traverse as T
+from cdi.linker.graphio import Graph
+from cdi.linker.link import Linker
+from cdi.linker.graphio import load_config
 from helpers import node, edge, graph
 
 ROOT = pathlib.Path(__file__).resolve().parents[2]

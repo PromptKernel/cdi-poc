@@ -7,7 +7,7 @@ UNRESOLVED edges are never traversed (their target is not a real node); they are
 A path's confidence is its WEAKEST hop (CONFIRMED_STATIC < INFERRED); it is never upgraded.
 """
 from __future__ import annotations
-from linker.graphio import RANK, Graph
+from cdi.linker.graphio import RANK, Graph
 
 TRAVERSABLE = ("CONFIRMED_STATIC", "INFERRED")
 

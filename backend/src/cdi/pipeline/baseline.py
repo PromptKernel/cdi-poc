@@ -3,16 +3,16 @@
   incremental: given a commit range, re-scan only the changed files (plus files that depend on changed definitions) with --only,
                merge into the baseline, RE-LINK the whole graph (ROUTES_TO / RESOLVES_TO / TESTS are fully recomputed), and sync Neo4j.
 A full rebuild of the same commit must produce an identical graph (same node and edge ids); tests/test_baseline.py checks that.
-usage: python -m pipeline.baseline full [--rev HEAD]
-       python -m pipeline.baseline incremental --from <rev> --to <rev>"""
+usage: python -m cdi.pipeline.baseline full [--rev HEAD]
+       python -m cdi.pipeline.baseline incremental --from <rev> --to <rev>"""
 from __future__ import annotations
 import argparse, contextlib, json, pathlib, subprocess, sys, time, uuid
-from impact import diff as D
-from linker import merge as M
-from linker.graphio import Graph, load_config
+from cdi.impact import diff as D
+from cdi.linker import merge as M
+from cdi.linker.graphio import Graph, load_config
 from .scanrun import ScanRunner
 
-TOOL_ROOT = pathlib.Path(__file__).resolve().parents[1]
+from cdi.paths import BACKEND_ROOT as TOOL_ROOT
 
 
 @contextlib.contextmanager
@@ -121,9 +121,9 @@ def main(argv=None):
     runner = ScanRunner(TOOL_ROOT, pathlib.Path(a.config).resolve(), root / "out/work")
     driver = db = None
     if not a.no_neo4j:
-        from graph.load_neo4j import connect
+        from cdi.graph.load_neo4j import connect
         driver, db = connect(cfg)
-    from graph import store
+    from cdi.graph import store
     if a.mode == "full":
         frags, linked, g, meta = full(runner, root, cfg, a.rev)
         fresh = store.make_freshness(g, meta["commits"], "full", to_commit=meta["rev"])

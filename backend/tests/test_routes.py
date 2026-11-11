@@ -1,5 +1,5 @@
 import pytest
-from linker import routes
+from cdi.linker import routes
 
 CFG = {"param_token": "{}", "case_sensitive": False, "strip_leading_slash": True}
 

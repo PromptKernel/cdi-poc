@@ -1,9 +1,9 @@
 """Load scanner + linker fragments into Neo4j. Config: config/graph.yml (+ NEO4J_PASSWORD env var). Idempotent (MERGE by id).
-usage: python -m graph.load_neo4j [--config config] [--graph out/graph] [--reset]"""
+usage: python -m cdi.graph.load_neo4j [--config config] [--graph out/graph] [--reset]"""
 from __future__ import annotations
 import argparse, json, os, pathlib, sys, time
 from neo4j import GraphDatabase
-from linker.graphio import Graph, load_config, load_fragments
+from cdi.linker.graphio import Graph, load_config, load_fragments
 
 EDGE_TYPES = {"CALLS", "DISPATCHES_TO", "USES_TYPE", "MAKES_REQUEST", "ROUTES_TO", "CALLS_PROCEDURE", "RESOLVES_TO",
               "READS_TABLE", "WRITES_TABLE", "READS_VIEW", "EXECUTES_DYNAMIC_SQL", "TESTS"}
