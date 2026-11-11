@@ -117,7 +117,7 @@ def graph_delta(base: Graph, head: Graph):
             "edges_moved": [{"from": a, "to": b} for a, b in moved], "edges_changed": sorted(changed)}
 
 
-def analyze(project_root, tool_root, config_dir, target, pr, baseline: Graph, freshness, name=None, scratch=None, runner=None):
+def analyze(project_root, tool_root, config_dir, target, pr, baseline: Graph, freshness, name=None, scratch=None, runner=None, keep=None):
     t_start = time.perf_counter()
     root = pathlib.Path(project_root)
     cfgd = pathlib.Path(config_dir)
@@ -334,6 +334,8 @@ def analyze(project_root, tool_root, config_dir, target, pr, baseline: Graph, fr
                 hidden.append({**cite(head, e["id"]), "screens_above": sorted(head.nodes[i]["name"] for i in above if head.nodes[i]["kind"] == "UI_COMPONENT")})
     tests_ranked = sorted(test_pool.values(), key=test_sort_key)
     t_end = time.perf_counter()
+    if keep is not None:                    # optional: hand the in-memory graphs to the caller (the evaluation harness explains misses with them)
+        keep.update(base=base, head=head)
     synthetic_any = any(o["synthetic"] for o in results) or any(f["synthetic"] for f in file_reports)
     return {
         "meta": {"pr": name or pr, "pr_branch": pr, "target": target, "target_sha": tgt, "pr_sha": head_sha, "merge_base": mb,
