@@ -14,6 +14,8 @@ limits:
   comment_max_chars: 20000
   # placeholder, unvalidated: PRs touching more files than this are not analysed (reported as not applicable).
   max_changed_files: 500
+  # placeholder, unvalidated: warn (job summary + annotation) when the saved baseline file is larger than this (50 MiB). Cache storage is limited per repository.
+  baseline_max_bytes: 52428800
 graph:
   store: json
   json: {path: out/baseline.json}
@@ -47,7 +49,9 @@ ci:
     max_convention_tests: 5
   status:
     context: {name: "cdi/impact-analysis", genre: "cdi"}
-    description_max_chars: 300       # placeholder, unvalidated
+    description_max_chars: 140       # GitHub commit status descriptions: 140 characters (community-reported; not in the REST page)
+  github:
+    comment_author: "github-actions[bot]"   # only comments by this login are updated
   adapter:
     default: file                    # file | azure; azure is never used unless explicitly enabled
     azure:

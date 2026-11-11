@@ -1,4 +1,4 @@
-"""`cdi` command line. Subcommands are added as the tool grows; today: audit, config (show / validate / schema / profiles)."""
+"""`cdi` command line. Subcommands are added as the tool grows; today: audit, config (show / validate / schema / profiles), github (baseline | pr)."""
 from __future__ import annotations
 import argparse, json, runpy, sys
 import yaml
@@ -32,11 +32,15 @@ def _config(a):
 
 def main(argv=None):
     argv = sys.argv[1:] if argv is None else list(argv)
+    if argv and argv[0] == "github":
+        from cdi.github import cli as gh
+        return gh.main(argv[1:])
     if argv and argv[0] == "audit":          # options belong to the audit tool; see backend/tools/audit_hardcoding.py --help
         return _audit(argv[1:])
     ap = argparse.ArgumentParser(prog="cdi", description="Cross-layer dependency graph and PR impact analysis")
     sub = ap.add_subparsers(dest="cmd", required=True)
     sub.add_parser("audit", help="fail if sample-specific identifiers appear in backend/ or frontend/ source (options: --root, --json)")
+    sub.add_parser("github", help="GitHub flow: `cdi github baseline|pr` (used by the composite action)")
     cf = sub.add_parser("config", help="inspect the configuration")
     cf.add_argument("what", choices=["show", "validate", "schema", "profiles"])
     cf.add_argument("--file", default=None, help="path to .cdi/config.yml (default: $CDI_CONFIG or .cdi/config.yml)")

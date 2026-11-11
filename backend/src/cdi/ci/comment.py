@@ -13,6 +13,7 @@ def basis_lines(b):
            f"**Basis:** PR commit `{b['pr_sha'][:8]}` (`{b['pr_branch']}`) compared with target `{b['target']}` @ `{b['target_sha'][:8]}` (merge-base `{b['merge_base'][:8]}`); "
            f"baseline graph commits: {commits}; baseline loaded {b.get('baseline_loaded_at') or '?'} ({b.get('baseline_mode') or '?'}).",
            "Results are static-analysis evidence on this repository's own graph; confirmed and inferred links are kept separate."]
+    out += [f"**Baseline note:** {n}" for n in b.get("baseline_notes") or []]
     return out
 
 

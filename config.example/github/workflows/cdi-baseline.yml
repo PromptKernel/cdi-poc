@@ -1,0 +1,41 @@
+# Workflow 1 of 2: build the dependency baseline when the BASE branch changes, and save it to the Actions cache.
+# This is the ONLY workflow that produces a baseline. Pull-request runs only restore it (see cdi-pr.yml).
+# Copy to .github/workflows/ of the target repository. `main` below must equal `branches.base` in .cdi/config.yml.
+name: cdi baseline
+
+on:
+  push:
+    branches: [main]
+
+# Least privilege: the job only reads the repository. (Saving to the Actions cache is not a GITHUB_TOKEN permission.)
+permissions:
+  contents: read
+
+concurrency:
+  group: cdi-baseline-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  baseline:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0              # per-repo commit ids and merge-base checks need history
+          persist-credentials: false
+
+      - name: Build the baseline
+        id: cdi
+        # TODO(before use): replace OWNER and <FULL_COMMIT_SHA> with the tool repository and the full 40-character commit
+        # of the cdi release you reviewed. Never use a branch or tag here.
+        uses: OWNER/cdi-poc/.github/actions/cdi@<FULL_COMMIT_SHA>
+        with:
+          mode: baseline
+          baseline-path: ${{ runner.temp }}/cdi-baseline.json
+
+      - name: Save the baseline (immutable cache entry keyed by the commit)
+        uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: ${{ steps.cdi.outputs.baseline-path }}
+          key: cdi-baseline-v1-${{ github.sha }}     # v1 = cdi.store.SCHEMA_VERSION

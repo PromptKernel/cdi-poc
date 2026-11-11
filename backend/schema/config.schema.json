@@ -46,7 +46,8 @@
         "max_depth_downstream": {"$ref": "#/$defs/posint"},
         "max_depth_upstream": {"$ref": "#/$defs/posint"},
         "comment_max_chars": {"$ref": "#/$defs/posint"},
-        "max_changed_files": {"$ref": "#/$defs/posint"}
+        "max_changed_files": {"$ref": "#/$defs/posint"},
+        "baseline_max_bytes": {"$ref": "#/$defs/posint"}
       }
     },
     "conventions": {
@@ -159,6 +160,7 @@
                    "properties": {"context": {"type": "object", "additionalProperties": false, "required": ["name"], "properties": {"name": {"type": "string"}, "genre": {"type": "string"}}},
                                   "description_max_chars": {"$ref": "#/$defs/posint"}}},
         "adapter": {"type": "object", "additionalProperties": false, "properties": {"default": {"enum": ["file", "azure"]}, "azure": {"type": "object"}}},
+        "github": {"type": "object", "additionalProperties": false, "properties": {"comment_author": {"type": "string", "minLength": 1, "description": "Login that owns the tool's comment; only comments by this login are ever updated."}}},
         "blocking": {"type": "object", "additionalProperties": false, "properties": {"enabled": {"type": "boolean"}, "policies": {"$ref": "#/$defs/strings"}}}
       }
     }

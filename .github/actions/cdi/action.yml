@@ -1,0 +1,73 @@
+name: cdi dependency impact
+description: >-
+  Build the dependency baseline (mode: baseline, push to the base branch only) or analyse a same-repository pull request against it
+  (mode: pr). Runs the cdi tool from THIS action's pinned ref; the target repository's .cdi/config.yml is read from the checkout the
+  workflow made (the BASE revision for pull requests). Pull request files are only parsed, never built or executed.
+author: cdi
+inputs:
+  mode:
+    description: "baseline | pr"
+    required: true
+  config:
+    description: Path of the target repository's config file, relative to the checkout.
+    required: false
+    default: .cdi/config.yml
+  baseline-path:
+    description: >-
+      Baseline file. In baseline mode the action writes it (the workflow then saves it to the cache); in pr mode it is the file restored
+      from the cache. The action never saves or overwrites a cache itself.
+    required: true
+  python-version:
+    description: Python used to run the tool.
+    required: false
+    default: "3.13"
+  dotnet-version:
+    description: .NET SDK used to build the C# and SQL scanners (tool code, not target code).
+    required: false
+    default: 10.0.x
+  node-version:
+    description: Node used to run the TypeScript scanner.
+    required: false
+    default: "24"
+outputs:
+  baseline-path:
+    description: The baseline file path (echo of the input), for the cache step.
+    value: ${{ inputs.baseline-path }}
+runs:
+  using: composite
+  steps:
+    - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
+      with:
+        python-version: ${{ inputs.python-version }}
+    - uses: actions/setup-dotnet@0f4a354dd5547a28c70b7853dbd95d5b67886e73 # v6.1.0
+      with:
+        dotnet-version: ${{ inputs.dotnet-version }}
+    - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+      with:
+        node-version: ${{ inputs.node-version }}
+    - name: Install the cdi tool from the pinned action ref
+      shell: bash
+      env:
+        TOOL: ${{ github.action_path }}/../../../backend
+        VENV: ${{ runner.temp }}/cdi-venv
+      run: |
+        set -euo pipefail
+        python -m venv "$VENV"
+        "$VENV/bin/pip" install --no-input --disable-pip-version-check -r "$TOOL/requirements.txt"
+        "$VENV/bin/pip" install --no-input --disable-pip-version-check --no-deps -e "$TOOL"
+        (cd "$TOOL/scanners/ts-morph" && npm ci --ignore-scripts --no-audit --no-fund)
+    - name: Run cdi
+      shell: bash
+      env:
+        MODE: ${{ inputs.mode }}
+        CONFIG: ${{ inputs.config }}
+        BASELINE: ${{ inputs.baseline-path }}
+        VENV: ${{ runner.temp }}/cdi-venv
+        OUT: ${{ runner.temp }}/cdi-out
+        DOTNET_CLI_TELEMETRY_OPTOUT: "1"
+        GITHUB_TOKEN: ${{ github.token }}
+      run: |
+        set -euo pipefail
+        case "$MODE" in baseline|pr) ;; *) echo "::error::mode must be 'baseline' or 'pr'"; exit 2 ;; esac
+        mkdir -p "$(dirname "$BASELINE")"
+        "$VENV/bin/cdi" github "$MODE" --root "$GITHUB_WORKSPACE" --config "$GITHUB_WORKSPACE/$CONFIG" --store-path "$BASELINE" --out "$OUT"

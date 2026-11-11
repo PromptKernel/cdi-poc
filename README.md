@@ -1,9 +1,18 @@
 # cdi-poc
 
-> **Branch `restructure` (work in progress, Phase 2 of 7).** The repository is being reorganised into `backend/` and `frontend/` (plus `docs/`, `.github/`, `config.example/`);
-> the sample application lives in its own repository. The tool is now configured by a target repository's `.cdi/config.yml` ([docs/configuration.md](docs/configuration.md));
-> `cdi audit` checks that no sample-specific name appears in `backend/` or `frontend/`. `samples/` is still present until the new sample repository is approved.
-> The Azure simulation, the live API and the GitHub flow are later phases. The README is rewritten in the last phases.
+> **Branch `restructure` (work in progress, Phase 4 of 7).** The repository is being reorganised into `backend/` and `frontend/` (plus `docs/`, `.github/`, `config.example/`);
+> the sample application lives in its own repository. The tool is configured by a target repository's `.cdi/config.yml` ([docs/configuration.md](docs/configuration.md)),
+> stores its baseline in a JSON file by default ([docs/graph-store.md](docs/graph-store.md)), and has a GitHub pull-request flow ([docs/github-flow.md](docs/github-flow.md)).
+> The live API and the rest of the `cdi` CLI are later phases. The README is rewritten in the last phases.
+
+### Real vs simulated
+| Part | State |
+|---|---|
+| Scanners, linker, graph, impact engine, reports | **Real** code; evidence-backed; results on the synthetic sample say nothing about real-code accuracy |
+| JSON baseline store (default), Neo4j store (optional) | **Real**, tested locally (Neo4j tests need a local container) |
+| **GitHub flow** (comment upsert, commit status, baseline cache, fork skip) | **Written and tested against an in-memory fake GitHub server. Becomes "real" only once Phase 7 runs it on github.com and the result is verified.** Nothing has run on GitHub yet. |
+| Azure DevOps adapter | **Written, never run** (disabled by default; shapes taken from public docs). Optional plugin, not the default flow |
+| File-sink "simulated CI" (`out/pr-comment.md`) | **Simulation**: writes files only; used locally and as the no-token fallback |
 
 A cross-layer dependency graph and PR impact proof of concept: static scanners for a frontend (TypeScript/Angular), an API
 (C#/.NET) and SQL Server code emit one shared, evidence-backed graph schema.

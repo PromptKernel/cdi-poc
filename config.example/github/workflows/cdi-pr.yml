@@ -1,0 +1,54 @@
+# Workflow 2 of 2: analyse a pull request against the cached baseline and post ONE advisory comment plus a commit status.
+# Copy to .github/workflows/ of the target repository.
+#
+# Trust model (see docs/github-flow.md):
+#   * `pull_request`, never `pull_request_target`; fork pull requests are skipped (they get a read-only token).
+#   * The BASE revision is checked out: the tool configuration (.cdi/config.yml) and the pinned cdi action come from the base, not from the PR.
+#   * PR files are fetched as git objects and only PARSED by the scanners; nothing from the PR is built, installed or executed.
+#   * The baseline is only RESTORED (actions/cache/restore cannot save). It is produced by cdi-baseline.yml on the base branch.
+name: cdi impact
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+# Each permission and why (drop what you do not need):
+#   contents: read        actions/checkout of the base revision
+#   pull-requests: write  create/update the single impact comment (list + create + update). `issues: write` would also work.
+#   statuses: write       set the commit status. Drop it, and the status step is simply reported as a failed advisory post, if you only want the comment.
+permissions:
+  contents: read
+  pull-requests: write
+  statuses: write
+
+concurrency:
+  group: cdi-pr-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  impact:
+    # Same-repository pull requests only. (The tool also checks this and writes a job-summary note.)
+    if: github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.event.pull_request.base.sha }}   # BASE revision, not the merge commit
+          fetch-depth: 0                                   # also fetches the PR's head commit (a branch of this repository)
+          persist-credentials: false                       # no token on disk while PR content is read
+
+      - name: Restore the baseline (restore only)
+        uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: ${{ runner.temp }}/cdi-baseline.json
+          key: cdi-baseline-v1-${{ github.event.pull_request.base.sha }}
+          restore-keys: |
+            cdi-baseline-v1-
+
+      - name: Analyse the pull request
+        # TODO(before use): replace OWNER and <FULL_COMMIT_SHA> as in cdi-baseline.yml.
+        uses: OWNER/cdi-poc/.github/actions/cdi@<FULL_COMMIT_SHA>
+        with:
+          mode: pr
+          baseline-path: ${{ runner.temp }}/cdi-baseline.json

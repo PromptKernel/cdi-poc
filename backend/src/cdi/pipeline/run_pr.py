@@ -30,7 +30,7 @@ def make_basis(root, target, pr, name, ci, mode, baseline_fresh=None):
     return {"pr_name": name, "pr_branch": pr, "pr_sha": psha, "target": target, "target_sha": tsha,
             "merge_base": safe(lambda: D.merge_base(root, tsha, psha)), "marker": ci["comment"]["marker"], "mode": mode,
             "baseline_commits": (baseline_fresh or {}).get("commits"), "baseline_loaded_at": (baseline_fresh or {}).get("loaded_at"),
-            "baseline_mode": (baseline_fresh or {}).get("mode")}
+            "baseline_mode": (baseline_fresh or {}).get("mode"), "baseline_notes": (baseline_fresh or {}).get("notes") or []}
 
 
 def highest_label(objs, labels):
