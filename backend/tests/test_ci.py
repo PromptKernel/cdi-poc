@@ -10,7 +10,7 @@ from cdi.linker.graphio import Graph, load_config
 from cdi.pipeline import baseline as B, run_pr
 from cdi.pipeline.scanrun import ScanRunner
 
-CI = yaml.safe_load((FIXTURE_CONFIG / "ci.yml").read_text())
+CI = load_config(FIXTURE_CONFIG)["ci"]
 
 
 @pytest.fixture(autouse=True)
@@ -24,8 +24,8 @@ def no_network(monkeypatch):
 @pytest.fixture(scope="module")
 def world(tmp_path_factory):
     p = Project(tmp_path_factory.mktemp("ci"))
-    cfg = load_config(p.path / "config")
-    runner = ScanRunner(BACKEND, p.path / "config", p.path / "out/work")
+    cfg = load_config(p.path / ".cdi/config.yml")
+    runner = ScanRunner(BACKEND, p.path / ".cdi/config.yml", p.path / "out/work")
     _, _, g, meta = B.full(runner, p.path, cfg)
     fresh = {"commits": meta["commits"], "loaded_at": "2026-01-01T00:00:00+00:00", "mode": "full"}
     for n in ("pr-a-sp-body", "pr-c-ts-service", "pr-e-delete-proc", "pr-f-route"):
@@ -35,7 +35,7 @@ def world(tmp_path_factory):
 
 def args_for(world, branch, out, **kw):
     p, g, fresh = world
-    d = dict(target="main", pr=branch, name=branch, baseline="files", graph="x", config=str(p.path / "config"), out=str(out), adapter=None,
+    d = dict(target="main", pr=branch, name=branch, baseline="files", graph="x", config=str(p.path / ".cdi/config.yml"), out=str(out), adapter=None,
              enable_azure_adapter=False, pull_request_id=None, blocking=False)
     d.update(kw)
     return argparse.Namespace(**d)
@@ -459,4 +459,4 @@ def test_ci_config_has_only_placeholders_and_no_secrets():
     az = CI["adapter"]["azure"]
     assert all(az[k].startswith("<") and az[k].endswith(">") for k in ("organization", "project", "repository_id"))
     assert az["token_env"] == "AZDO_TOKEN" and "token" not in {k for k in az if k != "token_env" and k != "auth_scheme"}
-    assert "placeholder, unvalidated" in (FIXTURE_CONFIG / "ci.yml").read_text()
+    assert "placeholder, unvalidated" in (BACKEND / "src/cdi/config/profiles/_base.yml").read_text()

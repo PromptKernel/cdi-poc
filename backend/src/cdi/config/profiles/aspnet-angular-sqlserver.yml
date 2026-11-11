@@ -1,0 +1,54 @@
+# Framework profile: ASP.NET Core attribute routing + Angular (HttpClient) + SQL Server (T-SQL, ADO.NET stored procedures).
+# Conventions only; repository folders and scanner globs belong to the target repo's own .cdi/config.yml.
+conventions:
+  api:
+    controller_suffix: Controller
+    controller_token: "[controller]"
+    action_token: "[action]"
+    route_attributes: [Route]
+    verb_attributes: {HttpGet: GET, HttpPost: POST, HttpPut: PUT, HttpDelete: DELETE, HttpPatch: PATCH}
+    # a class is a controller if its name ends with controller_suffix or it has one of these base classes
+    controller_base_classes: [Controller, ControllerBase]
+  frontend:
+    component_decorators: [Component]
+    service_decorators: [Injectable]
+    http_client_types: [HttpClient]
+    http_methods: {get: GET, post: POST, put: PUT, delete: DELETE, patch: PATCH}
+    # identifiers whose value is the deployment base URL (stripped from request templates)
+    base_url_identifiers: [baseUrl, BASE_URL]
+    # member calls that mean "value comes from runtime configuration" => unresolved route
+    runtime_config_markers: ["_config.get", "config.get", "ConfigService.get"]
+    # test-framework call names (Jasmine/Jest style): a suite call wraps case calls
+    test_functions: {suite: [describe], case: [it]}
+  matching:
+    param_token: "{}"              # route-parameter segments are normalised to this token before comparing
+    case_sensitive: false
+    strip_leading_slash: true
+  layers:
+    # first match wins; matched against the C# class name. kind is the node kind given to its methods.
+    - {match: "Controller$", kind: API_ENDPOINT, note: actions}
+    - {match: "DataAccess(Layer)?$", kind: DATA_ACCESS_METHOD}
+    - {match: "(Service|Manager)$", kind: SERVICE_METHOD}
+  sql:
+    default_schema: dbo
+    procedure_prefixes: [sp, usp]            # display hints only; object kinds are decided from the DDL
+    ignored_name_prefixes: ["#"]             # temp tables are not graph objects
+    dynamic_exec_procedures: [sp_executesql] # EXEC of these means the statement text is built at runtime
+  sql_access:
+    # ADO.NET: which constructed types are SQL commands, and how a stored-procedure command is recognised
+    command_types: [SqlCommand]
+    command_text_member: CommandText
+    command_type_member: CommandType
+    stored_procedure_markers: [StoredProcedure]
+  tests:
+    annotation_tag: "@covers"
+    csharp:
+      test_attributes: [Fact, Theory, Test, TestMethod]
+      # <Target>_<Member>_<Behaviour> => node "<Target>.<Member>"; files under these folders are test code
+      test_dir_markers: ["tests/", "Tests/"]
+      method_pattern: "^(?P<target>[A-Za-z0-9]+)_(?P<member>[A-Za-z0-9]+)_.+$"
+    typescript:
+      spec_suffix: ".spec.ts"      # X.spec.ts covers X.ts (same directory)
+      source_suffix: ".ts"
+    sql:
+      test_dir_markers: ["tests/"]  # annotation-only mapping ("-- @covers dbo.proc")

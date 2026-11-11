@@ -1,0 +1,112 @@
+# Tool-wide defaults applied under every configuration (lowest precedence). Nothing here depends on a framework or a target repo.
+# Values marked "placeholder, unvalidated" are ours, not taken from any measurement or from the documentation of a service.
+version: 1
+synthetic:
+  path_segments: []
+  header_marker: SYNTHETIC       # a line containing this marker marks that line (and files whose first 5 lines contain it) as synthetic
+branches:
+  base: main
+limits:
+  # placeholder, unvalidated: traversal depth (edges followed). When a traversal stops at the limit the report says so.
+  max_depth_downstream: 12
+  max_depth_upstream: 12
+  # placeholder, unvalidated: conservative cap of ours on the PR comment body; lower-priority sections are dropped first.
+  comment_max_chars: 20000
+  # placeholder, unvalidated: PRs touching more files than this are not analysed (reported as not applicable).
+  max_changed_files: 500
+graph:
+  store: json
+  neo4j:
+    uri: bolt://localhost:7687
+    user: neo4j
+    password_env: NEO4J_PASSWORD     # NAME of the variable; the password is never stored in a file
+    database: neo4j
+  load: {batch_size: 500}
+  trace:
+    # edge types skipped by default in trace output (noise for UI->API->SQL tracing); re-enable with --include-types
+    default_exclude_types: [USES_TYPE]
+impact:
+  # consumers/dependencies of these node kinds are listed in the report; other kinds are intermediate hops
+  consumer_kinds:
+    screen: [UI_COMPONENT]
+    ui_service: [UI_SERVICE_METHOD]
+    api_endpoint: [API_ENDPOINT]
+    business: [SERVICE_METHOD, DATA_ACCESS_METHOD, INTERFACE_METHOD, METHOD]
+    sql: [SQL_PROC, SQL_VIEW, SQL_TABLE]
+  changed_object_excluded_kinds: [HTTP_REQUEST, SQL_REF, UNRESOLVED, UI_MODEL]
+ci:
+  comment:
+    # Stable marker written into every comment body so a re-run finds and updates ITS OWN thread instead of creating a new one.
+    marker: "cdi:impact-report"
+    # placeholder, unvalidated: how many items are listed per section before "+N more" (the full report has everything)
+    max_confirmed_consumers: 10
+    max_confirmed_tests: 10
+    max_unresolved_items: 8
+    max_inferred_consumers: 5
+    max_convention_tests: 5
+  status:
+    context: {name: "cdi/impact-analysis", genre: "cdi"}
+    description_max_chars: 300       # placeholder, unvalidated
+  adapter:
+    default: file                    # file | azure; azure is never used unless explicitly enabled
+    azure:
+      organization: "<ORGANIZATION>"
+      project: "<PROJECT>"
+      repository_id: "<REPOSITORY_ID>"
+      api_version: "7.1"
+      token_env: AZDO_TOKEN
+      auth_scheme: basic
+  blocking:
+    # OFF by default. When enabled, a run may fail ONLY on a deterministic policy listed below, never on a risk label.
+    enabled: false
+    policies:
+      - P1-referenced-not-found-introduced     # the PR leaves a procedure/table/view referenced but not defined
+      - P2-route-unmatched-introduced          # a frontend request no longer matches any API route
+risk:
+  # Risk rules for the impact report. First matching rule wins. There is NO catch-all rule on purpose: if no rule fires the
+  # report prints "NO risk label" for that object. A label is never printed without the rule that produced it.
+  # `when` keys (AND; unknown keys are an error): change, kind_in, in_critical_list, has_consumers, confirmed_path_reaches_ui,
+  # inferred_path_reaches_ui, reaches_api_endpoint, introduces_unresolved, has_own_unresolved, min_consumers (numeric, unused here).
+  labels: [Critical, High, Medium, Low]      # most to least severe; only these labels can be printed
+  critical_objects: []                       # glob patterns on object names; set per target repo
+  rules:
+    - id: R1-critical-object
+      label: Critical
+      when: {in_critical_list: true}
+      explain: "the changed object is on the configured critical list"
+      action: "Get a second review from the owner of the listed workflow and run every selected test before merge."
+    - id: R2-removed-with-consumers
+      label: High
+      when: {change: removed, has_consumers: true}
+      explain: "an object that other objects depend on is removed"
+      action: "Do not merge until every consumer listed below is updated or the removal is reverted; run the selected tests."
+    - id: R3-introduces-unresolved
+      label: High
+      when: {introduces_unresolved: true}
+      explain: "the change leaves a reference that no longer resolves (route mismatch or referenced-but-undefined object)"
+      action: "Fix the reference named in section C, or confirm it is intended and update the dependent callers."
+    - id: R4-confirmed-path-to-screen
+      label: High
+      when: {confirmed_path_reaches_ui: true}
+      explain: "a UI screen depends on this object through confirmed static links only"
+      action: "Review the screens listed below and run the selected tests."
+    - id: R5-inferred-path-to-screen
+      label: Medium
+      when: {inferred_path_reaches_ui: true}
+      explain: "a UI screen depends on this object, but the path includes at least one inferred link"
+      action: "Review the consumers below (the inferred link is named in each path) and run the selected tests."
+    - id: R6-api-consumers
+      label: Medium
+      when: {reaches_api_endpoint: true}
+      explain: "an API endpoint depends on this object (no screen is reachable through resolved links)"
+      action: "Review the dependent endpoints and run the selected API/SQL tests."
+    - id: R7-own-unresolved
+      label: Medium
+      when: {has_own_unresolved: true}
+      explain: "the changed object contains links the graph cannot resolve (dynamic SQL or a config-built route), so its impact may be under-reported"
+      action: "Review manually: the graph cannot show what this object touches at runtime."
+    - id: R8-has-consumers
+      label: Low
+      when: {has_consumers: true}
+      explain: "other objects depend on this one, none of them a screen or an endpoint"
+      action: "Review the consumers listed below."

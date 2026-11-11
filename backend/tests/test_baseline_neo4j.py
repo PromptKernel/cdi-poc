@@ -15,12 +15,12 @@ def env(tmp_path_factory):
     from cdi.graph.load_neo4j import connect
     from cdi.graph import store
     p = Project(tmp_path_factory.mktemp("n4j"))
-    cfg = load_config(p.path / "config")
+    cfg = load_config(p.path / ".cdi/config.yml")
     try:
         drv, db = connect(cfg, wait=10)
     except Exception as e:
         pytest.skip(f"neo4j not reachable: {e}")
-    runner = ScanRunner(BACKEND, p.path / "config", p.path / "out/work")
+    runner = ScanRunner(BACKEND, p.path / ".cdi/config.yml", p.path / "out/work")
     yield p, cfg, runner, drv, db, store
     drv.close()
 
@@ -61,7 +61,7 @@ def test_pr_run_never_writes_to_the_baseline_graph(env):
         before_fresh = s.run("MATCH (f:Freshness) RETURN f.loaded_at AS t, f.commits AS c").data()
     for name in ("pr-a-sp-body", "pr-f-route"):   # (the proc deleted by the previous test is already gone on main)
         make_branch(p, name, SCENARIOS[name], base="main")
-        res = engine.analyze(p.path, BACKEND, p.path / "config", "main", name, base, fresh, name=name, runner=runner)
+        res = engine.analyze(p.path, BACKEND, p.path / ".cdi/config.yml", "main", name, base, fresh, name=name, runner=runner)
         assert res["graph_counts"]["after_pr"] != res["graph_counts"]["baseline"], "the PR changes the in-memory graph..."
     after = store.snapshot(drv, db)
     assert after == before, "...but the stored baseline (node ids and edge ids) is identical before and after PR runs"

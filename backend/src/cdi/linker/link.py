@@ -20,7 +20,7 @@ class Linker:
         self.nodes_out: dict[str, dict] = {}
         self.edges_out: list[dict] = []
         self.match_cfg = (cfg["routes"] or {}).get("matching", {})
-        self.default_schema = ((cfg["naming"] or {}).get("sql") or {}).get("default_schema", "dbo")
+        self.default_schema = ((cfg["naming"] or {}).get("sql") or {})["default_schema"]
 
     # ---------- helpers ----------
     def _unresolved_node(self, cause, key, label):
@@ -177,7 +177,7 @@ def build_fragment(linker: Linker):
 
 def main(argv=None):
     ap = argparse.ArgumentParser(description="Link scanner fragments across repos")
-    ap.add_argument("--config", default="config")
+    ap.add_argument("--config", default=None, help="path to .cdi/config.yml (default: $CDI_CONFIG or .cdi/config.yml)")
     ap.add_argument("--graph", default="out/graph")
     ap.add_argument("--out", default=None)
     a = ap.parse_args(argv)

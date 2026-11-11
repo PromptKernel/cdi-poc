@@ -139,12 +139,12 @@ def run(source=".", gt_path="eval/ground_truth.yml", out="out/eval", baseline="m
         td = pathlib.Path(td)
         clone = td / "clone"
         subprocess.run(["git", "clone", "-q", "--local", "--branch", "main", str(source), str(clone)], check=True, capture_output=True)
-        cfg = load_config(clone / "config")
-        runner = ScanRunner(tool_root, clone / "config", clone / "out/work")
+        cfg = load_config(clone / ".cdi/config.yml")
+        runner = ScanRunner(tool_root, load_config(clone / ".cdi/config.yml")["dir"], clone / "out/work")
         if baseline == "neo4j":
             from cdi.graph import store
             from cdi.graph.load_neo4j import connect
-            drv, db = connect(load_config(source / "config"))
+            drv, db = connect(load_config(source / ".cdi/config.yml"))
             base, fresh = store.read_graph(drv, db); drv.close()
             if not fresh:
                 raise SystemExit("no baseline in Neo4j")
@@ -159,7 +159,7 @@ def run(source=".", gt_path="eval/ground_truth.yml", out="out/eval", baseline="m
         for n in names:
             S.make_branch(clone, n, S.SCENARIOS[n], base="main", workdir=td, ident=GIT_ID)
             keep = {}
-            res = engine.analyze(clone, tool_root, clone / "config", "main", n, base, fresh, name=n, runner=runner, keep=keep)
+            res = engine.analyze(clone, tool_root, clone / ".cdi/config.yml", "main", n, base, fresh, name=n, runner=runner, keep=keep)
             per.append(evaluate_scenario(n, gt["scenarios"][n], res, keep["base"], keep["head"], kinds, universe))
     durs = [p["pr_run_duration_s"] for p in per]
     summary = {

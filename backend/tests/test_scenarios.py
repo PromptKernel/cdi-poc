@@ -12,8 +12,8 @@ from cdi.pipeline.scanrun import ScanRunner
 @pytest.fixture(scope="module")
 def world(tmp_path_factory):
     p = Project(tmp_path_factory.mktemp("scen"))
-    cfg = load_config(p.path / "config")
-    runner = ScanRunner(BACKEND, p.path / "config", p.path / "out/work")
+    cfg = load_config(p.path / ".cdi/config.yml")
+    runner = ScanRunner(BACKEND, p.path / ".cdi/config.yml", p.path / "out/work")
     _, _, g, meta = B.full(runner, p.path, cfg)
     fresh = {"commits": meta["commits"], "loaded_at": "test", "mode": "full"}
     for name, edits in SCENARIOS.items():
@@ -24,7 +24,7 @@ def world(tmp_path_factory):
 def run(world, branch, **kw):
     p, runner, g, fresh = world
     n_before = (len(g.nodes), len(g.edges))
-    res = engine.analyze(p.path, BACKEND, p.path / "config", "main", branch, g, kw.get("fresh", fresh), name=branch, runner=runner)
+    res = engine.analyze(p.path, BACKEND, p.path / ".cdi/config.yml", "main", branch, g, kw.get("fresh", fresh), name=branch, runner=runner)
     assert (len(g.nodes), len(g.edges)) == n_before, "the baseline graph object must not be modified by a PR run"
     return res
 
@@ -194,14 +194,14 @@ def test_stale_baseline_and_older_target_warnings_appear_at_the_top_of_the_repor
 
 def test_depth_limit_is_reported_when_a_traversal_is_cut_off(tmp_path_factory):
     def tweak(path):
-        f = path / "config/graph.yml"
-        f.write_text(f.read_text().replace("max_depth_downstream: 12", "max_depth_downstream: 3"))
+        f = path / ".cdi/config.yml"
+        f.write_text(f.read_text() + "limits: {max_depth_downstream: 3}\n")
     p = Project(tmp_path_factory.mktemp("depth"), tweak)
-    cfg = load_config(p.path / "config")
-    runner = ScanRunner(BACKEND, p.path / "config", p.path / "out/work")
+    cfg = load_config(p.path / ".cdi/config.yml")
+    runner = ScanRunner(BACKEND, p.path / ".cdi/config.yml", p.path / "out/work")
     _, _, g, meta = B.full(runner, p.path, cfg)
     make_branch(p, "pr-a-sp-body", SCENARIOS["pr-a-sp-body"])
-    res = engine.analyze(p.path, BACKEND, p.path / "config", "main", "pr-a-sp-body", g, {"commits": meta["commits"], "loaded_at": "t", "mode": "full"}, runner=runner)
+    res = engine.analyze(p.path, BACKEND, p.path / ".cdi/config.yml", "main", "pr-a-sp-body", g, {"commits": meta["commits"], "loaded_at": "t", "mode": "full"}, runner=runner)
     o = obj(res, "dbo.spGetAllEmployees")
     assert o["depth"]["downstream_limit"] == 3 and o["depth"]["downstream_truncated"] and o["depth"]["downstream_stopped_at"]
     assert "FetchEmployeeComponent" not in {c["name"] for c in o["consumers"].get("screen", [])}, "the screen is beyond depth 3"

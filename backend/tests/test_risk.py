@@ -3,8 +3,9 @@ import pytest
 from cdi.impact import risk, report
 
 ROOT = pathlib.Path(__file__).resolve().parents[2]
-from conftest import FIXTURE_CONFIG
-CFG = risk.load(FIXTURE_CONFIG / "risk-rules.yml")
+from conftest import BACKEND, FIXTURE_CONFIG
+from cdi.linker.graphio import load_config
+CFG = risk.from_config(load_config(FIXTURE_CONFIG))
 
 
 def facts(**kw):
@@ -63,7 +64,7 @@ def test_min_consumers_numeric_rule_is_supported_but_unused_by_default():
     risk.validate(cfg)
     assert risk.select(cfg, facts(consumer_count=3)) and not risk.select(cfg, facts(consumer_count=2))
     assert not any("min_consumers" in r["when"] for r in CFG["rules"])
-    text = (FIXTURE_CONFIG / "risk-rules.yml").read_text()
+    text = (BACKEND / "src/cdi/config/profiles/_base.yml").read_text()
     assert "min_consumers" in text and "placeholder, unvalidated" in text
 
 

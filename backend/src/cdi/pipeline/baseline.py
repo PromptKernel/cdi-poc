@@ -114,11 +114,11 @@ def main(argv=None):
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("mode", choices=["full", "incremental"])
     ap.add_argument("--rev", default="HEAD"); ap.add_argument("--from", dest="frm"); ap.add_argument("--to", default="HEAD")
-    ap.add_argument("--config", default="config"); ap.add_argument("--out", default="out/graph"); ap.add_argument("--no-neo4j", action="store_true")
+    ap.add_argument("--config", default=None, help="path to .cdi/config.yml (default: $CDI_CONFIG or .cdi/config.yml)"); ap.add_argument("--out", default="out/graph"); ap.add_argument("--no-neo4j", action="store_true")
     a = ap.parse_args(argv)
     root = pathlib.Path(".").resolve()
     cfg = load_config(a.config)
-    runner = ScanRunner(TOOL_ROOT, pathlib.Path(a.config).resolve(), root / "out/work")
+    runner = ScanRunner(TOOL_ROOT, cfg["dir"], root / "out/work")
     driver = db = None
     if not a.no_neo4j:
         from cdi.graph.load_neo4j import connect

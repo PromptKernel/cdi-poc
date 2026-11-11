@@ -1,0 +1,165 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.invalid/cdi/config.schema.json",
+  "title": "cdi configuration (.cdi/config.yml), validated after profile defaults and environment overrides are applied",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["version", "repos", "conventions"],
+  "$defs": {
+    "globs": {"type": "array", "items": {"type": "string", "minLength": 1}},
+    "strings": {"type": "array", "items": {"type": "string"}},
+    "posint": {"type": "integer", "minimum": 1}
+  },
+  "properties": {
+    "version": {"const": 1},
+    "profile": {"type": "string", "description": "Framework profile whose conventions are used as defaults (see cdi.config.profiles)."},
+    "repos": {
+      "type": "array", "minItems": 1,
+      "items": {
+        "type": "object", "additionalProperties": false, "required": ["name", "path", "scanner"],
+        "properties": {
+          "name": {"type": "string", "pattern": "^[A-Za-z0-9_-]+$"},
+          "path": {"type": "string", "minLength": 1, "description": "Folder of this logical repo, relative to the repository root (the parent of .cdi/) or absolute."},
+          "main_branch": {"type": "string"},
+          "scanner": {
+            "type": "object", "additionalProperties": false, "required": ["plugin"],
+            "properties": {
+              "plugin": {"type": "string", "description": "Scanner plugin id from the registry (cdi.plugins)."},
+              "include": {"$ref": "#/$defs/globs"},
+              "exclude": {"$ref": "#/$defs/globs"}
+            }
+          }
+        }
+      }
+    },
+    "synthetic": {
+      "type": "object", "additionalProperties": false,
+      "properties": {"path_segments": {"$ref": "#/$defs/strings"}, "header_marker": {"type": "string", "minLength": 1}}
+    },
+    "branches": {
+      "type": "object", "additionalProperties": false,
+      "properties": {"base": {"type": "string", "minLength": 1, "description": "Branch the baseline is built from and PRs are compared with."}}
+    },
+    "limits": {
+      "type": "object", "additionalProperties": false,
+      "properties": {
+        "max_depth_downstream": {"$ref": "#/$defs/posint"},
+        "max_depth_upstream": {"$ref": "#/$defs/posint"},
+        "comment_max_chars": {"$ref": "#/$defs/posint"},
+        "max_changed_files": {"$ref": "#/$defs/posint"}
+      }
+    },
+    "conventions": {
+      "type": "object", "additionalProperties": false,
+      "required": ["api", "frontend", "matching", "layers", "sql", "sql_access", "tests"],
+      "properties": {
+        "api": {
+          "type": "object", "additionalProperties": false,
+          "required": ["controller_suffix", "controller_token", "action_token", "route_attributes", "verb_attributes", "controller_base_classes"],
+          "properties": {
+            "controller_suffix": {"type": "string"}, "controller_token": {"type": "string"}, "action_token": {"type": "string"},
+            "route_attributes": {"$ref": "#/$defs/strings"},
+            "verb_attributes": {"type": "object", "additionalProperties": {"type": "string"}},
+            "controller_base_classes": {"$ref": "#/$defs/strings"}
+          }
+        },
+        "frontend": {
+          "type": "object", "additionalProperties": false,
+          "required": ["component_decorators", "service_decorators", "http_client_types", "http_methods", "base_url_identifiers", "runtime_config_markers", "test_functions"],
+          "properties": {
+            "component_decorators": {"$ref": "#/$defs/strings"}, "service_decorators": {"$ref": "#/$defs/strings"},
+            "http_client_types": {"$ref": "#/$defs/strings"},
+            "http_methods": {"type": "object", "additionalProperties": {"type": "string"}},
+            "base_url_identifiers": {"$ref": "#/$defs/strings"}, "runtime_config_markers": {"$ref": "#/$defs/strings"},
+            "test_functions": {
+              "type": "object", "additionalProperties": false, "required": ["suite", "case"],
+              "properties": {"suite": {"$ref": "#/$defs/strings"}, "case": {"$ref": "#/$defs/strings"}}
+            }
+          }
+        },
+        "matching": {
+          "type": "object", "additionalProperties": false, "required": ["param_token", "case_sensitive", "strip_leading_slash"],
+          "properties": {"param_token": {"type": "string"}, "case_sensitive": {"type": "boolean"}, "strip_leading_slash": {"type": "boolean"}}
+        },
+        "layers": {
+          "type": "array",
+          "items": {"type": "object", "additionalProperties": false, "required": ["match", "kind"],
+                    "properties": {"match": {"type": "string"}, "kind": {"type": "string"}, "note": {"type": "string"}}}
+        },
+        "sql": {
+          "type": "object", "additionalProperties": false, "required": ["default_schema", "procedure_prefixes", "ignored_name_prefixes", "dynamic_exec_procedures"],
+          "properties": {
+            "default_schema": {"type": "string", "minLength": 1},
+            "procedure_prefixes": {"$ref": "#/$defs/strings"},
+            "ignored_name_prefixes": {"$ref": "#/$defs/strings"},
+            "dynamic_exec_procedures": {"$ref": "#/$defs/strings"}
+          }
+        },
+        "sql_access": {
+          "type": "object", "additionalProperties": false,
+          "required": ["command_types", "command_text_member", "command_type_member", "stored_procedure_markers"],
+          "properties": {
+            "command_types": {"$ref": "#/$defs/strings"}, "command_text_member": {"type": "string"},
+            "command_type_member": {"type": "string"}, "stored_procedure_markers": {"$ref": "#/$defs/strings"}
+          }
+        },
+        "tests": {
+          "type": "object", "additionalProperties": false, "required": ["annotation_tag", "csharp", "typescript", "sql"],
+          "properties": {
+            "annotation_tag": {"type": "string"},
+            "csharp": {"type": "object", "additionalProperties": false, "required": ["test_attributes", "test_dir_markers", "method_pattern"],
+                       "properties": {"test_attributes": {"$ref": "#/$defs/strings"}, "test_dir_markers": {"$ref": "#/$defs/strings"}, "method_pattern": {"type": "string"}}},
+            "typescript": {"type": "object", "additionalProperties": false, "required": ["spec_suffix", "source_suffix"],
+                           "properties": {"spec_suffix": {"type": "string"}, "source_suffix": {"type": "string"}}},
+            "sql": {"type": "object", "additionalProperties": false, "required": ["test_dir_markers"], "properties": {"test_dir_markers": {"$ref": "#/$defs/strings"}}}
+          }
+        }
+      }
+    },
+    "risk": {
+      "type": "object", "additionalProperties": false, "required": ["labels", "rules"],
+      "properties": {
+        "labels": {"$ref": "#/$defs/strings"},
+        "critical_objects": {"$ref": "#/$defs/strings"},
+        "rules": {
+          "type": "array",
+          "items": {"type": "object", "additionalProperties": false, "required": ["id", "label", "when", "explain", "action"],
+                    "properties": {"id": {"type": "string"}, "label": {"type": "string"}, "when": {"type": "object"},
+                                   "explain": {"type": "string"}, "action": {"type": "string"}}}
+        }
+      }
+    },
+    "graph": {
+      "type": "object", "additionalProperties": false,
+      "properties": {
+        "store": {"enum": ["json", "neo4j"], "description": "Baseline store. json is the default; neo4j is optional."},
+        "neo4j": {
+          "type": "object", "additionalProperties": false,
+          "properties": {"uri": {"type": "string"}, "user": {"type": "string"}, "password_env": {"type": "string", "description": "NAME of the environment variable holding the password; the password itself is never stored."}, "database": {"type": "string"}}
+        },
+        "load": {"type": "object", "additionalProperties": false, "properties": {"batch_size": {"$ref": "#/$defs/posint"}}},
+        "trace": {"type": "object", "additionalProperties": false, "properties": {"default_exclude_types": {"$ref": "#/$defs/strings"}}}
+      }
+    },
+    "impact": {
+      "type": "object", "additionalProperties": false, "required": ["consumer_kinds", "changed_object_excluded_kinds"],
+      "properties": {
+        "consumer_kinds": {"type": "object", "additionalProperties": {"$ref": "#/$defs/strings"}},
+        "changed_object_excluded_kinds": {"$ref": "#/$defs/strings"}
+      }
+    },
+    "ci": {
+      "type": "object", "additionalProperties": false,
+      "properties": {
+        "comment": {"type": "object", "additionalProperties": false,
+                    "properties": {"marker": {"type": "string", "minLength": 1}, "max_confirmed_consumers": {"$ref": "#/$defs/posint"}, "max_confirmed_tests": {"$ref": "#/$defs/posint"},
+                                   "max_unresolved_items": {"$ref": "#/$defs/posint"}, "max_inferred_consumers": {"$ref": "#/$defs/posint"}, "max_convention_tests": {"$ref": "#/$defs/posint"}}},
+        "status": {"type": "object", "additionalProperties": false,
+                   "properties": {"context": {"type": "object", "additionalProperties": false, "required": ["name"], "properties": {"name": {"type": "string"}, "genre": {"type": "string"}}},
+                                  "description_max_chars": {"$ref": "#/$defs/posint"}}},
+        "adapter": {"type": "object", "additionalProperties": false, "properties": {"default": {"enum": ["file", "azure"]}, "azure": {"type": "object"}}},
+        "blocking": {"type": "object", "additionalProperties": false, "properties": {"enabled": {"type": "boolean"}, "policies": {"$ref": "#/$defs/strings"}}}
+      }
+    }
+  }
+}

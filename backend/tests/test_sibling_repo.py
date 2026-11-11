@@ -15,8 +15,8 @@ REPOS = ("web", "api", "db")
 @pytest.fixture(scope="module")
 def sibling(tmp_path_factory):
     root = tmp_path_factory.mktemp("sibling")
-    shutil.copytree(FIXTURE_CONFIG, root / "config")
-    repos = root / "config" / "repos.yml"
+    shutil.copytree(FIXTURE_CONFIG.parent, root / ".cdi")
+    repos = root / ".cdi" / "config.yml"
     repos.write_text(repos.read_text().replace("path: samples/", "path: "))     # the sibling has web/ api/ db/ at its root
     files = sh(["git", "ls-files", "-z"], cwd=SIBLING).stdout.split("\0")
     for f in filter(None, files):

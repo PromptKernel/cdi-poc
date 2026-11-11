@@ -42,7 +42,7 @@ def main(argv=None):
     ap.add_argument("node"); ap.add_argument("--direction", default="both", choices=["forward", "reverse", "both"])
     ap.add_argument("--backend", default="memory", choices=["memory", "neo4j"])
     ap.add_argument("--include-types", default=""); ap.add_argument("--max-depth", type=int, default=25)
-    ap.add_argument("--graph", default="out/graph"); ap.add_argument("--config", default="config")
+    ap.add_argument("--graph", default="out/graph"); ap.add_argument("--config", default=None, help="path to .cdi/config.yml (default: $CDI_CONFIG or .cdi/config.yml)")
     ap.add_argument("--kind", default=None)
     a = ap.parse_args(argv)
     cfg = load_config(a.config)

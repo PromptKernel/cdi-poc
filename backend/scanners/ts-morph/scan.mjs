@@ -164,7 +164,7 @@ for (const sf of project.getSourceFiles()) {
     if (!cn) continue;
     if (isComponent(cls)) {
       const attrs = { screen_routes: (routePaths.get(cn) ?? []).map((r) => r.path) };
-      const dec = cls.getDecorators().find((d) => d.getName() === "Component");
+      const dec = cls.getDecorators().find((d) => FE.component_decorators.includes(d.getName()));
       const sel = dec?.getArguments()[0]?.getDescendantsOfKind(SyntaxKind.PropertyAssignment).find((p) => p.getName() === "selector");
       if (sel) attrs.selector = sel.getInitializer().getText().replace(/['"]/g, "");
       classNode.set(cls, addNode("UI_COMPONENT", cn, cn, f, cls.getStartLineNumber(), cls.getEndLineNumber(), attrs));
@@ -244,9 +244,9 @@ for (const sf of specFiles) {
   const f = rel(sf);
   const target = f.slice(0, -specSuffix.length) + srcSuffix;
   for (const call of sf.getDescendantsOfKind(SyntaxKind.CallExpression)) {
-    if (call.getExpression().getText() !== "it") continue;
+    if (!FE.test_functions.case.includes(call.getExpression().getText())) continue;
     const title = call.getArguments()[0]?.getText().replace(/^['"`]|['"`]$/g, "") ?? "";
-    const desc = call.getFirstAncestor((a) => Node.isCallExpression(a) && a.getExpression().getText() === "describe");
+    const desc = call.getFirstAncestor((a) => Node.isCallExpression(a) && FE.test_functions.suite.includes(a.getExpression().getText()));
     const suite = desc?.getArguments()[0]?.getText().replace(/^['"`]|['"`]$/g, "") ?? path.basename(f);
     // @covers annotations are per test: comments directly above the `it` statement, plus comments directly above its enclosing `describe` statement
     const own = covers(stmtOf(call)), inherited = desc ? covers(stmtOf(desc)) : [];

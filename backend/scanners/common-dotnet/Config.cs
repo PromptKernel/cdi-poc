@@ -48,8 +48,20 @@ public class LayerRule { public string Match { get; set; } public string Kind { 
 public class TestsCsharp { public List<string> TestAttributes { get; set; } = new(); public List<string> TestDirMarkers { get; set; } = new(); public string MethodPattern { get; set; } }
 public class TestsSql { public List<string> TestDirMarkers { get; set; } = new(); }
 public class TestsConfig { public string AnnotationTag { get; set; } = "@covers"; public TestsCsharp Csharp { get; set; } = new(); public TestsSql Sql { get; set; } = new(); }
-public class SqlNaming { public string DefaultSchema { get; set; } = "dbo"; }
-public class NamingFile { public List<LayerRule> Layers { get; set; } = new(); public SqlNaming Sql { get; set; } = new(); public TestsConfig Tests { get; set; } = new(); }
+public class SqlNaming
+{
+    public string DefaultSchema { get; set; }
+    public List<string> IgnoredNamePrefixes { get; set; } = new();
+    public List<string> DynamicExecProcedures { get; set; } = new();
+}
+public class SqlAccess
+{
+    public List<string> CommandTypes { get; set; } = new();
+    public string CommandTextMember { get; set; }
+    public string CommandTypeMember { get; set; }
+    public List<string> StoredProcedureMarkers { get; set; } = new();
+}
+public class NamingFile { public List<LayerRule> Layers { get; set; } = new(); public SqlNaming Sql { get; set; } = new(); public SqlAccess SqlAccess { get; set; } = new(); public TestsConfig Tests { get; set; } = new(); }
 
 public static class Cfg
 {
@@ -58,7 +70,7 @@ public static class Cfg
 
     public static T Load<T>(string file) => D.Deserialize<T>(File.ReadAllText(file));
 
-    /// <summary>Loads config/repos.yml and resolves repo paths relative to the PoC root (parent of the config dir).</summary>
+    /// <summary>Loads repos.yml (the scanner view cdi writes from .cdi/config.yml) and resolves repo paths relative to the PoC root (parent of the config dir).</summary>
     public static (RepoConfig repo, SyntheticRules synth) Repo(string configDir, string repoName, string overridePath = null)
     {
         var rf = Load<ReposFile>(Path.Combine(configDir, "repos.yml"));

@@ -13,5 +13,8 @@ dependencies = ["jsonschema==4.23.0", "PyYAML==6.0.2"]
 neo4j = ["neo4j==5.28.1"]
 dev = ["pytest==8.3.4"]
 
+[tool.setuptools.package-data]
+cdi = ["config/profiles/*.yml"]
+
 [tool.setuptools.packages.find]
 where = ["src"]

@@ -61,7 +61,7 @@ def load_graph(source, cfg, graph_dir):
     return g, fresh, "files"
 
 
-def export(source="auto", out="out/explorer", graph_dir="out/graph", config="config", reports_dir="out"):
+def export(source="auto", out="out/explorer", graph_dir="out/graph", config=None, reports_dir="out"):
     cfg = load_config(config)
     g, fresh, actual = load_graph(source, cfg, graph_dir)
     out = pathlib.Path(out)
@@ -105,7 +105,7 @@ def export(source="auto", out="out/explorer", graph_dir="out/graph", config="con
 def main(argv=None):
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--source", default="auto", choices=["auto", "neo4j", "files"]); ap.add_argument("--out", default="out/explorer")
-    ap.add_argument("--graph", default="out/graph"); ap.add_argument("--config", default="config"); ap.add_argument("--reports-dir", default="out")
+    ap.add_argument("--graph", default="out/graph"); ap.add_argument("--config", default=None); ap.add_argument("--reports-dir", default="out")
     a = ap.parse_args(argv)
     print(json.dumps(export(a.source, a.out, a.graph, a.config, a.reports_dir)))
 

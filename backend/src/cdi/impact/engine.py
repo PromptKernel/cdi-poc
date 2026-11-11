@@ -120,9 +120,8 @@ def graph_delta(base: Graph, head: Graph):
 def analyze(project_root, tool_root, config_dir, target, pr, baseline: Graph, freshness, name=None, scratch=None, runner=None, keep=None):
     t_start = time.perf_counter()
     root = pathlib.Path(project_root)
-    cfgd = pathlib.Path(config_dir)
-    cfg = load_config(cfgd)
-    rcfg = risk.load(cfgd / "risk-rules.yml")
+    cfg = load_config(config_dir)
+    rcfg = risk.from_config(cfg)
     icfg = cfg["graph"]["impact"]
     groups = icfg["consumer_kinds"]
     excluded_kinds = set(icfg["changed_object_excluded_kinds"])
@@ -130,7 +129,7 @@ def analyze(project_root, tool_root, config_dir, target, pr, baseline: Graph, fr
     repos = repo_entries(cfg)
     names = [r["name"] for r in repos]
     scratch = pathlib.Path(scratch or root / "out/work/worktrees")
-    runner = runner or ScanRunner(tool_root, cfgd.resolve(), root / "out/work")
+    runner = runner or ScanRunner(tool_root, cfg["dir"], root / "out/work")
 
     tgt, head_sha = D.resolve(root, target), D.resolve(root, pr)
     mb = D.merge_base(root, tgt, head_sha)

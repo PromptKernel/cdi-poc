@@ -93,7 +93,7 @@ void Walk(TSqlStatement st, string file, string ownerId, IList<TSqlParserToken> 
     foreach (var (nt, isWrite) in v.Tables)
     {
         var q = Qn(nt.SchemaObject);
-        if (nt.SchemaObject.BaseIdentifier.Value.StartsWith("#") || v.CteNames.Contains(nt.SchemaObject.BaseIdentifier.Value)) continue;
+        if (naming.Sql.IgnoredNamePrefixes.Any(p => nt.SchemaObject.BaseIdentifier.Value.StartsWith(p)) || v.CteNames.Contains(nt.SchemaObject.BaseIdentifier.Value)) continue;
         var (line, col) = (nt.StartLine, nt.StartColumn);
         var (eLine, eCol) = (toks[nt.LastTokenIndex].Line, toks[nt.LastTokenIndex].Column + toks[nt.LastTokenIndex].Text.Length);
         if (defs.TryGetValue(q, out var target))
@@ -113,7 +113,7 @@ void Walk(TSqlStatement st, string file, string ownerId, IList<TSqlParserToken> 
         var (line, col) = (ex.StartLine, ex.StartColumn);
         var (eLine, eCol) = (toks[ex.LastTokenIndex].Line, toks[ex.LastTokenIndex].Column + toks[ex.LastTokenIndex].Text.Length);
         string procName = (ex.ExecuteSpecification.ExecutableEntity as ExecutableProcedureReference)?.ProcedureReference?.ProcedureReference?.Name is { } n ? Qn(n) : null;
-        var isDynamic = procName == null || procName.EndsWith(".sp_executesql", StringComparison.OrdinalIgnoreCase);
+        var isDynamic = procName == null || naming.Sql.DynamicExecProcedures.Any(p => procName.EndsWith("." + p, StringComparison.OrdinalIgnoreCase));
         if (isDynamic)
         {
             var uid = g.AddNode("UNRESOLVED", $"{file}:{line}", $"dynamic SQL at {file}:{line}", file, line, line,

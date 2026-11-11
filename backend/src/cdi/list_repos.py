@@ -1,12 +1,13 @@
-"""Print 'name kind path' for each logical repo in config/repos.yml (used by pipeline scripts). Run from the target repository root."""
-import pathlib, yaml
+"""Print 'name plugin path' for each logical repo in .cdi/config.yml. Run from the target repository root (or pass --config / set CDI_CONFIG)."""
+import sys
+from cdi import config as C
 
 
-def main(root=None):
-    root = pathlib.Path(root or pathlib.Path.cwd())
-    for r in yaml.safe_load((root / "config/repos.yml").read_text())["repos"]:
-        print(r["name"], r["kind"], r["path"])
+def main(config=None):
+    cfg = C.load(config)
+    for r in C.scanner_view(cfg)["repos"]["repos"]:
+        print(r["name"], r["plugin"], r["path"])
 
 
 if __name__ == "__main__":
-    main()
+    main(sys.argv[1] if len(sys.argv) > 1 else None)

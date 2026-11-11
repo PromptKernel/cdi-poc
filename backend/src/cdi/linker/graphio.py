@@ -6,14 +6,10 @@ import yaml
 RANK = {"CONFIRMED_STATIC": 0, "INFERRED": 1, "UNRESOLVED": 2}
 
 
-def load_config(config_dir):
-    d = pathlib.Path(config_dir)
-    cfg = {n: yaml.safe_load((d / f"{n}.yml").read_text()) for n in ("repos", "routes", "naming")}
-    for opt in ("graph", "risk-rules"):
-        if (d / f"{opt}.yml").exists():
-            cfg[opt] = yaml.safe_load((d / f"{opt}.yml").read_text())
-    cfg["dir"] = str(d)
-    return cfg
+def load_config(config=None, environ=None):
+    """Load and validate `.cdi/config.yml` (see cdi.config) and return the dict the tool reads (repos, routes, naming, graph, risk-rules, ci, ...)."""
+    from cdi import config as C
+    return C.as_legacy(C.load(config, environ))
 
 
 def load_fragments(graph_dir, repo_names, include_linked=False):

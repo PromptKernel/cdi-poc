@@ -73,7 +73,7 @@ def load(graph: Graph, driver, db, batch=500, reset=False):
 
 def main(argv=None):
     ap = argparse.ArgumentParser()
-    ap.add_argument("--config", default="config"); ap.add_argument("--graph", default="out/graph"); ap.add_argument("--reset", action="store_true")
+    ap.add_argument("--config", default=None, help="path to .cdi/config.yml (default: $CDI_CONFIG or .cdi/config.yml)"); ap.add_argument("--graph", default="out/graph"); ap.add_argument("--reset", action="store_true")
     a = ap.parse_args(argv)
     cfg = load_config(a.config)
     g = Graph.from_fragments(load_fragments(a.graph, [r["name"] for r in cfg["repos"]["repos"]], include_linked=True))

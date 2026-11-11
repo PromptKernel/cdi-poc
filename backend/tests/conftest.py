@@ -1,12 +1,13 @@
-"""Shared fixtures. Scanner tests run the real scanners on a throw-away git repo that contains a copy of config/ and samples/,
+"""Shared fixtures. Scanner tests run the real scanners on a throw-away git repo that contains a copy of .cdi/ and samples/,
 so they can exercise commit_id, the dirty-tree check and --only overlays without touching the real working tree."""
 import json, os, pathlib, shutil, subprocess, sys
 import pytest
+from cdi.pipeline.scanrun import scanner_dir
 
 ROOT = pathlib.Path(__file__).resolve().parents[2]    # repository root (config/, samples/ still live here until the fixture switch)
 BACKEND = ROOT / "backend"
 FIXTURE = pathlib.Path(__file__).resolve().parent / "fixtures" / "sample"       # pinned copy of the sample (config/ + samples/)
-FIXTURE_CONFIG = FIXTURE / "config"
+FIXTURE_CONFIG = FIXTURE / ".cdi" / "config.yml"
 sys.path.insert(0, str(ROOT / "tools"))
 ENV = {**os.environ, "DOTNET_CLI_TELEMETRY_OPTOUT": "1"}
 if "DOTNET_ROOT" not in ENV and pathlib.Path("/opt/homebrew/opt/dotnet/libexec").is_dir():
@@ -26,7 +27,7 @@ def built_scanners():
 
 def scan_cmd(project, repo, out, only=None):
     kind = {"web": "ts", "api": "cs", "db": "sql"}[repo]
-    base = ["--config", str(project / "config"), "--repo", repo, "--out", str(out)]
+    base = ["--config", str(scanner_dir(project / ".cdi/config.yml")), "--repo", repo, "--out", str(out)]
     if only is not None:
         base += ["--only", str(only)]
     if kind == "ts":
@@ -36,10 +37,10 @@ def scan_cmd(project, repo, out, only=None):
 
 
 class Project:
-    """A copy of config/ + samples/ in a temp dir, committed to its own git repo."""
+    """A copy of .cdi/ + samples/ in a temp dir, committed to its own git repo."""
     def __init__(self, path, tweak=None):
         self.path = path
-        shutil.copytree(FIXTURE_CONFIG, path / "config")
+        shutil.copytree(FIXTURE_CONFIG.parent, path / ".cdi")
         if tweak:
             tweak(path)
         shutil.copytree(FIXTURE / "samples", path / "samples", ignore=shutil.ignore_patterns("bin", "obj", "node_modules"))

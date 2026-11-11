@@ -1,4 +1,4 @@
-"""Risk label selection from config/risk-rules.yml. First matching rule wins; no catch-all: no rule => no label."""
+"""Risk label selection from the `risk` section of .cdi/config.yml. First matching rule wins; no catch-all: no rule => no label."""
 from __future__ import annotations
 import fnmatch, pathlib
 import yaml
@@ -12,6 +12,13 @@ def load(path):
     cfg = yaml.safe_load(pathlib.Path(path).read_text())
     validate(cfg)
     return cfg
+
+
+def from_config(cfg):
+    """cfg: the loaded configuration (cdi.linker.graphio.load_config)."""
+    r = cfg["risk-rules"]
+    validate(r)
+    return r
 
 
 def validate(cfg):

@@ -9,8 +9,8 @@ from cdi.pipeline.scanrun import ScanRunner
 @pytest.fixture(scope="module")
 def world(tmp_path_factory):
     p = Project(tmp_path_factory.mktemp("inc"))
-    cfg = load_config(p.path / "config")
-    runner = ScanRunner(BACKEND, p.path / "config", p.path / "out/work")
+    cfg = load_config(p.path / ".cdi/config.yml")
+    runner = ScanRunner(BACKEND, p.path / ".cdi/config.yml", p.path / "out/work")
     c0 = sh(["git", "rev-parse", "HEAD"], cwd=p.path).stdout.strip()
     frags0, linked0, g0, meta0 = B.full(runner, p.path, cfg)
     return p, cfg, runner, c0, g0, meta0

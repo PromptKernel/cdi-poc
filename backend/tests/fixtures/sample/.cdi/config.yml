@@ -1,0 +1,24 @@
+# Interim test-fixture configuration (the sample repository carries its own .cdi/config.yml).
+version: 1
+profile: aspnet-angular-sqlserver
+repos:
+  - name: web
+    path: samples/web
+    scanner: {plugin: ts-morph, exclude: ["**/node_modules/**", "**/*.d.ts", "e2e/**"]}
+  - name: api
+    path: samples/api
+    scanner: {plugin: dotnet-roslyn}
+  - name: db
+    path: samples/db
+    scanner: {plugin: sql-scriptdom}
+synthetic:
+  path_segments: [synthetic, Synthetic]
+graph:
+  neo4j: {uri: "bolt://localhost:7688"}      # local test container
+risk:
+  # placeholder, unvalidated: deliberately meaningless
+  critical_objects: ["EXAMPLE_ONLY_replace_me*"]
+ci:
+  comment: {marker: "cdi-poc:impact-report"}
+  status:
+    context: {name: "cdi-poc/impact-analysis", genre: "cdi-poc"}

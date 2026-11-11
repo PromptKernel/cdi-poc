@@ -4,7 +4,7 @@
   3. build the comment and the status, publish them through the adapter (file sink by default)
   4. print timing
 Advisory by default: the exit code is 0 in every case, including tool failures (those are written as an `error` status and a comment saying the
-analysis did not run). Blocking is OFF unless config/ci.yml `blocking.enabled` is true or --blocking is given; even then only a deterministic policy
+analysis did not run). Blocking is OFF unless the `ci` section of .cdi/config.yml `blocking.enabled` is true or --blocking is given; even then only a deterministic policy
 hit (ci/policy.py) exits 1, never a risk label and never a tool failure.
 usage: python -m cdi.pipeline.run_pr --target main --pr <branch-or-sha> [--name pr-17] [--baseline neo4j|files] [--out out]
        [--adapter file|azure] [--enable-azure-adapter --pull-request-id N] [--blocking]"""
@@ -41,12 +41,12 @@ def highest_label(objs, labels):
 
 
 def run(args, root=None, tool_root=TOOL_ROOT, now=time.perf_counter, load_baseline=None, adapter=None, ci_override=None):
-    """Returns (summary dict, exit code). `ci_override` (tests/programmatic use) is deep-merged over config/ci.yml."""
+    """Returns (summary dict, exit code). `ci_override` (tests/programmatic use) is deep-merged over the `ci` section of .cdi/config.yml."""
     t0 = now()
     root = pathlib.Path(root or ".").resolve()
-    cfgdir = pathlib.Path(args.config)
+    cfgdir = args.config
     cfg = load_config(cfgdir)
-    ci = yaml.safe_load((cfgdir / "ci.yml").read_text())
+    ci = cfg["ci"]
     for k, v in (ci_override or {}).items():
         ci[k] = {**ci[k], **v} if isinstance(v, dict) else v
     blocking = bool(args.blocking or ci["blocking"]["enabled"])
@@ -73,7 +73,7 @@ def run(args, root=None, tool_root=TOOL_ROOT, now=time.perf_counter, load_baseli
         (out / f"report-{slug}.json").write_text(report.to_json(result))
         violations = policy.evaluate(result, ci["blocking"]["policies"]) if blocking else []
         md, info = comment.build_report_comment(result, basis, ci["comment"], violations, blocking)
-        label = highest_label(result["objects"], load_config_labels(cfgdir))
+        label = highest_label(result["objects"], cfg["risk-rules"]["labels"])
         desc = (f"{'blocking policy hit: ' + str(len(violations)) if violations else 'advisory'}: {len(result['objects'])} changed object(s)"
                 f"{', highest risk label ' + label if label else ', no risk label'}; {len(result['new_unresolved'])} unresolved introduced")
         state = "failed" if (blocking and violations) else "succeeded"
@@ -104,15 +104,11 @@ def run(args, root=None, tool_root=TOOL_ROOT, now=time.perf_counter, load_baseli
     return summary, code
 
 
-def load_config_labels(cfgdir):
-    return yaml.safe_load((pathlib.Path(cfgdir) / "risk-rules.yml").read_text())["labels"]
-
-
 def main(argv=None):
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--target", default="main"); ap.add_argument("--pr", required=True); ap.add_argument("--name")
     ap.add_argument("--baseline", default="neo4j", choices=["neo4j", "files"]); ap.add_argument("--graph", default="out/graph")
-    ap.add_argument("--config", default="config"); ap.add_argument("--out", default="out")
+    ap.add_argument("--config", default=None, help="path to .cdi/config.yml (default: $CDI_CONFIG or .cdi/config.yml)"); ap.add_argument("--out", default="out")
     ap.add_argument("--adapter", choices=["file", "azure"]); ap.add_argument("--enable-azure-adapter", action="store_true")
     ap.add_argument("--pull-request-id", type=int); ap.add_argument("--blocking", action="store_true")
     a = ap.parse_args(argv)

@@ -1,27 +1,36 @@
-"""Run the scanner that matches a logical repo's kind (config/repos.yml) and return its fragment. Used by the baseline runner and the impact engine."""
+"""Run the scanner plugin selected for a logical repo (`scanner.plugin` in .cdi/config.yml) and return its fragment.
+Used by the baseline runner and the impact engine."""
 from __future__ import annotations
 import json, os, pathlib, subprocess
+from cdi import config as C, plugins
 
-KIND_SCANNER = {"frontend": "ts", "api": "cs", "sql": "sql"}
+
+def scanner_dir(config) -> pathlib.Path:
+    """`config` is a scanner view folder (repos.yml, routes.yml, naming.yml) or anything cdi.config.load accepts."""
+    p = pathlib.Path(config)
+    if (p / "repos.yml").is_file():
+        return p
+    return C.materialize(C.load(p))
 
 
 class ScanRunner:
-    def __init__(self, tool_root, config_dir, work_dir):
-        self.tool_root, self.config_dir, self.work = pathlib.Path(tool_root), pathlib.Path(config_dir), pathlib.Path(work_dir)
+    def __init__(self, tool_root, config, work_dir):
+        self.tool_root, self.config_dir, self.work = pathlib.Path(tool_root), scanner_dir(config), pathlib.Path(work_dir)
         self.env = {**os.environ, "DOTNET_CLI_TELEMETRY_OPTOUT": "1"}
         if "DOTNET_ROOT" not in self.env and pathlib.Path("/opt/homebrew/opt/dotnet/libexec").is_dir():
             self.env["DOTNET_ROOT"] = "/opt/homebrew/opt/dotnet/libexec"
-        self._built = False
+        self._built = set()
 
-    def build(self):
-        if not self._built:
-            for p in ("sql-scriptdom", "dotnet-roslyn"):
-                subprocess.run(["dotnet", "build", "-nologo", "-v", "q", str(self.tool_root / "scanners" / p)], env=self.env, check=True, capture_output=True)
-            self._built = True
+    def build(self, plugin):
+        if plugin.build_project and plugin.id not in self._built:
+            subprocess.run(["dotnet", "build", "-nologo", "-v", "q", str(self.tool_root / "scanners" / plugin.build_project)],
+                           env=self.env, check=True, capture_output=True)
+        self._built.add(plugin.id)
 
     def scan(self, repo_cfg, repo_path, only_files=None):
-        """repo_cfg: entry from repos.yml; repo_path: absolute folder of that logical repo (main tree or a worktree)."""
-        self.build()
+        """repo_cfg: a repo entry (name, plugin); repo_path: absolute folder of that logical repo (main tree or a worktree)."""
+        plugin = plugins.get(repo_cfg["plugin"])
+        self.build(plugin)
         self.work.mkdir(parents=True, exist_ok=True)
         out = self.work / f"scan_{repo_cfg['name']}.json"
         if out.exists():
@@ -31,13 +40,7 @@ class ScanRunner:
             of = self.work / f"only_{repo_cfg['name']}.txt"
             of.write_text("\n".join(sorted(only_files)))
             args += ["--only", str(of)]
-        kind = KIND_SCANNER[repo_cfg["kind"]]
-        if kind == "ts":
-            cmd = ["node", str(self.tool_root / "scanners/ts-morph/scan.mjs")] + args
-        else:
-            dll = {"cs": "dotnet-roslyn/bin/Debug/net10.0/CsScanner.dll", "sql": "sql-scriptdom/bin/Debug/net10.0/SqlScanner.dll"}[kind]
-            cmd = ["dotnet", str(self.tool_root / "scanners" / dll)] + args
-        r = subprocess.run(cmd, env=self.env, capture_output=True, text=True)
+        r = subprocess.run(plugin.command(self.tool_root, args), env=self.env, capture_output=True, text=True)
         if r.returncode != 0:
             raise RuntimeError(f"scanner for {repo_cfg['name']} failed:\n{r.stdout}\n{r.stderr}")
         return json.loads(out.read_text())

@@ -48,13 +48,17 @@ var defaultSchema = naming.Sql.DefaultSchema;
 var layerRules = naming.Layers.Select(l => (re: new Regex(l.Match), kind: l.Kind)).ToList();
 string NormRoute(string t) => Regex.Replace(t.Trim('/'), @"\{[^}]*\}", "{}");
 
+var acc = naming.SqlAccess;
+var cmdTypes = acc.CommandTypes.ToHashSet();   // conventions.sql_access (framework profile), not hardcoded here
+bool IsProcMarker(ExpressionSyntax e) => acc.StoredProcedureMarkers.Any(m => e.ToString().EndsWith(m));
+
 bool IsSqlCommand(BaseObjectCreationExpressionSyntax o, SemanticModel m)
 {
     // Types are matched by NAME: System.Data.SqlClient / Microsoft.Data.SqlClient are not loaded as references.
-    if (o is ObjectCreationExpressionSyntax oc) return oc.Type.ToString().Split('.').Last() == "SqlCommand";
+    if (o is ObjectCreationExpressionSyntax oc) return cmdTypes.Contains(oc.Type.ToString().Split('.').Last());
     var ti = m.GetTypeInfo(o);
-    if ((ti.ConvertedType?.Name ?? ti.Type?.Name) == "SqlCommand") return true; // target-typed new()
-    return o.Parent is EqualsValueClauseSyntax { Parent: VariableDeclaratorSyntax { Parent: VariableDeclarationSyntax vd } } && vd.Type.ToString().Split('.').Last() == "SqlCommand";
+    if (cmdTypes.Contains(ti.ConvertedType?.Name ?? ti.Type?.Name ?? "")) return true; // target-typed new()
+    return o.Parent is EqualsValueClauseSyntax { Parent: VariableDeclaratorSyntax { Parent: VariableDeclarationSyntax vd } } && cmdTypes.Contains(vd.Type.ToString().Split('.').Last());
 }
 
 // Command text: compile-time constant (literal, const field, constant concatenation) via the semantic model; else a local's initializer; else dynamic.
@@ -210,15 +214,15 @@ foreach (var t in trees.Where(t => emitFiles.Contains(Rel(t))))
             foreach (var asg in oc.Initializer?.Expressions.OfType<AssignmentExpressionSyntax>() ?? Enumerable.Empty<AssignmentExpressionSyntax>())
             {
                 var lhs = asg.Left.ToString();
-                if (lhs == "CommandText") { textExpr = asg.Right; textSource = "object-initializer"; }
-                else if (lhs == "CommandType" && asg.Right.ToString().EndsWith("StoredProcedure")) isStoredProc = true;
+                if (lhs == acc.CommandTextMember) { textExpr = asg.Right; textSource = "object-initializer"; }
+                else if (lhs == acc.CommandTypeMember && IsProcMarker(asg.Right)) isStoredProc = true;
             }
             if (varName != null)
                 foreach (var asg in body.DescendantNodes().OfType<AssignmentExpressionSyntax>())
                 {
                     var lhs = asg.Left.ToString();
-                    if (lhs == varName + ".CommandText") { textExpr = asg.Right; textSource = "commandtext-assignment"; }
-                    else if (lhs == varName + ".CommandType" && asg.Right.ToString().EndsWith("StoredProcedure")) isStoredProc = true;
+                    if (lhs == varName + "." + acc.CommandTextMember) { textExpr = asg.Right; textSource = "commandtext-assignment"; }
+                    else if (lhs == varName + "." + acc.CommandTypeMember && IsProcMarker(asg.Right)) isStoredProc = true;
                 }
             var (lit, dynReason, prefix) = ResolveText(model, textExpr);
 

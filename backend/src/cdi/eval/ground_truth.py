@@ -102,7 +102,7 @@ def validate(gt: dict, graph, known_scenarios) -> list[str]:
 
 def _graph(graph_dir):
     from cdi.linker.graphio import Graph, load_config, load_fragments
-    cfg = load_config("config")
+    cfg = load_config()
     return Graph.from_fragments(load_fragments(graph_dir, [r["name"] for r in cfg["repos"]["repos"]], include_linked=True))
 
 

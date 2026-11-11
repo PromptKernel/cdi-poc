@@ -27,7 +27,7 @@ def main(argv=None):
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--target", default="main"); ap.add_argument("--pr", required=True); ap.add_argument("--name")
     ap.add_argument("--baseline", default="neo4j", choices=["neo4j", "files"]); ap.add_argument("--graph", default="out/graph")
-    ap.add_argument("--config", default="config"); ap.add_argument("--out", default="out")
+    ap.add_argument("--config", default=None, help="path to .cdi/config.yml (default: $CDI_CONFIG or .cdi/config.yml)"); ap.add_argument("--out", default="out")
     a = ap.parse_args(argv)
     root = pathlib.Path(".").resolve()
     cfg = load_config(a.config)
