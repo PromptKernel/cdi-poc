@@ -92,8 +92,12 @@ def run(args, root=None, tool_root=TOOL_ROOT, now=time.perf_counter, load_baseli
     try:
         adapter = adapter or adapters.build_adapter(args.adapter or ci["adapter"]["default"], ci, out, args.enable_azure_adapter, args.pull_request_id)
         summary["post"] = adapter.post(name, md, status, ci["comment"]["marker"])
-    except Exception as e:                           # a posting problem must not fail an advisory run
+    except Exception as e:                           # a posting problem must not fail an advisory run; keep the result in files
         summary["post"] = {"error": f"{type(e).__name__}: {e}"}
+        try:
+            summary["post"]["fallback"] = adapters.FileSink(out).post(name, md, status, ci["comment"]["marker"])
+        except Exception as e2:
+            summary["post"]["fallback_error"] = f"{type(e2).__name__}: {e2}"
     summary["duration_s"] = round(now() - t0, 3)
     code = 1 if (blocking and summary["violations"] and state == "failed") else 0
     summary["exit_code"] = code

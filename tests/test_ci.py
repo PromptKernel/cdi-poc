@@ -363,6 +363,9 @@ def test_azure_adapter_is_disabled_by_default_and_makes_no_call(world, tmp_path)
     # through the runner: requesting azure without the enable flag is reported, never executed, and does not fail an advisory run
     summary, code = go(world, "pr-f-route", tmp_path, adapter_obj=a)
     assert code == 0 and "AdapterDisabled" in summary["post"]["error"] and srv.calls == []
+    # the result is not lost: the file sink is the fallback
+    assert (tmp_path / "pr-comment.md").exists() and json.loads((tmp_path / "pr-status.json").read_text())["simulated"] is True
+    assert summary["post"]["fallback"]["adapter"] == "file"
 
 
 def test_enabled_adapter_still_refuses_placeholders_and_missing_token():
