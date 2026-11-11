@@ -1,5 +1,5 @@
 """Metric calculations for the evaluation harness. Pure functions over sets of workflow names.
-ALL numbers produced from them are 'measured on synthetic data' (the synthetic-extended sample); they say nothing about real code.
+Every number produced from them carries the label of the data it was measured on (see eval.run_eval.label_for); none says anything about other code bases.
 
 Definitions (per scenario), with GT = ground-truth workflows, R = workflows the tool reported, U = all workflows in the baseline graph:
   TP = GT & R          FN = GT - R (misses)          FP = R - GT (unexpected workflows)

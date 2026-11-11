@@ -99,7 +99,7 @@ def create_app(cfg: dict, open_store: Callable[[], S.GraphStore], reports_dir="o
     def meta():
         g, fresh = baseline()
         return {"source": "live-api", "store": holder.kind, "baseline": fresh, "counts": {"nodes": len(g.nodes), "edges": len(g.edges)},
-                "repos": {r["name"]: {"path": r["path"], "kind": r["kind"]} for r in cfg["repos"]["repos"]}, "notice": X.NOTICE}
+                "repos": {r["name"]: {"path": r["path"], "kind": r["kind"]} for r in cfg["repos"]["repos"]}, "notice": X.notice_for(g)}
 
     @api.get("/graph", response_model=M.GraphDoc, tags=["graph"], summary="The whole graph in the explorer's format")
     def graph():

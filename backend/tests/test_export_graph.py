@@ -38,7 +38,7 @@ def run_export(files_env, **kw):
 def test_graph_json_has_the_fields_the_explorer_needs(files_env, full):
     res, out = run_export(files_env)
     d = json.loads((out / "graph.json").read_text())
-    assert res["source"] == "json" and d["meta"]["source"] == "json" and "SYNTHETIC" in d["meta"]["notice"]
+    assert res["source"] == "json" and d["meta"]["source"] == "json" and "flagged synthetic" in d["meta"]["notice"]
     assert d["meta"]["counts"] == {"nodes": len(d["nodes"]), "edges": len(d["edges"])} and d["meta"]["repos"]["api"] == {"path": "samples/api", "kind": "api"}
     assert d["meta"]["baseline"]["commits"].keys() == {"web", "api", "db"}
     assert set(d["nodes"][0]) == {"id", "kind", "name", "repo", "file", "line", "end_line", "synthetic", "attrs"}
@@ -124,3 +124,12 @@ def test_neo4j_source_is_read_only_and_matches_the_stored_graph(files_env):
     assert res["source"] == "neo4j" and before == after, "the export must not modify the store"
     assert {n["id"] for n in d["nodes"]} == before[0] and {e["id"] for e in d["edges"]} == before[1]
     assert d["meta"]["baseline"]["mode"] in ("full", "incremental") and d["meta"]["baseline"]["loaded_at"]
+
+
+def test_notice_is_driven_by_the_synthetic_flag_not_by_a_fixed_claim():
+    from helpers import graph, node
+    plain = graph([node("api", "API_ENDPOINT", "A", "a.cs")], [])
+    synth = graph([node("api", "API_ENDPOINT", "A", "a.cs", synthetic=True)], [])
+    assert X.notice_for(plain) == X.NOTICE_PLAIN and "synthetic" not in X.NOTICE_PLAIN.lower() and "sample" not in X.NOTICE_PLAIN.lower()
+    assert X.notice_for(synth) == X.NOTICE_SYNTHETIC and "flagged synthetic by the repository's configuration" in X.NOTICE_SYNTHETIC
+    assert X.graph_document(synth, {"commits": {}}, __import__("cdi.linker.graphio", fromlist=["x"]).load_config(CFG), "json")["meta"]["notice"] == X.NOTICE_SYNTHETIC

@@ -21,7 +21,7 @@ test('explorer smoke: search, expand, trace UI -> SQL in both directions, styles
   await test.step('loads the built app with the synthetic-data banner', async () => {
     await page.goto('/')
     await expect(page.getByRole('heading', { name: 'Dependency explorer' })).toBeVisible()
-    await expect(page.getByRole('note').first()).toContainText('Synthetic sample data')
+    await expect(page.getByTestId('notice')).toContainText('Structure only')   // the notice text is part of the data (meta.notice)
     await expect(page.locator('.meta')).toContainText('nodes')
   })
 

@@ -320,3 +320,12 @@ def test_e2e_unknown_scenario_in_ground_truth_is_an_error_not_a_skip(tmp_path_fa
     p.commit_all("gt")
     with pytest.raises(SystemExit, match="does not define"):
         R.run(source=p.path, gt_path=gt, out=tmp_path_factory.mktemp("o"), tool_root=BACKEND)
+
+
+def test_eval_label_and_caps_follow_the_synthetic_flag():
+    assert R.label_for(True).startswith("Measured on synthetic data") and "flagged synthetic by the configuration" in R.label_for(True)
+    plain = R.label_for(False)
+    assert "synthetic" not in plain.lower() and plain.startswith("Measured on this repository's author-written scenarios")
+    s = {**fake_summary(), "label": plain, "cap": "(measured on this repository's scenarios)"}
+    md = report.render(s)
+    assert md.count("(measured on this repository's scenarios)") >= 7 and "measured on synthetic data" not in md.lower()

@@ -58,7 +58,7 @@ export default function App() {
           </span>
         )}
       </header>
-      <div className="banner" role="note">Structure only. Synthetic sample data: static-analysis evidence from a small sample that includes clearly marked synthetic additions; it says nothing about real code.</div>
+      <div className="banner" role="note" data-testid="notice">{data ? data.meta.notice : 'Structure only.'}</div>      {/* wording comes from the data (driven by the repository's synthetic flag), not from the page */}
       {needToken && (
         <form className="tokenform" onSubmit={(e) => { e.preventDefault(); setToken(tokenInput.trim()); setTokenInput(''); load() }}>
           <label>The API needs a bearer token <input type="password" autoComplete="off" value={tokenInput} onChange={(e) => setTokenInput(e.target.value)} aria-label="API token" /></label>

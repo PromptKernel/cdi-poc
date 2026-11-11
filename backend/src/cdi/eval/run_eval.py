@@ -4,7 +4,8 @@ Rules enforced here:
   * eval/ground_truth.yml must be COMMITTED and UNMODIFIED, otherwise the run is refused (the ground truth is fixed before any run, never edited to fit output).
   * The run happens in a temporary local clone of the repository (scenario branches are created there, never in the real repo) and, by default, with an in-memory
     baseline built from that clone, so nothing is written to Neo4j and no branch of yours is touched.
-ALL numbers are 'measured on synthetic data' (the synthetic-extended sample). They are not compared with any outside target in this repository.
+Every number is labelled with what it was measured on: 'synthetic data' when the scenarios touch files flagged synthetic by the configuration, otherwise the repository's own
+author-written scenarios. They are not compared with any outside target in this repository.
 usage: python -m cdi.eval.run_eval [--source .] [--gt eval/ground_truth.yml] [--out out/eval] [--baseline memory|neo4j]"""
 from __future__ import annotations
 import argparse, copy, datetime, json, pathlib, subprocess, sys, tempfile, time
@@ -14,7 +15,13 @@ from cdi.impact import diff as D, engine                       # noqa: E402
 from cdi.impact import traverse as T                           # noqa: E402
 from cdi.linker.graphio import load_config                     # noqa: E402
 
-LABEL = "Measured on synthetic data (the synthetic-extended sample). Not a statement about real code bases."
+LABEL_SYNTHETIC = "Measured on synthetic data (files flagged synthetic by the configuration). Not a statement about real code bases."
+LABEL_PLAIN = "Measured on this repository's author-written scenarios and ground truth. Not a statement about other code bases."
+LABEL = LABEL_SYNTHETIC                      # the wording used when the data is flagged synthetic (kept for callers)
+
+
+def label_for(synthetic: bool) -> str:
+    return LABEL_SYNTHETIC if synthetic else LABEL_PLAIN
 NOT_FOUND_CAUSES = {"referenced_not_found", "no_matching_route", "annotation_target_not_found"}
 GIT_ID = ["-c", "user.name=eval-harness", "-c", "user.email=eval@example.invalid", "-c", "commit.gpgsign=false"]
 
@@ -105,7 +112,7 @@ def evaluate_scenario(name, gt_entry, result, base, head, kinds, universe):
     rep_all, rep_conf = reported_workflows(result, kinds)
     m_all, m_conf = M.workflow_metrics(gt, rep_all, universe), M.workflow_metrics(gt, rep_conf, universe)
     return {
-        "scenario": name, "synthetic": True, "description": gt_entry.get("description", ""),
+        "scenario": name, "synthetic": bool(result["meta"]["synthetic_notice"]), "description": gt_entry.get("description", ""),
         "changed_objects": [{"name": o["name"], "kind": o["kind"], "change": o["change"], "risk": (o["risk"] or {}).get("label")} for o in result["objects"]],
         "ground_truth": sorted(gt), "reported_any_confidence": sorted(rep_all), "reported_confirmed_only": sorted(rep_conf),
         "metrics_any_confidence": m_all, "metrics_confirmed_only": m_conf,
@@ -164,8 +171,11 @@ def run(source=".", gt_path="eval/ground_truth.yml", out="out/eval", baseline="m
             res = engine.analyze(clone, tool_root, clone / ".cdi/config.yml", base_branch, n, base, fresh, name=n, runner=runner, keep=keep)
             per.append(evaluate_scenario(n, gt["scenarios"][n], res, keep["base"], keep["head"], kinds, universe))
     durs = [p["pr_run_duration_s"] for p in per]
+    synthetic = any(p["synthetic"] for p in per)            # one flag for the whole run: the data set is synthetic if any scenario touched a flagged file
+    for p in per:
+        p["synthetic"] = synthetic
     summary = {
-        "label": LABEL,
+        "label": label_for(synthetic), "cap": "(measured on synthetic data)" if synthetic else "(measured on this repository's scenarios)",
         "meta": {"run_at": datetime.datetime.now(datetime.timezone.utc).isoformat(timespec="seconds"), "ground_truth": gtc, "source_head": D.git(source, "rev-parse", "HEAD"),
                  "workflow_kinds": kinds, "universe_workflows": len(universe), "baseline": baseline, "baseline_commits": fresh["commits"],
                  "scenarios_run": names, "wall_clock_s": round(time.perf_counter() - started, 1)},
@@ -192,7 +202,7 @@ def main(argv=None):
         sys.exit(f"REFUSED: {e}")
     o = s["overall_any_confidence"]
     print(f"[eval] {len(s['scenarios'])} scenario(s), {o['ground_truth']} ground-truth workflow(s): micro recall {M.pct(o['micro_recall'])}, "
-          f"false-positive share {M.pct(o['micro_false_positive_share'])} -- {LABEL}\n[eval] wrote {a.out}/summary.md and summary.json")
+          f"false-positive share {M.pct(o['micro_false_positive_share'])} -- {s['label']}\n[eval] wrote {a.out}/summary.md and summary.json")
 
 
 if __name__ == "__main__":

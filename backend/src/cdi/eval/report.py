@@ -1,8 +1,7 @@
-"""Render out/eval/summary.md from the summary dict. Every number is labelled 'measured on synthetic data'."""
+"""Render out/eval/summary.md from the summary dict. Every number carries the label the run computed from the synthetic flag."""
 from __future__ import annotations
 from . import metrics as M
 
-CAP = "(measured on synthetic data)"
 
 
 def _fmt(m):
@@ -11,9 +10,11 @@ def _fmt(m):
 
 def render(s) -> str:
     meta, L = s["meta"], []
+    CAP = s.get("cap", "(measured on synthetic data)")
     a = L.append
     a("# Evaluation summary"); a("")
-    a(f"> **{s['label']}**"); a("> Scenarios, ground truth and workflows are all synthetic. Nothing here is compared with any outside target.")
+    a(f"> **{s['label']}**")
+    a("> Scenarios and ground truth are written by the repository's author. Nothing here is compared with any outside target.")
     a("")
     gt = meta["ground_truth"]
     a("## Run")
@@ -41,7 +42,7 @@ def render(s) -> str:
         a("")
     t = s["timing"]
     a(f"## Timing {CAP}")
-    a(f"- baseline build: {t['baseline_build_s']} s; PR run: mean {t['pr_run_mean_s']} s, max {t['pr_run_max_s']} s (tiny synthetic repository, one machine)")
+    a(f"- baseline build: {t['baseline_build_s']} s; PR run: mean {t['pr_run_mean_s']} s, max {t['pr_run_max_s']} s (one repository, one machine)")
     a("")
     a(f"## Misses: ground-truth workflows the tool did not report, and why {CAP}")
     any_ = False
@@ -67,5 +68,5 @@ def render(s) -> str:
         a("_None._")
     a("")
     a("## Method and limits")
-    a("See `docs/evaluation.md`. Small sample, author-written scenarios and ground truth: these numbers describe how the tool behaves on this synthetic sample, not on real code.")
+    a("See `docs/evaluation.md`. Author-written scenarios and ground truth: these numbers describe how the tool behaves on this repository's scenarios, not on other code.")
     return "\n".join(L) + "\n"

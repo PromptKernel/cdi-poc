@@ -8,8 +8,15 @@ import argparse, datetime, json, os, pathlib, shutil, sys
 
 from cdi.linker.graphio import Graph, load_config, load_fragments          # noqa: E402
 
-NOTICE = ("Structure only: static-analysis evidence from a small SYNTHETIC-extended sample (upstream sample code plus clearly marked synthetic additions). "
-          "It says nothing about real code bases.")
+NOTICE_PLAIN = "Structure only: static-analysis evidence from the scanners. It is not a statement about correctness, and not validated against other code bases."
+NOTICE_SYNTHETIC = ("Structure only: static-analysis evidence. Some of this data is flagged synthetic by the repository's configuration "
+                    "(written for demonstration, not by the project's authors); results on it say nothing about accuracy on real code.")
+
+
+def notice_for(graph):
+    """Wording driven by the `synthetic` flag the scanners set from the repository's config, not by a fixed claim about any sample."""
+    return NOTICE_SYNTHETIC if any(n.get("synthetic") for n in graph.nodes.values()) or any(e.get("synthetic") for e in graph.edges.values()) else NOTICE_PLAIN
+
 
 
 def node_json(n):
@@ -46,7 +53,7 @@ def load_graph(source, cfg, store_path=None):
 def graph_document(g, fresh, cfg, source):
     """The explorer's graph.json shape (also served by the API): {meta, nodes, edges}."""
     return {"meta": {"generated_at": datetime.datetime.now(datetime.timezone.utc).isoformat(timespec="seconds"), "source": source,
-                     "baseline": fresh, "notice": NOTICE,
+                     "baseline": fresh, "notice": notice_for(g),
                      "repos": {r["name"]: {"path": r["path"], "kind": r["kind"]} for r in cfg["repos"]["repos"]},
                      "counts": {"nodes": len(g.nodes), "edges": len(g.edges)}},
             "nodes": sorted((node_json(n) for n in g.nodes.values()), key=lambda n: n["id"]),

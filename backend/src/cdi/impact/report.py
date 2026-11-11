@@ -37,10 +37,10 @@ def render(res):
     a(f"# Impact report: {m['pr']} → {m['target']}")
     a("")
     if m["synthetic_notice"]:
-        a("> **Synthetic data.** At least one changed file is synthetic (written for this PoC, not upstream sample code); objects marked *synthetic* below. "
-          "Results on the synthetic sample say nothing about accuracy on real code.")
+        a("> **Synthetic data.** At least one changed file is flagged synthetic by this repository's configuration (written for demonstration, not by the project's authors); "
+          "objects marked *synthetic* below. Results on synthetic files say nothing about accuracy on real code.")
     else:
-        a("> Measured on the small synthetic-extended sample; results say nothing about accuracy on real code.")
+        a("> Static-analysis evidence only: every claim cites a stored edge, and none of it is validated against other code bases.")
     a("")
     if m["warnings"]:
         a("## ⚠ Warnings")
@@ -53,7 +53,7 @@ def render(res):
     a(f"- Baseline graph (read-only): commits {json.dumps({k: v[:8] for k, v in (m['baseline_commits'] or {}).items()})}, loaded {m['baseline_loaded_at']} ({m['baseline_mode']})")
     a(f"- Graph before/after PR (in memory; the stored baseline is not modified): nodes/edges {res['graph_counts']['baseline']} → {res['graph_counts']['after_pr']}")
     a(f"- Depth limits (config, placeholder): downstream {m['depth_limits']['downstream']}, upstream {m['depth_limits']['upstream']}")
-    a(f"- **PR run duration {t['total_pr_run']} s** (overlay scan {t['overlay_scan']} s; rest = query, mapping, traversal) — measured on this small synthetic sample only")
+    a(f"- **PR run duration {t['total_pr_run']} s** (overlay scan {t['overlay_scan']} s; rest = query, mapping, traversal) (measured on this repository and machine only)")
     if m["scan_plan"]:
         a(f"- Overlay scan plan: {json.dumps(m['scan_plan'])}")
     a("")
