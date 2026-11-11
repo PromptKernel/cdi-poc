@@ -34,9 +34,11 @@ def scan_cmd(project, repo, out, only=None):
 
 class Project:
     """A copy of config/ + samples/ in a temp dir, committed to its own git repo."""
-    def __init__(self, path):
+    def __init__(self, path, tweak=None):
         self.path = path
         shutil.copytree(ROOT / "config", path / "config")
+        if tweak:
+            tweak(path)
         shutil.copytree(ROOT / "samples", path / "samples", ignore=shutil.ignore_patterns("bin", "obj", "node_modules"))
         sh(["git", "init", "-q", "-b", "main"], cwd=path)
         sh(["git", "add", "-A"], cwd=path)
@@ -74,3 +76,8 @@ def full(project):
 
 def names(frag):
     return {n["id"]: n for n in frag["nodes"]}
+
+
+def make_branch(project, branch, edits, base="main"):
+    from scenarios import make_branch as mb
+    return mb(project.path, branch, edits, base, workdir=project.path.parent, ident=GIT_ID)
