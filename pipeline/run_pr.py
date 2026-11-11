@@ -120,8 +120,10 @@ def main(argv=None):
     print(f"[run_pr] state={summary['state']} mode={summary['mode']} skipped={summary['skipped']} error={summary['error']} exit={code} "
           f"duration={summary['duration_s']} s (measured on this small synthetic sample)")
     print(f"[run_pr] posted: {json.dumps(summary['post'])}")
-    for v in summary["violations"]:
-        print(f"[run_pr] POLICY {v['policy']}: {v['message']} at {v['repo']}:{v['file']}:{v['line']}")
+    for g in policy.group(summary["violations"]):
+        print(f"[run_pr] POLICY {g['policy']}: {g['message']} ({len(g['locations'])} location(s))")
+        for loc in g["locations"]:
+            print(f"[run_pr]    {loc['repo']}:{loc['file']}:{loc['line']}")
     sys.exit(code)
 
 

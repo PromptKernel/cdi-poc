@@ -46,9 +46,15 @@ def _render(result, b, ccfg, scale, violations, blocking):
     if blocking:
         lines += ["### Blocking policies (enabled for this run)"]
         if violations:
-            for v in violations:
-                lines.append(f"- ❌ `{v['policy']}`: {v['message']} — `{v['repo']}:{v['file']}:{v['line']}` via `{v['method']}` @{v['commit'][:8]}"
-                             + (f" — reason: {v['reason']}" if v.get("reason") else ""))
+            from .policy import group
+            for g in group(violations):
+                n = len(g["locations"])
+                lines.append(f"- ❌ `{g['policy']}`: {g['message']} ({n} location{'s' if n != 1 else ''})")
+                for loc in g["locations"]:
+                    via = (f" via {', '.join('`'+m+'`' for m in loc['methods'])}" + (f" @{loc['commits'][0][:8]}" if loc["commits"] else "")) if loc["methods"] else " (referenced from)"
+                    lines.append(f"  - `{loc['repo']}:{loc['file']}:{loc['line']}`{via}")
+                if g["reasons"]:
+                    lines.append(f"  - reason: {g['reasons'][0]}")
         else:
             lines.append("- no policy hit")
         lines.append("")

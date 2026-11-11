@@ -213,8 +213,19 @@ def test_blocking_on_fails_only_on_deterministic_policy_with_file_line_evidence(
     md = (tmp_path / "pr-comment.md").read_text()
     assert "### Blocking policies (enabled for this run)" in md and "Synthetic/DataAccess/DepartmentDataAccess.cs:24" in md
     assert json.loads((tmp_path / "pr-status.json").read_text())["status"]["state"] == "failed"
+    # one deleted procedure = ONE item (not one per reference), with every location listed underneath
+    block = md[md.index("### Blocking policies"):md.index("### Changed objects")]
+    items = [l for l in block.splitlines() if l.startswith("- ❌")]
+    assert len(items) == 1 and "`dbo.spGetDepartmentHeadcount` is referenced but no definition was found (3 locations)" in items[0]
+    locs = [l.strip() for l in block.splitlines() if l.startswith("  - `")]
+    assert [l.split("`")[1] for l in locs] == ["api:Synthetic/DataAccess/DepartmentDataAccess.cs:24", "api:Synthetic/DataAccess/SqlPatternsDataAccess.cs:42",
+                                              "db:synthetic/tests/test_spGetDepartmentHeadcount.sql:7"]
+    assert block.count("reason:") == 1 and "no definition was found in any scanned repo" in block
+    assert len(summary["violations"]) == 3, "the flat violations (3 raw hits) are still available in the summary"
 
     summary, code = go(world, "pr-f-route", tmp_path, blocking=True)
+    block = (tmp_path / "pr-comment.md").read_text()
+    assert block.count("- ❌") == 1 and "`GET api/Employee/Index`" in block and "web:src/app/services/employee.service.ts:26" in block
     assert code == 1 and {v["policy"] for v in summary["violations"]} == {"P2-route-unmatched-introduced"}
     assert (summary["violations"][0]["file"], summary["violations"][0]["line"]) == ("src/app/services/employee.service.ts", 26)
 
@@ -239,6 +250,51 @@ def test_blocking_does_not_turn_tool_errors_into_failures(world, tmp_path):
         raise RuntimeError("boom")
     summary, code = go(world, "pr-f-route", tmp_path, loader=broken, blocking=True)
     assert code == 0 and summary["state"] == "error"
+
+
+def _hit(**kw):
+    base = {"repo": "api", "file": "A.cs", "line": 7, "method": "m", "commit": "a" * 40, "evidence": "x", "reason": "r", "synthetic": False,
+            "source_node": "n", "source_kind": "SQL_REF", "type": "RESOLVES_TO", "confidence": "UNRESOLVED", "target_cause": "referenced_not_found",
+            "target_kind": "UNRESOLVED", "target": "t", "attrs": {}}
+    base.update(kw)
+    return base
+
+
+def test_grouping_collapses_hits_on_the_same_missing_object_and_lists_locations():
+    res = {"new_unresolved": [
+        _hit(source_node="dbo.spGone", file="A.cs", line=7, method="linker:sql-name-match", attrs={"referenced_from": ["api:A.cs:7", "api:B.cs:42"]}),
+        _hit(source_node="DBO.SPGONE", repo="db", file="t.sql", line=3, method="linker:sql-name-match"),          # same object, different case/repo
+        _hit(type="CALLS_PROCEDURE", target_kind="SQL_REF", target_cause=None, source_node="TestX", source_kind="TEST", target="dbo.spGone",
+             repo="db", file="t.sql", line=3, method="scriptdom:exec-procedure"),                                     # scanner-level reference, same file:line
+        _hit(source_node="dbo.spOther", file="C.cs", line=9)]}
+    flat = policy.evaluate(res, ["P1-referenced-not-found-introduced"])
+    assert len(flat) == 4
+    groups = policy.group(flat)
+    assert [g["missing_object"].lower() for g in groups] == ["dbo.spgone", "dbo.spother"]
+    gone = groups[0]
+    assert [(l["repo"], l["file"], l["line"]) for l in gone["locations"]] == [("api", "A.cs", 7), ("api", "B.cs", 42), ("db", "t.sql", 3)]
+    db_loc = gone["locations"][2]
+    assert db_loc["methods"] == ["linker:sql-name-match", "scriptdom:exec-procedure"], "two hits at the same file:line are merged into one location"
+    assert gone["locations"][1]["methods"] == [], "a site known only from referenced_from has no method of its own"
+    assert len(groups[1]["locations"]) == 1
+
+
+def test_grouping_keeps_different_policies_and_objects_apart():
+    res = {"new_unresolved": [_hit(source_node="dbo.p"), _hit(type="ROUTES_TO", target_cause="no_matching_route", source_node="dbo.p")]}
+    groups = policy.group(policy.evaluate(res, list(policy.KNOWN)))
+    assert {(g["policy"], g["missing_object"]) for g in groups} == {("P1-referenced-not-found-introduced", "dbo.p"), ("P2-route-unmatched-introduced", "dbo.p")}
+
+
+def test_comment_groups_blocking_hits_per_missing_object():
+    res = fake_result(n_consumers=1, n_conv=0, n_unres=0)
+    hits = [policy._violation("P1-referenced-not-found-introduced", {"repo": r, "file": f, "line": l, "method": m, "commit": "a" * 40, "type": "RESOLVES_TO",
+                                                                      "reason": "no definition", "evidence": "e", "attrs": {}}, "`dbo.spX` is referenced but no definition was found", "dbo.spX")
+            for r, f, l, m in (("api", "A.cs", 24, "m1"), ("api", "B.cs", 42, "m1"), ("db", "t.sql", 7, "m2"))]
+    md, _ = comment.build_report_comment(res, BASIS, CI["comment"], hits, blocking=True)
+    block = md[md.index("### Blocking policies"):md.index("### Changed objects")]
+    assert block.count("- ❌") == 1 and "(3 locations)" in block and block.count("\n  - `") == 3 and block.count("reason:") == 1
+    md1, _ = comment.build_report_comment(res, BASIS, CI["comment"], hits[:1], blocking=True)
+    assert "(1 location)" in md1
 
 
 def test_policy_unit_behaviour_and_unknown_ids():
