@@ -21,6 +21,11 @@ export class DepartmentReportService {
     return this._http.get(this.baseUrl + 'api/Department/Employees/' + department);
   }
 
+  // WHOLE URL IS A RUNTIME VALUE: nothing static to match against API routes.
+  exportReport(url: string) {
+    return this._http.get(url);
+  }
+
   archive(id: number) {
     return this._http.post(this.baseUrl + 'api/Department/Archive/' + id, {});
   }
