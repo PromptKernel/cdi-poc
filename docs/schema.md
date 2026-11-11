@@ -18,6 +18,13 @@ All three scanners, the linker and the impact engine use this one format. Machin
 Additional fields: `id`, `source`, `target`, `synthetic` (the evidencing file/line is in a synthetic path or carries the
 synthetic marker), `evidence` (source line), `reason` (**mandatory** when confidence is `INFERRED` or `UNRESOLVED`), `attrs`.
 
+## Line convention
+An edge's `location.line` is the line where the **evidencing expression starts**, not where each of its parts is. Examples:
+a method call is the line of the call expression; a SQL table reference is the line of the table name; for a `SqlCommand` built with an
+object initializer (`new SqlCommand { CommandText = "..." }`) or given its text by a later `cmd.CommandText = "..."` assignment, the line is the
+`new SqlCommand` line (the construction), not the line of the property assignment. Node `location` is the declaration's first to last line
+(attributes included).
+
 ## Commit IDs
 A *logical repo* is a name in `config/repos.yml` mapped to a folder (`path`). In this PoC all logical repos are folders of
 one git repository. Each scanner computes the commit ID of its logical repo as

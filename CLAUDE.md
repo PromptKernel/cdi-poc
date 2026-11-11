@@ -15,7 +15,7 @@ carries them; later milestones link them across repos, load a graph store, and r
 - Never promote an INFERRED or UNRESOLVED edge to CONFIRMED_STATIC.
 - Keep paths, route patterns, naming conventions and rule thresholds in `config/`; nothing hardcoded to the samples.
 - Anything that is not upstream sample code is labelled synthetic. Do not present synthetic results as real-world accuracy.
-- Scanners refuse to run on a dirty git working tree (commit first).
+- Scanners refuse to run only when the logical repo's own folder has uncommitted changes (changes elsewhere in the git repo are ignored); commit first.
 - No cloud calls: CI and AI integrations are local stubs.
 - `private/` and `docs/source/` are git-ignored; never commit them.
 
