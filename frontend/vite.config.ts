@@ -4,6 +4,7 @@ import react from '@vitejs/plugin-react'
 import fs from 'node:fs'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
+import { runtimeConfigFromEnv, serverOptions } from './tools/dev-env'
 
 const here = path.dirname(fileURLToPath(import.meta.url))
 // The explorer reads generated data (never committed) from out/explorer, written by `python -m cdi.export`.
@@ -18,6 +19,8 @@ function serveData(): Plugin {
       res.setHeader('Content-Type', 'application/json'); res.setHeader('Cache-Control', 'no-store')
       return res.end(fs.readFileSync(process.env.EXPLORER_RUNTIME_CONFIG))
     }
+    const fromEnv = req.url?.split('?')[0] === '/config.json' ? runtimeConfigFromEnv(process.env) : null     // CDI_API_BASE_URL (see tools/dev-env.ts)
+    if (fromEnv) { res.setHeader('Content-Type', 'application/json'); res.setHeader('Cache-Control', 'no-store'); return res.end(fromEnv) }
     if (!req.url?.startsWith('/data/')) return next()
     const rel = decodeURIComponent(req.url.slice('/data/'.length).split('?')[0])
     const file = path.resolve(dataDir, rel)
@@ -32,4 +35,5 @@ function serveData(): Plugin {
   return { name: 'serve-explorer-data', configureServer: (s) => { s.middlewares.use(mw) }, configurePreviewServer: (s) => { s.middlewares.use(mw) } }
 }
 
-export default defineConfig({ base: './', plugins: [react(), serveData()], test: { include: ['src/**/*.test.ts'], environment: 'node' }, server: { host: '127.0.0.1', port: 5173 }, preview: { host: '127.0.0.1' } })
+export default defineConfig({ base: './', plugins: [react(), serveData()], test: { include: ['src/**/*.test.ts', 'tools/**/*.test.ts'], environment: 'node' },
+  server: serverOptions(process.env, 5173), preview: serverOptions(process.env, 4173) })

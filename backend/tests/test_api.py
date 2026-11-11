@@ -181,9 +181,11 @@ def test_the_api_never_writes_the_store(baseline, monkeypatch):
     assert baseline.read_bytes() == before
 
 
-def test_serve_binds_to_localhost_by_default_and_refuses_open_binding_without_a_token():
+def test_serve_binds_to_localhost_by_default_and_refuses_open_binding_without_a_token(monkeypatch):
+    for v in ("CDI_API_HOST", "CDI_API_PORT", "CDI_CORS_ORIGINS"):
+        monkeypatch.delenv(v, raising=False)
     a = serve.build_parser().parse_args([])
-    assert a.host == "127.0.0.1" and a.port == 8000 and a.token_env == "CDI_API_TOKEN" and a.cors_origin == []
+    assert a.host == "127.0.0.1" and a.port == 8000 and a.token_env == "CDI_API_TOKEN" and a.cors_origin is None
     serve.check_bind("127.0.0.1", False); serve.check_bind("localhost", False); serve.check_bind("::1", False)
     for host in ("0.0.0.0", "192.168.1.5", "example.com", "::"):
         with pytest.raises(SystemExit, match="without authentication"):
@@ -212,3 +214,25 @@ def test_openapi_document_describes_every_operation(baseline):
     assert "HTTPBearer" in doc["components"]["securitySchemes"]
     assert "/api/health" in doc["paths"] and "security" not in doc["paths"]["/api/health"]["get"]
     assert "Hop" in doc["components"]["schemas"] and "from" in doc["components"]["schemas"]["Hop"]["properties"]
+
+
+# ---------------------------------------------------------------- environment-driven defaults, no wildcard CORS
+def test_host_port_and_origins_come_from_the_environment_with_documented_defaults(monkeypatch):
+    monkeypatch.setenv("CDI_API_PORT", "8123"); monkeypatch.setenv("CDI_API_HOST", "127.0.0.1"); monkeypatch.setenv("CDI_CORS_ORIGINS", "http://127.0.0.1:5999, https://ui.example.invalid")
+    a = serve.build_parser().parse_args([])
+    assert (a.host, a.port) == ("127.0.0.1", 8123)
+    assert serve.cors_origins(a) == ["http://127.0.0.1:5999", "https://ui.example.invalid"]
+    a = serve.build_parser().parse_args(["--port", "9", "--cors-origin", "http://x.example:1"])
+    assert a.port == 9 and serve.cors_origins(a) == ["http://x.example:1"], "an explicit option beats the environment"
+    monkeypatch.delenv("CDI_API_PORT"); monkeypatch.delenv("CDI_API_HOST"); monkeypatch.delenv("CDI_CORS_ORIGINS")
+    a = serve.build_parser().parse_args([])
+    assert (a.host, a.port) == ("127.0.0.1", 8000) and serve.cors_origins(a) == []
+
+
+@pytest.mark.parametrize("bad", ["*", "http://*.example.com", "null", "127.0.0.1:5173", "file://x"])
+def test_wildcard_and_malformed_cors_origins_are_refused(bad):
+    a = serve.build_parser().parse_args(["--cors-origin", bad])
+    with pytest.raises(SystemExit, match="no wildcards"):
+        serve.cors_origins(a)
+    with pytest.raises(SystemExit, match="no wildcards"):
+        serve.cors_origins(serve.build_parser().parse_args([]), {"CDI_CORS_ORIGINS": bad})
