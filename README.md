@@ -3,8 +3,8 @@
 A cross-layer dependency graph and PR impact proof of concept: static scanners for a frontend (TypeScript/Angular), an API
 (C#/.NET) and SQL Server code emit one shared, evidence-backed graph schema.
 
-**Status: milestone 2 of the PoC (schema, three scanners, cross-repo linker, Neo4j load, bidirectional trace).** Impact engine, PR report,
-CI wrapper, explorer and evaluation are planned and not in this repository yet. See `LIMITATIONS.md`.
+**Status: milestone 3 of the PoC (schema, three scanners, cross-repo linker, Neo4j load, bidirectional trace, baseline runner, PR impact report).** CI wrapper,
+explorer and evaluation are planned and not in this repository yet. See `LIMITATIONS.md`.
 
 ## What is real and what is synthetic
 - `samples/*` start from an upstream MIT-licensed sample (Angular + ASP.NET Core + ADO.NET), see `NOTICE` and `docs/changes.md`.
@@ -36,7 +36,11 @@ python3 -m venv .venv && .venv/bin/pip install -r requirements.txt
    `.venv/bin/python -m impact.trace FetchEmployeeComponent --kind UI_COMPONENT --direction forward --backend neo4j`
    `.venv/bin/python -m impact.trace dbo.tblEmployee --kind SQL_TABLE --direction reverse --backend neo4j`
    (`--backend memory` runs the same traversal without a database.) UNRESOLVED links are listed with their reason, never traversed.
-6. `.venv/bin/python tools/show_workflow.py FetchEmployeeComponent spGetAllEmployees` - raw scanner edges with the cited source line re-read from disk.
+6. Baseline runner (replaces steps 2 and 4 for day-to-day use): `.venv/bin/python -m pipeline.baseline full` (scan + link + replace the graph in Neo4j) or
+   `.venv/bin/python -m pipeline.baseline incremental --from <rev> --to <rev>` (changed files only).
+7. PR impact report: `.venv/bin/python tools/scenarios.py` creates six local demo branches (never pushed), then
+   `.venv/bin/python -m impact.cli --target main --pr pr-e-delete-proc` writes `out/report-pr-e-delete-proc.md` / `.json`. See `docs/impact-report.md`.
+8. `.venv/bin/python tools/show_workflow.py FetchEmployeeComponent spGetAllEmployees` - raw scanner edges with the cited source line re-read from disk.
 
 ## Tests
 `.venv/bin/python -m pytest tests` (needs the setup above and the .NET 10 SDK). The scanner tests run the real scanners on a temporary

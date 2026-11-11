@@ -1,6 +1,6 @@
 # Limitations (what this PoC does not prove)
 
-Status: milestone 2 (schema, scanners, linker, Neo4j load, bidirectional trace). Items for later milestones are marked *(planned)*.
+Status: milestone 3 (schema, scanners, linker, Neo4j load, trace, baseline runner, PR impact report). Items for later milestones are marked *(planned)*.
 
 * **Multiple repos are simulated with folders.** `samples/web|api|db` are folders of one git repository. Commit IDs come from
   `git log -1 -- <folder>`. The PoC does not test real multi-repo checkouts, per-repo branches, access control or cross-repo PR flows.
@@ -34,5 +34,15 @@ Status: milestone 2 (schema, scanners, linker, Neo4j load, bidirectional trace).
 * **Traversal skips UNRESOLVED links**, so anything reachable only through dynamic SQL, a config-built route or a missing definition is
   invisible to the trace (it is listed as an unresolved link at the node where the chain stops). This lowers recall by construction.
 * **Neo4j is a local single Community instance** with no authentication beyond a local password and no persistence guarantees beyond a Docker volume.
-* **Not built *(planned)*:** impact engine, PR report, CI wrapper, explorer API and UI, evaluation harness.
+* **Impact results on the synthetic sample say nothing about accuracy on real code.** The six demo scenarios, the sample, the risk rules and the depth limits are
+  written by the tool author; the timings are from a very small repository. No false-positive or false-negative rate on real changes has been measured.
+* **Risk labels are rule outputs, not predictions.** The rules in `config/risk-rules.yml` are unvalidated defaults and the critical list is a placeholder.
+* **Incremental updates re-scan changed files plus files that depend on changed definitions**, not a full transitive closure. Cross-file facts that a scanner reads
+  from elsewhere (for example the DI registration text shown in an inferred dispatch reason, or a base class changed in another file) can leave a stale `reason` or attribute
+  until the next full rebuild; node and edge ids are checked for equality with a full rebuild only on the cases in `tests/test_baseline.py`.
+* **Impact is computed on the target-tip baseline plus the PR overlay**, not on a real merge of the PR into the target; semantic conflicts and merge results are not modelled.
+  Renames are treated as delete + add. Generated files, build-time code and non-scanned file types are reported as "not scanned".
+* **Consumers of a changed object are the baseline's consumers**: dependents that exist only through UNRESOLVED links (dynamic SQL, config-built routes) cannot be listed;
+  section C3 only lists unresolved requests as context.
+* **Not built *(planned)*:** CI wrapper, explorer API and UI, evaluation harness.
 * **No licence for the tooling.** The repository has no top-level licence file; only the upstream-derived sample is MIT.

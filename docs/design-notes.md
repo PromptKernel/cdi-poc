@@ -17,3 +17,5 @@ Pipeline: scanners -> shared graph schema -> linker (cross-repo edges) -> graph 
   every edge field as properties. Loading is idempotent (MERGE by id).
 * **Trace**: `impact/traverse.py` (in-memory) and `graph/neo4j_query.py` (Cypher) return the same maximal paths; tests assert they are identical.
   A path's confidence is its weakest hop.
+* **Baseline and PR runs**: the baseline runner writes the graph (full replace, or incremental sync plus a whole-graph re-link). The impact engine reads it read-only,
+  overlays the PR's changed files in memory, re-links, and reports what the PR changes. Details in `docs/impact-report.md`.
