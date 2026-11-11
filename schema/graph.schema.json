@@ -68,6 +68,13 @@
         "type": "string"
       },
       "description": "files that were allowed to emit nodes/edges in an overlay scan"
+    },
+    "inputs": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "string"
+      },
+      "description": "linker output only: logical repo -> commit_id of the scanner fragments it consumed; the fragment commit_id is a SHA-1 over these"
     }
   },
   "$defs": {
