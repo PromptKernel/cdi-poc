@@ -19,6 +19,11 @@ carries them; later milestones link them across repos, load a graph store, and r
 - No cloud calls: CI and AI integrations are local stubs.
 - `private/` and `docs/source/` are git-ignored; never commit them.
 
+## Safety rules (always)
+- Never delete files or folders without first listing exactly what will be removed and getting the owner's approval.
+- Never run `rm -rf` (or any recursive delete) outside this repository.
+- Never push without first showing the pre-push check output (private-name file grep, name search, gitleaks, author check) to the owner.
+
 ## Commands
 - Setup: `python3 -m venv .venv && .venv/bin/pip install -r requirements.txt`; `(cd scanners/ts-morph && npm ci)`; .NET 10 SDK required.
 - Scan: `pipeline/scan_all.sh` -> `out/graph/<repo>.json`.
