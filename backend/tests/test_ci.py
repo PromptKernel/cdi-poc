@@ -157,7 +157,7 @@ def test_lower_priority_sections_shrink_before_confirmed_ones():
 def test_advisory_exit_code_is_zero_even_when_policies_would_fire(world, tmp_path):
     summary, code = go(world, "pr-e-delete-proc", tmp_path)               # introduces a referenced-but-undefined proc
     assert code == 0 and summary["state"] == "succeeded" and summary["violations"] == [] and summary["mode"] == "advisory"
-    assert "advisory" in json.loads((tmp_path / "pr-status.json").read_text())["status"]["description"]
+    assert "advisory" in json.loads((tmp_path / "pr-status.json").read_text())["status"]["description"].lower()
 
 
 def test_tool_failure_exits_zero_with_error_state_and_explanatory_comment(world, tmp_path):
@@ -524,3 +524,44 @@ def test_footer_points_at_local_files_unless_a_report_location_is_given():
     assert "_Full report: `out/report-pr-9.md` and `.json`. PR run 1.0 s._" in md and "synthetic-scale" not in md
     md, _ = comment.build_report_comment(fake_result(2, 2, 1), {**BASIS, "report_ref": "in the log of [this run](https://x.invalid/r/1)"}, CI["comment"])
     assert "_Full report: in the log of [this run](https://x.invalid/r/1). PR run 1.0 s._" in md and "out/report-" not in md
+
+
+# ------------------------------------------------------------------ wording found on the real run
+def test_a_high_risk_label_says_advisory_first_and_keeps_state_and_exit_code(world, tmp_path):
+    summary, code = go(world, "pr-f-route", tmp_path)                         # route change: rule R3 -> High
+    desc = json.loads((tmp_path / "pr-status.json").read_text())["status"]["description"]
+    assert desc.startswith("Advisory only (status stays success): highest risk label High;") and len(desc) <= 140
+    assert summary["state"] == "succeeded" and code == 0
+    assert json.loads((tmp_path / "pr-status.json").read_text())["status"]["state"] == "succeeded"
+
+
+def test_other_labels_keep_the_plain_advisory_wording(world, tmp_path):
+    summary, code = go(world, "pr-a-sp-body", tmp_path)                       # Medium
+    desc = json.loads((tmp_path / "pr-status.json").read_text())["status"]["description"]
+    assert desc.startswith("advisory: ") and "Medium" in desc and "stays success" not in desc and summary["state"] == "succeeded" and code == 0
+
+
+def test_critical_is_worded_like_high():
+    import types
+    from cdi.pipeline import run_pr
+    src = pathlib.Path(run_pr.__file__).read_text()
+    assert 'label in ("High", "Critical")' in src
+
+
+def test_comment_markdown_survives_github_rendering_rules(world, tmp_path):
+    go(world, "pr-f-route", tmp_path)
+    md = (tmp_path / "pr-comment.md").read_text().splitlines()
+    i = next(n for n, l in enumerate(md) if "declared attributes changed" in l)
+    assert md[i - 1] == "" and md[i - 2].startswith("|"), "a blank line separates the table from the line under it"
+    assert "**Inferred consumers (0)**" not in "\n".join(md), "an empty inferred list is not announced"
+    for n, l in enumerate(md):
+        if l.startswith("**") and n and md[n - 1].startswith("- "):
+            pytest.fail(f"bold line {l[:40]!r} directly under a list item (it would be swallowed by the item)")
+
+
+def test_lower_confidence_section_says_none_when_empty():
+    r = fake_result(2, 0, 0)
+    for o in r["objects"]:
+        o["consumers"] = {"business": [c for c in o["consumers"]["business"] if c["confidence"] == "CONFIRMED_STATIC"]}
+    md, _ = comment.build_report_comment(r, BASIS, CI["comment"])
+    assert "### Lower confidence\nNone." in md

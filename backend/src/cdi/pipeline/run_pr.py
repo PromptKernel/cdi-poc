@@ -73,8 +73,15 @@ def run(args, root=None, tool_root=TOOL_ROOT, now=time.perf_counter, load_baseli
         violations = policy.evaluate(result, ci["blocking"]["policies"]) if blocking else []
         md, info = comment.build_report_comment(result, basis, ci["comment"], violations, blocking)
         label = highest_label(result["objects"], cfg["risk-rules"]["labels"])
-        desc = (f"{'blocking policy hit: ' + str(len(violations)) if violations else 'advisory'}: {len(result['objects'])} changed object(s)"
-                f"{', highest risk label ' + label if label else ', no risk label'}; {len(result['new_unresolved'])} unresolved introduced")
+        if violations:
+            desc = (f"blocking policy hit: {len(violations)}: {len(result['objects'])} changed object(s)"
+                    f"{', highest risk label ' + label if label else ', no risk label'}; {len(result['new_unresolved'])} unresolved introduced")
+        elif label in ("High", "Critical"):       # a red-looking label must not be mistaken for a failing check: the first words say it is advisory
+            desc = (f"Advisory only (status stays success): highest risk label {label}; {len(result['objects'])} changed object(s); "
+                    f"{len(result['new_unresolved'])} unresolved introduced")
+        else:
+            desc = (f"advisory: {len(result['objects'])} changed object(s)"
+                    f"{', highest risk label ' + label if label else ', no risk label'}; {len(result['new_unresolved'])} unresolved introduced")
         state = "failed" if (blocking and violations) else "succeeded"
         summary.update(state=state, violations=violations, comment=info, objects=len(result["objects"]), warnings=result["meta"]["warnings"])
     except BaselineMissing as e:
@@ -121,7 +128,7 @@ def main(argv=None):
     a = ap.parse_args(argv)
     summary, code = run(a)
     print(f"[run_pr] state={summary['state']} mode={summary['mode']} skipped={summary['skipped']} error={summary['error']} exit={code} "
-          f"duration={summary['duration_s']} s (measured on this small synthetic sample)")
+          f"duration={summary['duration_s']} s")
     print(f"[run_pr] posted: {json.dumps(summary['post'])}")
     for g in policy.group(summary["violations"]):
         print(f"[run_pr] POLICY {g['policy']}: {g['message']} ({len(g['locations'])} location(s))")

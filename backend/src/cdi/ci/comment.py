@@ -72,10 +72,13 @@ def _render(result, b, ccfg, scale, violations, blocking):
         lines.append(f"| `{o['name']}`{' (synthetic)' if o['synthetic'] else ''} | {o['kind']} | {o['change']} | {rk} |")
     if len(objs) > max(lim("max_confirmed_consumers"), 3):
         lines.append(f"| … +{len(objs) - max(lim('max_confirmed_consumers'), 3)} more | | | see full report |")
+    attr_lines = []
     for o in objs[:max(lim("max_confirmed_consumers"), 3)]:
         if o.get("attr_changes"):
-            lines.append(f"`{o['name'].split('.')[-2] + '.' + o['name'].split('.')[-1] if '(' in o['name'] else o['name']}` declared attributes changed: "
+            attr_lines.append(f"`{o['name'].split('.')[-2] + '.' + o['name'].split('.')[-1] if '(' in o['name'] else o['name']}` declared attributes changed: "
                          + "; ".join(f"`{c['attr']}` `{c['before']}` → `{c['after']}`" for c in o["attr_changes"] if c["attr"] != "route_normalized"))
+    if attr_lines:                     # a blank line is required: a line directly under a table is rendered as one more table row
+        lines += [""] + attr_lines
     lines.append("")
 
     # 1. CONFIRMED consumers
@@ -131,16 +134,22 @@ def _render(result, b, ccfg, scale, violations, blocking):
     # 4. INFERRED (lower confidence)
     inf = [(o["name"], c) for o in objs for g in o["consumers"].values() for c in g if c["confidence"] == "INFERRED"]
     conv = [t for t in result["tests"] if t["rank"] == 2]
-    lines += ["### Lower confidence", f"**Inferred consumers ({len(inf)})** — at least one hop is inferred (for example DI-decided dispatch); listed in the full report with the inferred hop flagged."]
-    for n, c in inf[:lim("max_inferred_consumers")]:
-        lines.append(f"- {c['kind']} `{c['name']}` (via `{n}`)")
-    m = _more(len(inf), min(len(inf), lim("max_inferred_consumers")))
-    if m: lines.append(m)
-    lines.append(f"**Naming/file-convention tests ({len(conv)})** — INFERRED; a spec file maps to every method of its source file, so this list over-selects.")
-    for t in conv[:lim("max_convention_tests")]:
-        lines.append(f"- `{t['name']}`")
-    m = _more(len(conv), min(len(conv), lim("max_convention_tests")))
-    if m: lines.append(m)
+    lines += ["### Lower confidence"]
+    if inf:
+        lines.append(f"**Inferred consumers ({len(inf)})** — at least one hop is inferred (for example DI-decided dispatch); listed in the full report with the inferred hop flagged.")
+        for n, c in inf[:lim("max_inferred_consumers")]:
+            lines.append(f"- {c['kind']} `{c['name']}` (via `{n}`)")
+        m = _more(len(inf), min(len(inf), lim("max_inferred_consumers")))
+        if m: lines.append(m)
+        lines.append("")                 # a bold line right under list items would be swallowed by the last item
+    if conv:
+        lines.append(f"**Naming/file-convention tests ({len(conv)})** — INFERRED; a spec file maps to every method of its source file, so this list over-selects.")
+        for t in conv[:lim("max_convention_tests")]:
+            lines.append(f"- `{t['name']}`")
+        m = _more(len(conv), min(len(conv), lim("max_convention_tests")))
+        if m: lines.append(m)
+    if not inf and not conv:
+        lines.append("None.")
     where = b.get("report_ref") or f"`out/report-{b['pr_name']}.md` and `.json`"
     lines += ["", f"_Full report: {where}. PR run {meta['timing_s']['total_pr_run']} s._"]
     return lines
