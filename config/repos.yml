@@ -1,0 +1,27 @@
+# Logical repositories to analyse: name -> folder. Paths are relative to this file's parent (the PoC root) unless absolute.
+# In this PoC the three logical repos are folders of ONE git repository (see LIMITATIONS.md). Point `path` at separate
+# checkouts to analyse real multi-repo setups; nothing else in the tooling depends on the folder layout.
+repos:
+  - name: web
+    path: samples/web
+    kind: frontend          # frontend | api | sql
+    main_branch: main
+    include: ["src/**/*.ts"]
+    exclude: ["**/node_modules/**", "**/*.d.ts", "e2e/**"]
+  - name: api
+    path: samples/api
+    kind: api
+    main_branch: main
+    include: ["**/*.cs"]
+    exclude: ["**/bin/**", "**/obj/**"]
+  - name: db
+    path: samples/db
+    kind: sql
+    main_branch: main
+    include: ["**/*.sql"]
+    exclude: []
+
+# What counts as "synthetic" (PoC additions to the base sample). Used to label nodes/edges and reports.
+synthetic:
+  path_segments: ["synthetic", "Synthetic"]
+  header_marker: "SYNTHETIC"      # a line containing this marker marks that line (and files whose first 5 lines contain it) as synthetic

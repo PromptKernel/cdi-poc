@@ -1,0 +1,25 @@
+# Naming conventions: layer classification, SQL name normalisation, test mapping.
+layers:
+  # first match wins; matched against the C# class name. kind is the node kind given to its methods.
+  - { match: "Controller$",       kind: API_ENDPOINT,        note: "actions"  }
+  - { match: "DataAccess(Layer)?$", kind: DATA_ACCESS_METHOD }
+  - { match: "(Service|Manager)$", kind: SERVICE_METHOD }
+sql:
+  default_schema: dbo
+  # object kinds are decided from the DDL, not from names; prefixes below are only used for display hints
+  procedure_prefixes: [sp, usp]
+tests:
+  annotation_tag: "@covers"
+  csharp:
+    test_attributes: [Fact, Theory, Test, TestMethod]
+    # <Target>_<Member>_<Behaviour> => node "<Target>.<Member>"
+    # files under these folders are test code: implementations declared there (fakes/mocks) are not production dispatch targets
+    test_dir_markers: ["tests/", "Tests/"]
+    method_pattern: "^(?P<target>[A-Za-z0-9]+)_(?P<member>[A-Za-z0-9]+)_.+$"
+  typescript:
+    # file naming: X.spec.ts covers X.ts (same directory)
+    spec_suffix: ".spec.ts"
+    source_suffix: ".ts"
+  sql:
+    # tests live in files under these folders; mapping is annotation-only ("-- @covers dbo.proc")
+    test_dir_markers: ["tests/"]

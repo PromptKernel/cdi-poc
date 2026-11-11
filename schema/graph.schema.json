@@ -1,0 +1,86 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.invalid/code-dependency-intelligence/graph.schema.json",
+  "title": "Graph fragment emitted by a scanner (and by the linker)",
+  "type": "object",
+  "required": ["schema_version", "repo", "commit_id", "scanner", "nodes", "edges"],
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": { "const": "1.0" },
+    "repo": { "type": "string", "minLength": 1 },
+    "commit_id": { "type": "string", "pattern": "^[0-9a-f]{7,40}$" },
+    "scanned_at": { "type": "string" },
+    "scanner": {
+      "type": "object",
+      "required": ["name"],
+      "additionalProperties": false,
+      "properties": { "name": { "type": "string" }, "version": { "type": "string" } }
+    },
+    "files_scanned": { "type": "integer", "minimum": 0 },
+    "nodes": { "type": "array", "items": { "$ref": "#/$defs/node" } },
+    "edges": { "type": "array", "items": { "$ref": "#/$defs/edge" } }
+  },
+  "$defs": {
+    "node_kind": {
+      "enum": ["UI_COMPONENT", "UI_SERVICE_METHOD", "UI_MODEL", "HTTP_REQUEST", "API_ENDPOINT",
+               "SERVICE_METHOD", "DATA_ACCESS_METHOD", "METHOD", "INTERFACE_METHOD",
+               "SQL_REF", "SQL_PROC", "SQL_VIEW", "SQL_TABLE", "SQL_COLUMN", "TEST", "UNRESOLVED"]
+    },
+    "edge_type": {
+      "enum": ["CALLS", "DISPATCHES_TO", "USES_TYPE", "MAKES_REQUEST", "ROUTES_TO",
+               "CALLS_PROCEDURE", "RESOLVES_TO", "READS_TABLE", "WRITES_TABLE", "READS_VIEW",
+               "EXECUTES_DYNAMIC_SQL", "TESTS"]
+    },
+    "location": {
+      "type": "object",
+      "required": ["line"],
+      "additionalProperties": false,
+      "properties": {
+        "line": { "type": "integer", "minimum": 1 },
+        "column": { "type": "integer", "minimum": 1 },
+        "end_line": { "type": "integer", "minimum": 1 },
+        "end_column": { "type": "integer", "minimum": 1 }
+      }
+    },
+    "node": {
+      "type": "object",
+      "required": ["id", "kind", "name", "repo", "synthetic"],
+      "additionalProperties": false,
+      "properties": {
+        "id": { "type": "string", "pattern": "^[a-z0-9_-]+:[a-z_]+:.+$", "description": "{repo}:{kind-slug}:{qualified-name}" },
+        "kind": { "$ref": "#/$defs/node_kind" },
+        "name": { "type": "string" },
+        "repo": { "type": "string" },
+        "file": { "type": "string", "description": "repo-relative path, forward slashes" },
+        "location": { "$ref": "#/$defs/location" },
+        "synthetic": { "type": "boolean", "description": "true if the defining file lives in a synthetic path" },
+        "attrs": { "type": "object" }
+      }
+    },
+    "edge": {
+      "type": "object",
+      "required": ["id", "type", "source", "target", "source_file", "location", "analysis_method", "confidence", "commit_id", "repo", "synthetic"],
+      "additionalProperties": false,
+      "properties": {
+        "id": { "type": "string" },
+        "type": { "$ref": "#/$defs/edge_type", "description": "relationship type" },
+        "source": { "type": "string" },
+        "target": { "type": "string" },
+        "source_file": { "type": "string", "description": "repo-relative file where the relationship is evidenced" },
+        "location": { "$ref": "#/$defs/location" },
+        "analysis_method": { "type": "string", "description": "e.g. roslyn:semantic-invocation, tsmorph:type-resolved-call, scriptdom:table-reference, linker:route-match" },
+        "confidence": { "enum": ["CONFIRMED_STATIC", "INFERRED", "UNRESOLVED"] },
+        "commit_id": { "type": "string", "pattern": "^[0-9a-f]{7,40}$", "description": "commit of the repo that contains source_file" },
+        "repo": { "type": "string", "description": "repo that contains source_file" },
+        "synthetic": { "type": "boolean" },
+        "reason": { "type": "string", "description": "REQUIRED when confidence is INFERRED or UNRESOLVED" },
+        "evidence": { "type": "string", "description": "source text snippet at location" },
+        "attrs": { "type": "object" }
+      },
+      "allOf": [
+        { "if": { "properties": { "confidence": { "enum": ["INFERRED", "UNRESOLVED"] } }, "required": ["confidence"] },
+          "then": { "required": ["reason"] } }
+      ]
+    }
+  }
+}
