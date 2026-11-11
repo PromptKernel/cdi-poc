@@ -4,7 +4,7 @@ Precedence (low to high): tool defaults (profiles/_base.yml) < framework profile
 overrides (`CDI__section__key=<yaml value>`). The merged result is validated against backend/schema/config.schema.json.
 Secrets never live in the config; the file only names the environment variable that holds them."""
 from __future__ import annotations
-import copy, hashlib, json, os, pathlib, tempfile
+import atexit, copy, hashlib, json, os, pathlib, tempfile
 import jsonschema, yaml
 from cdi import plugins
 from cdi.paths import SCHEMA_DIR
@@ -144,18 +144,55 @@ def scanner_view(cfg: dict, absolute_paths=False) -> dict:
     }
 
 
+CONFIG_DIR_PREFIX = "cdi-scanner-config-"
+VIEW_FILES = ("repos.yml", "routes.yml", "naming.yml")
+_MATERIALIZED: dict[str, pathlib.Path] = {}          # content hash -> the directory THIS process created for it
+_atexit_registered = False
+
+
 def materialize(cfg: dict) -> pathlib.Path:
-    """Write the scanner view to a content-addressed folder under the system temp dir (idempotent; nothing is deleted) and return it."""
+    """Write the scanner view to a private directory under the system temp dir and return it. One directory per distinct view per process (a repeated
+    call returns the same one). It is removed when the process ends, on success or failure (cleanup_materialized); only directories created here are ever removed."""
+    global _atexit_registered
     view = scanner_view(cfg, absolute_paths=True)
-    blob = json.dumps(view, sort_keys=True)
-    d = pathlib.Path(tempfile.gettempdir()) / f"cdi-scanner-config-{hashlib.sha256(blob.encode()).hexdigest()[:16]}"
-    d.mkdir(exist_ok=True)
+    key = hashlib.sha256(json.dumps(view, sort_keys=True).encode()).hexdigest()
+    d = _MATERIALIZED.get(key)
+    if d is not None and d.is_dir():
+        return d
+    d = pathlib.Path(tempfile.mkdtemp(prefix=CONFIG_DIR_PREFIX))          # unique and mode 0700: never shared with another process
     for name in ("repos", "routes", "naming"):
-        f = d / f"{name}.yml"
-        text = yaml.safe_dump(view[name], sort_keys=False)
-        if not f.exists() or f.read_text() != text:
-            f.write_text(text)
+        (d / f"{name}.yml").write_text(yaml.safe_dump(view[name], sort_keys=False))
+    _MATERIALIZED[key] = d
+    if not _atexit_registered:
+        atexit.register(cleanup_materialized)
+        _atexit_registered = True
     return d
+
+
+def _remove_created_dir(d: pathlib.Path) -> bool:
+    """Remove exactly one directory this module created. Refuses (returns False) unless it is a real directory (not a symlink), a direct child of the
+    system temp dir, named with our prefix, registered by materialize(), and holds nothing but the files we wrote."""
+    try:
+        ok = (not d.is_symlink() and d.is_dir() and d.name.startswith(CONFIG_DIR_PREFIX) and d in _MATERIALIZED.values()
+              and d.parent.resolve() == pathlib.Path(tempfile.gettempdir()).resolve())
+        if not ok or {p.name for p in d.iterdir()} - set(VIEW_FILES):
+            return False
+        for name in VIEW_FILES:
+            (d / name).unlink(missing_ok=True)
+        d.rmdir()
+        return True
+    except OSError:
+        return False
+
+
+def cleanup_materialized() -> list[str]:
+    """Remove the scanner-view directories created by this process; returns the removed paths. Runs at interpreter exit (also after an exception)."""
+    removed = []
+    for key, d in list(_MATERIALIZED.items()):
+        if _remove_created_dir(d):
+            removed.append(str(d))
+        _MATERIALIZED.pop(key, None)
+    return removed
 
 
 def as_legacy(cfg: dict) -> dict:

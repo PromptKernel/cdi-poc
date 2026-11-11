@@ -147,3 +147,76 @@ def test_linker_default_schema_comes_from_config(full):
     g = Graph.from_fragments([full["web"], full["api"], full["db"]])
     assert Linker(g, load_config(FIXTURE_CONFIG)).default_schema == "dbo"
     assert Linker(g, load_config(FIXTURE_CONFIG, environ={"CDI__conventions__sql__default_schema": "app"})).default_schema == "app"
+
+
+# ---- the scanner-view temp directory: created per process, removed when the run ends --------------------------------------------------------
+import os, subprocess, sys, tempfile
+
+
+def _view_dirs(root):
+    return sorted(p.name for p in pathlib.Path(root).iterdir() if p.name.startswith(C.CONFIG_DIR_PREFIX))
+
+
+def test_materialize_is_private_per_process_and_cached_within_it(tmp_path):
+    cfg = C.load(write(tmp_path, MIN), environ={})
+    d1, d2 = C.materialize(cfg), C.materialize(cfg)
+    assert d1 == d2 and d1.parent.resolve() == pathlib.Path(tempfile.gettempdir()).resolve() and d1.name.startswith(C.CONFIG_DIR_PREFIX)
+    assert not d1.is_symlink() and (d1.stat().st_mode & 0o077) == 0, "a private directory (mode 0700), never shared with another process"
+    assert {p.name for p in d1.iterdir()} == set(C.VIEW_FILES)
+
+
+def test_cleanup_removes_exactly_the_directory_it_created(tmp_path, monkeypatch):
+    tmp = tmp_path / "tmp"; tmp.mkdir()
+    monkeypatch.setattr(tempfile, "tempdir", str(tmp))
+    other = tmp / (C.CONFIG_DIR_PREFIX + "someone-elses"); other.mkdir(); (other / "repos.yml").write_text("x")        # not ours: must survive
+    unrelated = tmp / "keep-me"; unrelated.mkdir()
+    cfg = C.load(write(tmp_path, MIN), environ={})
+    d = C.materialize(cfg)
+    assert d.parent == tmp.resolve() or d.parent == tmp
+    assert C.cleanup_materialized() == [str(d)]
+    assert not d.exists() and other.is_dir() and (other / "repos.yml").is_file() and unrelated.is_dir()
+    assert C.cleanup_materialized() == [], "a second cleanup does nothing"
+    assert not C._MATERIALIZED
+
+
+def test_cleanup_refuses_symlinks_foreign_places_and_unexpected_content(tmp_path, monkeypatch):
+    tmp = tmp_path / "tmp"; tmp.mkdir()
+    monkeypatch.setattr(tempfile, "tempdir", str(tmp))
+    victim = tmp_path / "victim"; victim.mkdir()
+    for n in C.VIEW_FILES:
+        (victim / n).write_text("precious")
+    link = tmp / (C.CONFIG_DIR_PREFIX + "link"); link.symlink_to(victim, target_is_directory=True)
+    assert C._remove_created_dir(link) is False and all((victim / n).read_text() == "precious" for n in C.VIEW_FILES)
+    nested = tmp / "sub" / (C.CONFIG_DIR_PREFIX + "nested"); nested.mkdir(parents=True)
+    C._MATERIALIZED["k1"] = nested
+    assert C._remove_created_dir(nested) is False and nested.is_dir(), "not a direct child of the temp dir"
+    cfg = C.load(write(tmp_path, MIN), environ={})
+    d = C.materialize(cfg)
+    (d / "extra.txt").write_text("user data")
+    assert C._remove_created_dir(d) is False and (d / "extra.txt").is_file(), "never removes content it did not write"
+    wrong = tmp / "other-name"; wrong.mkdir()
+    C._MATERIALIZED["k2"] = wrong
+    assert C._remove_created_dir(wrong) is False and wrong.is_dir()
+    C._MATERIALIZED.clear()
+
+
+@pytest.mark.parametrize("ending", ["raise SystemExit(0)", "raise SystemExit(3)", "raise RuntimeError('boom')"])
+def test_the_directory_is_gone_after_the_process_ends_even_on_failure(tmp_path, ending):
+    cfgf = write(tmp_path, MIN)
+    sandbox = tmp_path / "t"; sandbox.mkdir()
+    code = f"from cdi import config as C; cfg = C.load({str(cfgf)!r}); d = C.materialize(cfg); print(d); {ending}"
+    r = subprocess.run([sys.executable, "-c", code], env={**os.environ, "TMPDIR": str(sandbox)}, capture_output=True, text=True)
+    printed = r.stdout.strip().splitlines()[-1]
+    assert printed.startswith(str(sandbox.resolve())) or printed.startswith(str(sandbox))
+    assert _view_dirs(sandbox) == [], f"leftover: {_view_dirs(sandbox)}"
+
+
+def test_sigterm_in_a_cli_run_still_cleans_up(tmp_path):
+    """cdi.cli.main installs a SIGTERM handler that exits normally, so the atexit cleanup runs."""
+    cfgf = write(tmp_path, MIN)
+    sandbox = tmp_path / "t"; sandbox.mkdir()
+    code = (f"import os, signal, time; from cdi import config as C, cli; cfg = C.load({str(cfgf)!r}); C.materialize(cfg); "
+            f"cli.main(['config', 'profiles']); os.kill(os.getpid(), signal.SIGTERM); time.sleep(10)")
+    r = subprocess.run([sys.executable, "-c", code], env={**os.environ, "TMPDIR": str(sandbox)}, capture_output=True, text=True, timeout=60)
+    assert r.returncode == 143, r.stderr
+    assert _view_dirs(sandbox) == []

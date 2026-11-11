@@ -63,6 +63,11 @@ def build_parser():
 
 
 def main(argv=None):
+    import signal
+    try:                                     # a terminated run must still clean up the temporary scanner configuration (atexit runs on SystemExit)
+        signal.signal(signal.SIGTERM, lambda *_: sys.exit(143))
+    except ValueError:                       # not the main thread (tests)
+        pass
     argv = sys.argv[1:] if argv is None else list(argv)
     if not argv or argv[0] in ("-h", "--help"):
         build_parser().print_help()
