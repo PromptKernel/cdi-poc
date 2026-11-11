@@ -1,7 +1,7 @@
 # cdi-poc
 
 > **Status: branch `restructure`, not merged to `main`.** As of 2026-11-11 the GitHub flow has run on github.com against the sample repository
-> [`promptkernel/cdi-sample-app`](https://github.com/PromptKernel/cdi-sample-app) ([PR 1](https://github.com/PromptKernel/cdi-sample-app/pull/1), [PR 2](https://github.com/PromptKernel/cdi-sample-app/pull/2)):
+> [`promptkernel/cdi-sample-app`](https://github.com/PromptKernel/cdi-sample-app) ([PR 1](https://github.com/PromptKernel/cdi-sample-app/pull/1), [PR 2](https://github.com/PromptKernel/cdi-sample-app/pull/2), [PR 3](https://github.com/PromptKernel/cdi-sample-app/pull/3)), re-verified after the fixes the first run exposed:
 > baseline cache, restore, one comment updated in place, and a commit status all worked. Fork PRs, GitHub's real error responses and larger repositories are **not verified** (docs/github-flow.md).
 
 A cross-layer dependency graph and pull-request impact proof of concept. Static scanners read a frontend (TypeScript/Angular), an API (C#/.NET) and SQL Server code and emit one
@@ -11,10 +11,10 @@ result is a Markdown report, a PR comment and a commit status. The tool contains
 ### Real vs simulated
 | Part | State |
 |---|---|
-| Scanners, linker, graph, impact engine, reports | **Real** code; evidence-backed; results on the synthetic sample say nothing about real-code accuracy |
+| Scanners, linker, graph, impact engine, reports | **Real** code; evidence-backed; results on files flagged synthetic by a repository's configuration say nothing about real-code accuracy |
 | JSON baseline store (default), Neo4j store (optional) | **Real**, tested locally (Neo4j tests need a Neo4j you run yourself) |
 | Read-only API (`cdi serve`) and the explorer's live mode | **Real**, tested locally (API tests; Playwright against a real `cdi serve`) |
-| **GitHub flow** (comment upsert, commit status, baseline cache) | **Verified on real GitHub on 2026-11-11** for same-repository pull requests of the sample repository (see the two PRs above and docs/github-flow.md). **Not verified on GitHub:** fork PRs, real 403/404/422 responses, cache-miss / schema-mismatch / stale-baseline fallbacks, large repositories (fake-server tests only) |
+| **GitHub flow** (comment upsert, commit status, baseline cache) | **Verified on real GitHub on 2026-11-11** for same-repository pull requests of the sample repository (see the three PRs above and docs/github-flow.md). **Not verified on GitHub:** fork PRs, real 403/404/422 responses, cache-miss / schema-mismatch / stale-baseline fallbacks, large repositories (fake-server tests only) |
 | Azure DevOps adapter | **Written, never run** (disabled by default; shapes taken from public docs). Optional plugin, not the default flow |
 | File-sink "simulated CI" (`out/pr-comment.md`) | **Simulation**: writes files only; used locally and as the no-token fallback |
 

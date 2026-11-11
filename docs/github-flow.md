@@ -1,7 +1,7 @@
 # GitHub flow
 
 Two workflows and one composite action turn the impact engine into a pull-request check on GitHub. **Status (2026-11-11): run on github.com against the sample repository
-`promptkernel/cdi-sample-app` ([PR 1](https://github.com/PromptKernel/cdi-sample-app/pull/1), [PR 2](https://github.com/PromptKernel/cdi-sample-app/pull/2)); see "Verified on real GitHub" and
+`promptkernel/cdi-sample-app` ([PR 1](https://github.com/PromptKernel/cdi-sample-app/pull/1), [PR 2](https://github.com/PromptKernel/cdi-sample-app/pull/2), [PR 3](https://github.com/PromptKernel/cdi-sample-app/pull/3)); see "Verified on real GitHub" and
 "Not verified" at the end for exactly what that covers.**
 
 | Piece | File |
@@ -121,28 +121,38 @@ The only unpinned reference is the cdi action itself (`OWNER/cdi-poc/...@<FULL_C
 * Controlling `GITHUB_TOKEN` permissions: https://docs.github.com/en/actions/writing-workflows/choosing-what-your-workflow-does/controlling-permissions-for-github_token
 
 ## Verified on real GitHub (2026-11-11, sample repository `promptkernel/cdi-sample-app`)
-Run by the tool's author from this repository's `restructure` branch; the sample's workflows pin the tool by full commit SHA (a commit on a branch, no tag needed).
+Run by the tool's author from this repository's `restructure` branch; the sample's workflows pin the tool by full commit SHA (a commit on a branch, no tag needed). Three PRs were used:
+[PR 1](https://github.com/PromptKernel/cdi-sample-app/pull/1) (a stored-procedure body), [PR 2](https://github.com/PromptKernel/cdi-sample-app/pull/2) (a renamed route) and
+[PR 3](https://github.com/PromptKernel/cdi-sample-app/pull/3) (README only). The sample's pin moved through `39e9383`, `e76ceb2` and `81abdde` and is now `64a288c`; the final runs are
+[PR 1](https://github.com/PromptKernel/cdi-sample-app/actions/runs/43044498651), [PR 2](https://github.com/PromptKernel/cdi-sample-app/actions/runs/43044501355),
+[PR 3](https://github.com/PromptKernel/cdi-sample-app/actions/runs/43044509236), baseline [43044318693](https://github.com/PromptKernel/cdi-sample-app/actions/runs/43044318693).
 
 | What | Evidence |
 |---|---|
-| The composite action resolves from a branch commit by SHA and installs on `ubuntu-latest` (Python 3.13, .NET 10, Node 24, `npm ci`, scanner build) | baseline run [43030377448](https://github.com/PromptKernel/cdi-sample-app/actions/runs/43030377448): 33 s |
-| Baseline built on push to `main` and saved to the Actions cache | cache key `cdi-baseline-v1-<sha>`, 13.08 KiB compressed (153,655 bytes of JSON); the same 115 nodes / 125 edges as on macOS |
+| The composite action resolves from a branch commit by SHA and installs on `ubuntu-latest` (Python 3.13, .NET 10, Node 24, `npm ci`, scanner build) | every baseline and PR run; the first baseline run took 33 s |
+| Baseline built on push to `main` and saved to the Actions cache | cache keys `cdi-baseline-v1-<sha>`, 13.08 KiB compressed (153,655 bytes of JSON); the same 115 nodes / 125 edges as on macOS |
 | A PR run restores the baseline from the base branch's cache (exact key hit) and cannot save | log lines "Cache hit for: cdi-baseline-v1-…", "Cache restored successfully"; the PR workflow has no save step |
-| One advisory comment is created, then **updated in place** (same comment id) on later pushes; no duplicate | PR 1 comment id 6797310661, three revisions; PR 2 id 6797314921, two revisions; one bot comment each |
+| One advisory comment is created, then **updated in place** (same comment id) on every later push; never a duplicate | PR 1 id 6797310661 (five revisions), PR 2 id 6797314921 (four), PR 3 id 6799075229 (two); one bot comment each |
 | A commit status `cdi/impact-analysis` is set on every head commit | `gh pr checks`, `commits/<sha>/status` |
-| The results match the local reports for the same edits | the consumer / unresolved / test lines of both comments are identical to a local `cdi pr` run |
-| PR 1 (procedure body): consumers through the data-access layer, the inferred DI hop, the controller, the UI service and the screen | comment of PR 1 |
-| PR 2 (route renamed): the frontend request is unmatched, the screen is named, risk High | comment of PR 2 |
+| The status description says "Advisory only (status stays success)" first when the label is High (PR 2); the state stays `success` | PR 2 status |
+| The results match the local reports for the same edits | the consumer / unresolved / test lines of PR 1 and PR 2 are identical to a local `cdi pr` run |
+| PR 1: consumers through the data-access layer, the inferred DI hop, the controller, the UI service and the screen. PR 2: the frontend request is unmatched, the screen is named, risk High | comments |
+| A PR that changes only a file no scanner reads (PR 3, `README.md`) gets a short comment: no changed objects, "1 file(s) outside every folder the scanners analyse", no stale warning | PR 3 comment |
+| The "based on an OLDER target" warning no longer appears when `main` moved only in files the scanners do not read (the re-pins moved `main` by workflow files only) | PR 1-3 comments after `81abdde`; it did appear before, on `39e9383` |
+| The comment's Markdown renders as intended: the attribute-change line is its own paragraph, not a table row; the bold heading after a list is its own paragraph | GitHub's HTML for PR 1 and PR 2 comments |
 | The job summary and the full report appear in the job log inside `::group::` markers, inert and without credentials (the runner masks the `stop-commands` token as `***`) | run logs |
-| The `pull_request` run uses the workflow file of the merge result: after `main` re-pinned the action, PR runs used the new version although the PR branches still carried the old file | PR runs 43032357818, 43032360818 |
-| The "PR branch is based on an OLDER target" warning appears when `main` has moved | PR 2 comment |
-| Runtime: job about 33 s in total, tool run 3.7-5.4 s (small sample) | step timings |
+| The `pull_request` run uses the workflow file of the merge result: after `main` re-pinned the action, PR runs used the new version although the PR branches still carried the old file | PR runs after each re-pin |
+| Runtime: job 29-37 s, the analysis step 22-27 s, tool run 3-5 s (small sample) | step timings |
 
-### Defects found by the real run, and their fixes
-1. The comment's Basis line showed the remote-tracking ref (`origin/main`) and the head sha twice; its footer pointed at `out/report-<pr>.md` on the runner, which nobody can open; the footer called the repository
-   "synthetic-scale". Fixed in `e76ceb2`: branch names are shown, the full report is printed into the job log (group `cdi full report`) and the comment links to the run. Verified on the second real run.
-2. The report itself (in that log group) still named `origin/main` and the head sha, and its Run section said "Baseline graph (Neo4j, read-only)" for a JSON baseline. Fixed in `9837aab`; **verified only against the fake
-   server and local runs: the sample repository is pinned to `e76ceb2`**, so its comments do not show this fix until the pin is moved.
+### Defects found by the real runs, and their fixes
+1. The Basis line showed `origin/main` and the head sha twice; the footer pointed at `out/report-<pr>.md` on the runner; the footer called the repository "synthetic-scale". Fixed in `e76ceb2` (verified on the second real run).
+2. The full report named `origin/main` and the head sha and said "Baseline graph (Neo4j, read-only)" for a JSON baseline. Fixed in `9837aab`/`81abdde` (verified on the third round of runs).
+3. The "older target" warning appeared whenever `main` had moved, even by a workflow file. Fixed in `499b703`: it needs a changed file that matches a repo's include/exclude globs or `.cdi/`; the **negative** case is verified on GitHub, the positive case (a scanned file moved) only in tests.
+4. A fixed claim "measured on this small synthetic sample" in reports and the explorer banner; now driven by the synthetic flag (`23ff458`). Reports and the banner were verified in the run logs; the evaluation harness wording only in tests.
+5. A High risk label next to a green status looked contradictory: the description now starts "Advisory only (status stays success)" (`81abdde`).
+6. Markdown: a line under the table became a table row, and a bold heading under a list was swallowed by the list; an empty "Inferred consumers (0)" block was announced (`81abdde`).
+7. A README-only PR said "Changed files: 0". Fixed in `64a288c`.
+8. The tool left a `cdi-scanner-config-*` directory in the temp folder on every run (234 had accumulated). Fixed in `ba4a55f`; tested locally (normal exit, failure, SIGTERM). On the runner it was not observable.
 
 ## Not verified
 * **Fork pull requests** (this needs a second account): the skip is tested only against the fake server.

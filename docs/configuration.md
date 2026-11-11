@@ -50,8 +50,14 @@ Each of these was a literal in scanner code and is now a key under `conventions`
 | the six scenario PR edits | `.cdi/scenarios.yml` in the target repository |
 
 ## How the scanners see it
-The scanners are separate programs. `cdi.config.materialize` writes the resolved conventions to a content-addressed folder under the
-system temp directory (`repos.yml`, `routes.yml`, `naming.yml`, derived and not meant to be edited) and the scanners read those.
+The scanners are separate programs. `cdi.config.materialize` writes the resolved conventions (`repos.yml`, `routes.yml`, `naming.yml`, derived and not meant to be edited) to a **private
+directory under the system temp directory** (one per process, mode 0700) and the scanners read those. The directory is removed when the run ends, on success, on failure and on SIGTERM through `cdi`
+(it cannot be removed after `kill -9`). Only a directory this process created is ever removed: a real directory, a direct child of the temp directory, with the `cdi-scanner-config-` prefix, holding only the
+three files we wrote, and not a symlink. Leftovers from versions before this change are not touched automatically.
+
+### Wording about synthetic data
+Reports, the PR comment, the export/API notice, the evaluation label and the explorer banner do not carry a fixed claim about any sample. They say "synthetic" only when the data contains files that
+the repository's own `synthetic:` settings flagged (`path_segments`, `header_marker`); otherwise they say that the output is static-analysis evidence not validated against other code bases.
 
 ## Hardcoding audit
 `cdi audit` (`backend/tools/audit_hardcoding.py`) fails when a sample-specific name appears in `backend/` or `frontend/` source. The vocabulary

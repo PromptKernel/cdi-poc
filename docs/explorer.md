@@ -1,7 +1,7 @@
 # Local explorer
 
-A read-only, local web UI for the dependency graph (React + TypeScript + Vite, Cytoscape.js). It shows **structure only**: static-analysis evidence from a small
-sample that includes clearly marked synthetic additions. It says nothing about real code bases.
+A read-only, local web UI for the dependency graph (React + TypeScript + Vite, Cytoscape.js). It shows **structure only**: static-analysis evidence. The banner text comes from the data
+(`meta.notice`): it mentions synthetic data only when the repository's configuration flagged some, and it never claims anything about other code bases.
 
 ## Run
 ```
