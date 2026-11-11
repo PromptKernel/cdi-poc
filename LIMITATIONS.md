@@ -8,8 +8,9 @@ Status: milestone 3 (schema, scanners, linker, Neo4j load, trace, baseline runne
   tool author. Any metric measured on them says nothing about real code bases.
 * **No runtime validation.** Nothing is executed: no SQL Server, no running API, no browser. Tests are scanned, not run
   (the SQL test and the Angular specs cannot run here; only the 2 synthetic xunit tests do).
-* **Static-analysis blind spots.** Dynamic SQL, reflection, runtime DI, configuration-driven routes, message-based integrations
-  and generated code cannot be fully resolved. They are labelled UNRESOLVED or INFERRED, never CONFIRMED.
+* **Runtime-decided behaviour is not resolved.** SQL text assembled at runtime, routes built from configuration values and interface calls whose
+  implementation is chosen by dependency injection are reported as UNRESOLVED or INFERRED, never CONFIRMED. Reflection, event/message-based hand-offs and
+  generated code are not modelled at all, so dependencies that run through them are absent from the graph.
 * **Syntax-name matching.** The C# scanner has no ASP.NET/SqlClient references, so it recognises `SqlCommand`, route and verb
   attributes by name; a wrapper class with another name would be missed. The TS scanner recognises `HttpClient` by declared type name.
 * **DI registrations are found only for `AddX<I, Impl>()` calls** (`AddTransient/AddScoped/AddSingleton` with two type arguments).
