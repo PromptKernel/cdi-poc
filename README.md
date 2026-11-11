@@ -1,7 +1,8 @@
 # cdi-poc
 
-> **Branch `restructure` (work in progress, Phase 6 of 7).** Backend and frontend run from two terminals with a Python virtual environment; Docker is not needed.
-> The GitHub flow is written and tested against a fake GitHub server but has **not run on GitHub yet** (Phase 7).
+> **Status: branch `restructure`, not merged and not yet verified on GitHub.** Backend, API, explorer and the Docker-free two-terminal setup are built and tested locally
+> (see "Real vs simulated" below). The GitHub flow has only been tested against an in-memory fake GitHub server; it has **not run on github.com**, and the sample repository it targets
+> has not been published yet. Those last steps are pending, so treat everything GitHub-related as unverified.
 
 A cross-layer dependency graph and pull-request impact proof of concept. Static scanners read a frontend (TypeScript/Angular), an API (C#/.NET) and SQL Server code and emit one
 shared, evidence-backed graph (every edge carries file:line, method, confidence and commit). A linker joins the layers, an impact engine maps a pull request's diff onto the graph, and the
