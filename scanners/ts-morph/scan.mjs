@@ -21,10 +21,10 @@ const root = path.resolve(args["repo-path"] ?? (path.isAbsolute(repo.path) ? rep
 const synth = reposCfg.synthetic ?? { path_segments: [], header_marker: "SYNTHETIC" };
 const FE = routes.frontend;
 const git = (a) => execFileSync("git", ["-C", root, ...a]).toString().trim();
-// commit_id of a logical repo = last commit that touched its folder; refuse to scan a dirty working tree.
-const dirty = git(["status", "--porcelain", "--untracked-files=normal"]);
+// commit_id of a logical repo = last commit that touched its folder; refuse to scan when that folder has uncommitted changes.
+const dirty = git(["status", "--porcelain", "--untracked-files=normal", "--", "."]);
 if (dirty) {
-  console.error(`Refusing to scan: the git working tree has uncommitted changes (first lines):\n${dirty.split("\n").slice(0, 5).join("\n")}\nCommit or stash them so commit_id matches the scanned files.`);
+  console.error(`Refusing to scan: ${root} has uncommitted changes (first lines):\n${dirty.split("\n").slice(0, 5).join("\n")}\nCommit or stash them so commit_id matches the scanned files.`);
   process.exit(2);
 }
 const commit = git(["log", "-1", "--format=%H", "--", "."]);
@@ -158,7 +158,7 @@ const methodNode = new Map(); // MethodDeclaration -> node (service method)
 const isSpec = (f) => f.endsWith(naming.tests.typescript.spec_suffix);
 for (const sf of project.getSourceFiles()) {
   const f = rel(sf);
-  if (!emitSet.has(f) || isSpec(f)) continue;
+  if (isSpec(f)) continue; // nodes for the WHOLE repo, so edge targets in unchanged files resolve; only emitted files are written
   for (const cls of sf.getClasses()) {
     const cn = cls.getName();
     if (!cn) continue;
@@ -194,6 +194,8 @@ function scanBody(cls, ownerNode, scope, method, file) {
       const urlArg = call.getArguments()[0];
       try {
         const tpl = normUrl(foldUrl(urlArg, cls, encl));
+        if (tpl.replace(/\{\}|\//g, "") === "")
+          throw new Unresolved(`URL is entirely a runtime value (${urlArg.getText()}); no static path to match`);
         const rn = addNode("HTTP_REQUEST", `${verb} ${tpl}`, `${verb} ${tpl}`, file, call.getStartLineNumber(), call.getEndLineNumber(),
           { verb, url_template: tpl });
         addEdge("MAKES_REQUEST", ownerNode.id, rn.id, file, call, "tsmorph:http-url-fold", "CONFIRMED_STATIC");
@@ -235,24 +237,28 @@ for (const sf of project.getSourceFiles()) {
 const specSuffix = naming.tests.typescript.spec_suffix, srcSuffix = naming.tests.typescript.source_suffix;
 const tag = naming.tests.annotation_tag;
 const specFiles = project.getSourceFiles().filter((sf) => isSpec(rel(sf)) && emitSet.has(rel(sf)));
+const covers = (stmt) => stmt ? stmt.getLeadingCommentRanges().map((r) => r.getText())
+  .flatMap((t) => [...t.matchAll(new RegExp(tag + "\\s+([^\\r\\n*]+)", "g"))].map((m) => m[1].trim())) : [];
+const stmtOf = (call) => call.getFirstAncestor((a) => Node.isExpressionStatement(a));
 for (const sf of specFiles) {
   const f = rel(sf);
   const target = f.slice(0, -specSuffix.length) + srcSuffix;
-  const fileCovers = [...sf.getFullText().matchAll(new RegExp(tag.replace("@", "@") + "\\s+(\\S.*)", "g"))].map((m) => m[1].trim());
   for (const call of sf.getDescendantsOfKind(SyntaxKind.CallExpression)) {
     if (call.getExpression().getText() !== "it") continue;
     const title = call.getArguments()[0]?.getText().replace(/^['"`]|['"`]$/g, "") ?? "";
     const desc = call.getFirstAncestor((a) => Node.isCallExpression(a) && a.getExpression().getText() === "describe");
     const suite = desc?.getArguments()[0]?.getText().replace(/^['"`]|['"`]$/g, "") ?? path.basename(f);
+    // @covers annotations are per test: comments directly above the `it` statement, plus comments directly above its enclosing `describe` statement
+    const own = covers(stmtOf(call)), inherited = desc ? covers(stmtOf(desc)) : [];
     addNode("TEST", `${f}::${suite} > ${title}`, `${suite} > ${title}`, f, call.getStartLineNumber(), call.getEndLineNumber(),
-      { test_layer: "UNIT", covers_annotation: fileCovers, convention_target_file: fs.existsSync(path.join(root, target)) ? target : null });
+      { test_layer: "UNIT", covers_annotation: [...new Set([...own, ...inherited])], convention_target_file: fs.existsSync(path.join(root, target)) ? target : null });
   }
 }
 
 const fragment = {
-  schema_version: "1.0", repo: repo.name, commit_id: commit, scanned_at: new Date().toISOString(),
+  schema_version: "1.0", ...(args.only ? { overlay: true, overlay_files: [...emitSet].sort() } : {}), repo: repo.name, commit_id: commit, scanned_at: new Date().toISOString(),
   scanner: { name: "ts-morph", version: "1.0" }, files_scanned: [...emitSet].filter((x) => allFiles.includes(x)).length,
-  nodes: [...nodes.values()], edges,
+  nodes: [...nodes.values()].filter((n) => !n.file || emitSet.has(n.file)), edges,
 };
 fs.mkdirSync(path.dirname(path.resolve(args.out)), { recursive: true });
 fs.writeFileSync(args.out, JSON.stringify(fragment, null, 2));

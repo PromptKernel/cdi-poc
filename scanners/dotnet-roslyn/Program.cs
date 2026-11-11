@@ -19,6 +19,8 @@ var emitFiles = files.ToHashSet();
 if (a.TryGetValue("only", out var onlyPath))
     emitFiles = File.ReadAllLines(onlyPath).Select(x => x.Trim()).Where(x => x.Length > 0).ToHashSet();
 g.Fragment.FilesScanned = files.Count(emitFiles.Contains);
+g.EmitFile = emitFiles.Contains;
+if (a.ContainsKey("only")) g.MarkOverlay(emitFiles);
 
 var trees = files.Select(f => CSharpSyntaxTree.ParseText(File.ReadAllText(Path.Combine(repo.AbsPath, f)), path: f)).ToList();
 var tpa = ((string)AppContext.GetData("TRUSTED_PLATFORM_ASSEMBLIES")!).Split(Path.PathSeparator);
@@ -46,6 +48,36 @@ var defaultSchema = naming.Sql.DefaultSchema;
 var layerRules = naming.Layers.Select(l => (re: new Regex(l.Match), kind: l.Kind)).ToList();
 string NormRoute(string t) => Regex.Replace(t.Trim('/'), @"\{[^}]*\}", "{}");
 
+bool IsSqlCommand(BaseObjectCreationExpressionSyntax o, SemanticModel m)
+{
+    // Types are matched by NAME: System.Data.SqlClient / Microsoft.Data.SqlClient are not loaded as references.
+    if (o is ObjectCreationExpressionSyntax oc) return oc.Type.ToString().Split('.').Last() == "SqlCommand";
+    var ti = m.GetTypeInfo(o);
+    if ((ti.ConvertedType?.Name ?? ti.Type?.Name) == "SqlCommand") return true; // target-typed new()
+    return o.Parent is EqualsValueClauseSyntax { Parent: VariableDeclaratorSyntax { Parent: VariableDeclarationSyntax vd } } && vd.Type.ToString().Split('.').Last() == "SqlCommand";
+}
+
+// Command text: compile-time constant (literal, const field, constant concatenation) via the semantic model; else a local's initializer; else dynamic.
+(string lit, string dynReason, string prefix) ResolveText(SemanticModel m, ExpressionSyntax e)
+{
+    if (e == null) return (null, "no command text found for this SqlCommand", null);
+    ExpressionSyntax v = e;
+    if (e is IdentifierNameSyntax && m.GetSymbolInfo(e).Symbol is ILocalSymbol ls &&
+        ls.DeclaringSyntaxReferences.FirstOrDefault()?.GetSyntax() is VariableDeclaratorSyntax { Initializer.Value: { } init })
+        v = init;
+    var cv = m.GetConstantValue(v);
+    if (cv.HasValue && cv.Value is string str) return (str, null, null);
+    if (v is InterpolatedStringExpressionSyntax)
+        return (null, "SQL text is an interpolated string with runtime values; tables it touches cannot be resolved statically", null);
+    if (v is BinaryExpressionSyntax be && be.IsKind(SyntaxKind.AddExpression))
+    {
+        var left = be; while (left.Left is BinaryExpressionSyntax lb) left = lb;
+        var lc = m.GetConstantValue(left.Left);
+        return (null, "SQL text built by string concatenation with a runtime value; tables it touches cannot be resolved statically", lc.HasValue ? lc.Value as string : null);
+    }
+    return (null, "SQL command text is not a compile-time constant; cannot be resolved statically", null);
+}
+
 // ---------- DI registrations: AddTransient<IFoo, Foo>() ----------
 var di = new Dictionary<string, (string file, int line, string impl)>();
 foreach (var t in trees)
@@ -63,7 +95,7 @@ foreach (var t in trees)
 // ---------- Pass 1: nodes ----------
 var methodNodes = new Dictionary<string, Node>();
 var testAttrs = naming.Tests.Csharp.TestAttributes.ToHashSet();
-foreach (var t in trees.Where(t => emitFiles.Contains(Rel(t))))
+foreach (var t in trees) // nodes for the WHOLE repo (so edge targets in unchanged files resolve); only emitted files are written
 {
     var model = comp.GetSemanticModel(t);
     foreach (var td in t.GetRoot().DescendantNodes().OfType<TypeDeclarationSyntax>())
@@ -166,36 +198,36 @@ foreach (var t in trees.Where(t => emitFiles.Contains(Rel(t))))
             g.AddEdge("CALLS", owner.Id, target.Id, file, l, c, el, ec, "roslyn:semantic-invocation", "CONFIRMED_STATIC");
         }
 
-        // SqlCommand construction
-        foreach (var oc in body.DescendantNodes().OfType<ObjectCreationExpressionSyntax>().Where(o => o.Type.ToString().Split('.').Last() == "SqlCommand"))
+        // SqlCommand construction: new SqlCommand(...), target-typed new(...), object initializer, later CommandText/CommandType assignments
+        foreach (var oc in body.DescendantNodes().OfType<BaseObjectCreationExpressionSyntax>().Where(o => IsSqlCommand(o, model)))
         {
             var (l, c, el, ec) = Pos(oc);
-            var arg = oc.ArgumentList?.Arguments.FirstOrDefault()?.Expression;
-            string lit = null; string dynReason = null; string prefix = null;
-            if (arg is LiteralExpressionSyntax ls && ls.IsKind(SyntaxKind.StringLiteralExpression)) lit = ls.Token.ValueText;
-            else if (arg is IdentifierNameSyntax idn && model.GetSymbolInfo(idn).Symbol is ILocalSymbol loc &&
-                     loc.DeclaringSyntaxReferences.FirstOrDefault()?.GetSyntax() is VariableDeclaratorSyntax vd && vd.Initializer?.Value is { } init)
-            {
-                if (init is LiteralExpressionSyntax l2 && l2.IsKind(SyntaxKind.StringLiteralExpression)) lit = l2.Token.ValueText;
-                else if (init is BinaryExpressionSyntax be && be.IsKind(SyntaxKind.AddExpression))
-                {
-                    dynReason = "SQL text built by string concatenation with a runtime value; tables it touches cannot be resolved statically";
-                    prefix = (be.Left as LiteralExpressionSyntax)?.Token.ValueText;
-                }
-            }
-            if (lit == null && dynReason == null) dynReason = "SQL command text is not a string literal; cannot be resolved statically";
-
+            string varName = oc.Parent is EqualsValueClauseSyntax { Parent: VariableDeclaratorSyntax d0 } ? d0.Identifier.Text
+                           : oc.Parent is AssignmentExpressionSyntax { Left: IdentifierNameSyntax idl } ? idl.Identifier.Text : null;
+            ExpressionSyntax textExpr = oc.ArgumentList?.Arguments.FirstOrDefault()?.Expression;
+            string textSource = textExpr != null ? "constructor-argument" : null;
             bool isStoredProc = false;
-            var varName = (oc.Parent as EqualsValueClauseSyntax)?.Parent is VariableDeclaratorSyntax d0 ? d0.Identifier.Text : null;
+            foreach (var asg in oc.Initializer?.Expressions.OfType<AssignmentExpressionSyntax>() ?? Enumerable.Empty<AssignmentExpressionSyntax>())
+            {
+                var lhs = asg.Left.ToString();
+                if (lhs == "CommandText") { textExpr = asg.Right; textSource = "object-initializer"; }
+                else if (lhs == "CommandType" && asg.Right.ToString().EndsWith("StoredProcedure")) isStoredProc = true;
+            }
             if (varName != null)
-                isStoredProc = body.DescendantNodes().OfType<AssignmentExpressionSyntax>().Any(x =>
-                    x.Left.ToString() == varName + ".CommandType" && x.Right.ToString().EndsWith("StoredProcedure"));
+                foreach (var asg in body.DescendantNodes().OfType<AssignmentExpressionSyntax>())
+                {
+                    var lhs = asg.Left.ToString();
+                    if (lhs == varName + ".CommandText") { textExpr = asg.Right; textSource = "commandtext-assignment"; }
+                    else if (lhs == varName + ".CommandType" && asg.Right.ToString().EndsWith("StoredProcedure")) isStoredProc = true;
+                }
+            var (lit, dynReason, prefix) = ResolveText(model, textExpr);
 
             if (lit != null && isStoredProc)
             {
                 var q = lit.Contains('.') ? lit : $"{defaultSchema}.{lit}";
                 var rid = g.AddNode("SQL_REF", q, q, null, 0, 0, new() { ["expected"] = "procedure" }).Id;
-                g.AddEdge("CALLS_PROCEDURE", owner.Id, rid, file, l, c, el, ec, "roslyn:sqlcommand-storedprocedure-literal", "CONFIRMED_STATIC");
+                g.AddEdge("CALLS_PROCEDURE", owner.Id, rid, file, l, c, el, ec, "roslyn:sqlcommand-storedprocedure", "CONFIRMED_STATIC", null,
+                    new() { ["text_source"] = textSource });
             }
             else
             {

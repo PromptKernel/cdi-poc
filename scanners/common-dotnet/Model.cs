@@ -55,6 +55,8 @@ public class Fragment
     [JsonPropertyName("scanned_at")] public string ScannedAt { get; set; }
     [JsonPropertyName("scanner")] public ScannerInfo Scanner { get; set; }
     [JsonPropertyName("files_scanned")] public int FilesScanned { get; set; }
+    [JsonPropertyName("overlay")] public bool? Overlay { get; set; }
+    [JsonPropertyName("overlay_files")] public List<string> OverlayFiles { get; set; }
     [JsonPropertyName("nodes")] public List<Node> Nodes { get; set; } = new();
     [JsonPropertyName("edges")] public List<Edge> Edges { get; set; } = new();
 }

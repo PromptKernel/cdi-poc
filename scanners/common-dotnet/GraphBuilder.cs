@@ -15,6 +15,10 @@ public class GraphBuilder
     private readonly SyntheticRules _synth;
     private readonly Dictionary<string, string[]> _lineCache = new();
 
+    /// <summary>Which files may EMIT nodes. All nodes are still registered (so edge targets resolve) but only emitted ones are written (overlay mode).</summary>
+    public Func<string, bool> EmitFile { get; set; } = _ => true;
+    /// <summary>Mark this fragment as a partial overlay: edge endpoints may refer to baseline nodes that are not in the fragment.</summary>
+    public void MarkOverlay(IEnumerable<string> files) { Fragment.Overlay = true; Fragment.OverlayFiles = files.OrderBy(x => x, StringComparer.Ordinal).ToList(); }
     public string RepoRoot => _repo.AbsPath;
     public string RepoName => _repo.Name;
 
@@ -58,7 +62,8 @@ public class GraphBuilder
             Location = file == null ? null : new Location { Line = line, EndLine = endLine },
             Synthetic = file != null && IsSynthetic(file, 0), Attrs = attrs
         };
-        _nodes[id] = n; Fragment.Nodes.Add(n);
+        _nodes[id] = n;
+        if (file == null || EmitFile(file)) Fragment.Nodes.Add(n);
         return n;
     }
 
@@ -103,14 +108,14 @@ public static class Git
 
     /// <summary>
     /// Commit ID of a logical repo = last commit that touched its folder: git log -1 --format=%H -- &lt;path&gt;.
-    /// Refuses to scan when the working tree has uncommitted changes (including untracked, non-ignored files),
+    /// Refuses to scan when the logical repo's folder has uncommitted changes (including untracked, non-ignored files; changes elsewhere in the git repo are ignored),
     /// because the recorded commit would then not describe the scanned files.
     /// </summary>
     public static string CommitForPath(string dir)
     {
-        var dirty = Run(dir, "status --porcelain --untracked-files=normal");
+        var dirty = Run(dir, "status --porcelain --untracked-files=normal -- .");
         if (dirty.Length > 0)
-            throw new Exception($"Refusing to scan: the git working tree has uncommitted changes (first lines):\n{string.Join('\n', dirty.Split('\n').Take(5))}\nCommit or stash them so commit_id matches the scanned files.");
+            throw new Exception($"Refusing to scan: {dir} has uncommitted changes (first lines):\n{string.Join('\n', dirty.Split('\n').Take(5))}\nCommit or stash them so commit_id matches the scanned files.");
         var h = Run(dir, "log -1 --format=%H -- .");
         if (h.Length < 7) throw new Exception($"No commit found for path {dir}; commit the files before scanning.");
         return h;

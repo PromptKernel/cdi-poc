@@ -25,9 +25,16 @@ one git repository. Each scanner computes the commit ID of its logical repo as
     git log -1 --format=%H -- <that repo's path>
 
 i.e. the last commit that touched the folder. Because that value only describes the scanned files if they match the commit,
-**scanners refuse to run when the git working tree has uncommitted changes** (`git status --porcelain` non-empty,
-untracked non-ignored files included). Edge `commit_id` and fragment `commit_id` both use this value.
+**scanners refuse to run when the logical repo's folder has uncommitted changes**
+(`git status --porcelain --untracked-files=normal -- <that repo's path>` non-empty, untracked non-ignored files included;
+changes in other folders of the git repository do not matter). Edge `commit_id` and fragment `commit_id` both use this value.
 If a logical repo is later pointed at a separate checkout, the same command is run inside it.
+
+## Overlay fragments (`--only`)
+`--only <file-with-paths>` restricts which files may *emit* nodes and edges. The scanner still builds the node-id map for the
+whole logical repo, so an edge from a changed file to a symbol in an unchanged file is emitted with its real target id. Such a
+fragment has `overlay: true` and `overlay_files`; its edge endpoints may be absent from the fragment and are resolved by the
+loader against the baseline graph. Edges evidenced in unchanged files are not re-emitted (the baseline has them).
 
 ## Confidence semantics
 * `CONFIRMED_STATIC` – directly evidenced by a symbol/syntax fact in source (resolved call, table reference in DDL, literal-matched route).

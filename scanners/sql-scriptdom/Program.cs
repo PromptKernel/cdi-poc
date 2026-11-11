@@ -11,12 +11,14 @@ var g = new GraphBuilder(repo, synth, "scriptdom", "1.0");
 var defaultSchema = naming.Sql.DefaultSchema;
 
 var files = Files.Enumerate(repo).ToList();
+var emitFiles = files.ToHashSet();
 if (a.TryGetValue("only", out var onlyPath))
 {
-    var only = File.ReadAllLines(onlyPath).Select(x => x.Trim()).Where(x => x.Length > 0).ToHashSet();
-    files = files.Where(only.Contains).ToList();
+    emitFiles = File.ReadAllLines(onlyPath).Select(x => x.Trim()).Where(x => x.Length > 0).ToHashSet();
+    g.MarkOverlay(emitFiles);
 }
-g.Fragment.FilesScanned = files.Count;
+g.EmitFile = emitFiles.Contains;
+g.Fragment.FilesScanned = files.Count(emitFiles.Contains);
 
 string Qn(SchemaObjectName n) => $"{n.SchemaIdentifier?.Value ?? defaultSchema}.{n.BaseIdentifier.Value}";
 bool IsTestFile(string f) => naming.Tests.Sql.TestDirMarkers.Any(m => ("/" + f).Contains("/" + m));
@@ -58,7 +60,7 @@ static (int, int) Span(TSqlFragment fr, IList<TSqlParserToken> toks)
 }
 
 // ---------- Pass 2: relationships ----------
-foreach (var (file, tree, toks) in parsed)
+foreach (var (file, tree, toks) in parsed.Where(x => emitFiles.Contains(x.file)))
 {
     var text = File.ReadAllText(Path.Combine(repo.AbsPath, file));
     foreach (var batch in tree.Batches)
@@ -131,7 +133,7 @@ void Walk(TSqlStatement st, string file, string ownerId, IList<TSqlParserToken> 
 }
 
 g.Write(a["out"]);
-Console.WriteLine($"[sql-scriptdom] {repo.Name}@{g.Fragment.CommitId[..8]} files={files.Count} nodes={g.Fragment.Nodes.Count} edges={g.Fragment.Edges.Count} parseErrors={parseErrors} -> {a["out"]}");
+Console.WriteLine($"[sql-scriptdom] {repo.Name}@{g.Fragment.CommitId[..8]} files={g.Fragment.FilesScanned} nodes={g.Fragment.Nodes.Count} edges={g.Fragment.Edges.Count} parseErrors={parseErrors} -> {a["out"]}");
 
 class RefVisitor : TSqlFragmentVisitor
 {

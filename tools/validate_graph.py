@@ -11,7 +11,8 @@ for p in sys.argv[1:]:
     g = json.loads(pathlib.Path(p).read_text())
     errs = sorted(v.iter_errors(g), key=lambda e: list(e.path))
     ids = {n["id"] for n in g["nodes"]}
-    dangling = [e["id"] for e in g["edges"] if e["source"] not in ids or e["target"] not in ids]
+    # overlay fragments (scan restricted with --only) may point at baseline nodes outside the fragment
+    dangling = [] if g.get("overlay") else [e["id"] for e in g["edges"] if e["source"] not in ids or e["target"] not in ids]
     dup_nodes = len(g["nodes"]) - len(ids)
     print(f"{p}: schema errors={len(errs)} dangling-edge-endpoints={len(dangling)} duplicate-node-ids={dup_nodes} nodes={len(g['nodes'])} edges={len(g['edges'])}")
     for e in errs[:5]: print("   ", list(e.path), e.message[:160])
