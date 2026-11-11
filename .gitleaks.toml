@@ -1,0 +1,8 @@
+# Extend the default rules. The only allowlisted path is the generic explorer test dataset: it holds git commit ids (40 hex digits) keyed by the
+# logical repo name "api", which the generic-api-key rule mistakes for a key. They are commit ids, not credentials.
+[extend]
+useDefault = true
+
+[allowlist]
+description = "explorer e2e dataset: commit ids keyed by repo name"
+paths = ['''frontend/e2e/fixtures/explorer/.*''']
