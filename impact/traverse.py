@@ -92,3 +92,12 @@ def find_nodes(g: Graph, text: str, kinds=None):
         return ex
     t = text.lower()
     return [n for n in g.nodes.values() if (t in n["name"].lower() or t in n["id"].lower()) and (kinds is None or n["kind"] in kinds)]
+
+
+def reach_ex(g: Graph, start: str, direction: str, max_depth: int = 25, exclude_types=()):
+    """Like reach(), plus whether the traversal was cut off by the depth limit: returns (best, truncated, frontier_node_ids)."""
+    best = reach(g, start, direction, max_depth, exclude_types)
+    deepest = {n for n, (_, p) in best.items() if len(p) >= max_depth}
+    cut = {n for n in deepest if any((e["target"] if direction == "forward" else e["source"]) not in best
+                                     for e in neighbours(g, n, direction, exclude_types))}
+    return best, bool(cut), sorted(cut)
