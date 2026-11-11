@@ -73,7 +73,8 @@ note()  { printf 'gate note [%s]: %s\n' "$1" "$2"; }
 
 echo "== pre-push gate: $TOP"
 echo "== commits to be pushed: $(git rev-list $RANGE | wc -l | tr -d ' ')   range: $RANGE"
-if [ "$ON_REMOTE" -gt 0 ] 2>/dev/null; then echo "== note: $(( ON_REMOTE - $(git rev-list $RANGE | wc -l | tr -d ' ') )) commit(s) ahead of the upstream branch are already on remote '$REMOTE_NAME' (another branch), so they are public already and are not re-scanned; the tree and the staging area are scanned in full"; fi
+SKIPPED=$(( ON_REMOTE - $(git rev-list $RANGE | wc -l | tr -d ' ') ))
+if [ "$SKIPPED" -gt 0 ]; then echo "== note: $SKIPPED commit(s) ahead of the upstream branch are already on remote '$REMOTE_NAME' (another branch), so they are public already and are not re-scanned; the tree and the staging area are scanned in full"; fi
 echo "== rules: ${CONF:-none}; images: $IMAGE_EXTENSIONS (allowed in: ${ALLOW_IMAGE_DIRS:-nowhere}); forbidden paths: ${FORBIDDEN_PATHS:-none}"
 
 # Everything that is tracked or staged now, plus every path ADDED by a commit to be pushed (an image added and deleted inside the range is still pushed).

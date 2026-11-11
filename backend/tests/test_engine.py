@@ -131,3 +131,9 @@ def test_same_merge_base_and_tip_never_warns_and_unknown_keeps_the_old_behaviour
     g, rev = _git_repo(tmp_path)
     assert engine.moved_files_that_matter(tmp_path, REPOS, rev(), rev()) == []
     assert any("OLDER target" in x for x in engine.freshness_warnings({"commits": dict(TC)}, TC, "1" * 40, "2" * 40))     # moved=None
+
+
+def test_older_target_warning_makes_no_claim_about_what_the_baseline_reflects():
+    """Found on the real run: the baseline restored for a PR belongs to the PR's own base commit, so 'the baseline graph reflects the target tip' was false."""
+    w = engine.freshness_warnings({"commits": dict(TC)}, TC, "1" * 40, "2" * 40)[0]
+    assert "reflects the target tip" not in w and "not part of this analysis" in w and "three-dot" in w

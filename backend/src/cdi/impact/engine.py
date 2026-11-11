@@ -93,7 +93,7 @@ def freshness_warnings(recorded, target_commits, merge_base, target_tip, moved=N
         what = "" if not moved else (f" {len(moved)} file(s) the scanners read or the configuration changed on the target since then "
                                      f"(for example `{moved[0]}`).")
         w.append(f"The PR branch is based on an OLDER target: merge-base is {short(merge_base)}, the target tip is {short(target_tip)}.{what} "
-                 f"The diff covers only the PR's own changes (three-dot), but the baseline graph reflects the target tip.")
+                 f"The diff covers only the PR's own changes (three-dot); changes merged into the target since the merge-base are not part of this analysis.")
     return w
 
 
