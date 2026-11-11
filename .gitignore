@@ -1,0 +1,28 @@
+# Private / confidential working material (never published)
+private/
+docs/source/
+
+# Build outputs and dependencies
+bin/
+obj/
+node_modules/
+dist/
+out/
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+
+# IDE and OS files
+.vs/
+.idea/
+.vscode/
+.DS_Store
+*.user
+*.suo
+
+# Local services and secrets
+neo4j-data/
+neo4j-logs/
+.env
+.env.*

@@ -1,0 +1,16 @@
+cdi-poc: a cross-layer dependency graph and PR impact proof of concept
+
+This repository contains code derived from an MIT-licensed project:
+
+  CRUD.ASPCore.Angular.WebAPI.ADO
+  https://github.com/AnkitSharma-007/CRUD.ASPCore.Angular.WebAPI.ADO
+  Copyright (c) 2021 Ankit
+  Licensed under the MIT License (see samples/web/LICENSE, samples/api/LICENSE, samples/db/LICENSE)
+
+Imported at upstream commit 938cb17 into samples/web (ClientApp), samples/api (ASP.NET project) and samples/db (licence only).
+Every later modification is a separate commit and is listed in docs/changes.md. Files and folders marked
+"synthetic" (for example samples/db/synthetic, samples/api/Synthetic, samples/web/src/synthetic) were written
+for this proof of concept and are not part of the upstream project.
+
+This repository has no top-level licence file. The MIT licence applies to the upstream-derived sample code
+as stated above; no licence is granted for the other files at this time.
