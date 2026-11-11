@@ -102,6 +102,7 @@ def test_confirmed_consumer_and_unresolved_items_carry_file_line(world, tmp_path
     md = (tmp_path / "pr-comment.md").read_text()
     assert re.search(r"UI_COMPONENT `FetchEmployeeComponent` — `web:src/app/fetch-employee/fetch-employee.component.ts:19` ⚠ broken by this PR", md)
     assert "`web:src/app/services/employee.service.ts:26`" in md and "no API endpoint" in md
+    assert "declared attributes changed" in md and "`route_template` `api/Employee/Index` → `api/Employee/List`" in md
 
 
 # ------------------------------------------------------------------ truncation

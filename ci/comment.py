@@ -65,6 +65,10 @@ def _render(result, b, ccfg, scale, violations, blocking):
         lines.append(f"| `{o['name']}`{' (synthetic)' if o['synthetic'] else ''} | {o['kind']} | {o['change']} | {rk} |")
     if len(objs) > max(lim("max_confirmed_consumers"), 3):
         lines.append(f"| … +{len(objs) - max(lim('max_confirmed_consumers'), 3)} more | | | see full report |")
+    for o in objs[:max(lim("max_confirmed_consumers"), 3)]:
+        if o.get("attr_changes"):
+            lines.append(f"`{o['name'].split('.')[-2] + '.' + o['name'].split('.')[-1] if '(' in o['name'] else o['name']}` declared attributes changed: "
+                         + "; ".join(f"`{c['attr']}` `{c['before']}` → `{c['after']}`" for c in o["attr_changes"] if c["attr"] != "route_normalized"))
     lines.append("")
 
     # 1. CONFIRMED consumers
