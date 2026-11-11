@@ -1,9 +1,9 @@
 # cdi-poc
 
-> **Branch `restructure` (work in progress, Phase 1 of 7).** The repository is being reorganised into `backend/` and `frontend/` (plus `docs/`, `.github/`, `config.example/`);
-> the sample application moves out into its own repository. In this phase the code and tests have moved and still work as before; the commands below use the new
-> paths, but configuration is still the interim `config/` format (now kept inside the test fixture) and `samples/` is still present until the new sample repository is approved.
-> The README is rewritten in the last phases.
+> **Branch `restructure` (work in progress, Phase 2 of 7).** The repository is being reorganised into `backend/` and `frontend/` (plus `docs/`, `.github/`, `config.example/`);
+> the sample application lives in its own repository. The tool is now configured by a target repository's `.cdi/config.yml` ([docs/configuration.md](docs/configuration.md));
+> `cdi audit` checks that no sample-specific name appears in `backend/` or `frontend/`. `samples/` is still present until the new sample repository is approved.
+> The Azure simulation, the live API and the GitHub flow are later phases. The README is rewritten in the last phases.
 
 A cross-layer dependency graph and PR impact proof of concept: static scanners for a frontend (TypeScript/Angular), an API
 (C#/.NET) and SQL Server code emit one shared, evidence-backed graph schema.
@@ -16,7 +16,7 @@ The evaluation harness (`eval/`) is built; it needs a ground-truth file written 
 - **The upstream sample has no SQL.** All SQL under `samples/db/synthetic`, the Department API (`samples/api/Synthetic`), the Department screen
   (`samples/web/src/synthetic`), **all tests**, and any regression scenarios added later are **synthetic**: written for this PoC.
   Scan output marks them `synthetic: true`. Results on them are not evidence of accuracy on real code.
-- The "three repos" are **folders of this one git repository**; `config/repos.yml` maps each logical repo name to its folder.
+- The "three repos" are **folders of this one git repository**; `.cdi/config.yml` maps each logical repo name to its folder.
 
 ## Licence
 This repository has **no top-level licence file**. The upstream-derived sample code is MIT (`samples/web/LICENSE`,
