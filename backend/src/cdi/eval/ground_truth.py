@@ -87,7 +87,7 @@ def validate(gt: dict, graph, known_scenarios) -> list[str]:
     problems = []
     for sc, s in gt["scenarios"].items():
         if sc not in known_scenarios:
-            problems.append(f"scenario '{sc}' is not defined in cdi/eval/scenarios.py")
+            problems.append(f"scenario '{sc}' is not defined in .cdi/scenarios.yml")
         seen = set()
         for w in s["affected_workflows"]:
             if w in seen:
@@ -121,7 +121,7 @@ def main(argv=None):
         print(f"wrote {a.output}: {len(parsed['scenarios'])} scenario(s). Next: validate, commit it, and only then run the evaluation.")
     elif a.cmd == "validate":
         from cdi.eval import scenarios
-        probs = validate(load(a.gt), _graph(a.graph), set(scenarios.SCENARIOS))
+        probs = validate(load(a.gt), _graph(a.graph), set(scenarios.load_scenarios()))
         print("\n".join(probs) if probs else "ground truth is consistent with the graph and the scenario list")
         sys.exit(1 if probs else 0)
     else:

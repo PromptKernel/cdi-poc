@@ -8,6 +8,7 @@ ROOT = pathlib.Path(__file__).resolve().parents[2]    # repository root (config/
 BACKEND = ROOT / "backend"
 FIXTURE = pathlib.Path(__file__).resolve().parent / "fixtures" / "sample"       # pinned copy of the sample (config/ + samples/)
 FIXTURE_CONFIG = FIXTURE / ".cdi" / "config.yml"
+FIXTURE_SCENARIOS = FIXTURE / ".cdi" / "scenarios.yml"
 sys.path.insert(0, str(ROOT / "tools"))
 ENV = {**os.environ, "DOTNET_CLI_TELEMETRY_OPTOUT": "1"}
 if "DOTNET_ROOT" not in ENV and pathlib.Path("/opt/homebrew/opt/dotnet/libexec").is_dir():

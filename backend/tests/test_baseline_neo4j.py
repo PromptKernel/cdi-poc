@@ -2,7 +2,9 @@
 import os, pathlib
 import pytest
 from conftest import ROOT, BACKEND, Project, sh, make_branch
-from cdi.eval.scenarios import SCENARIOS
+from cdi.eval.scenarios import load_scenarios
+from conftest import FIXTURE_SCENARIOS
+SCENARIOS = load_scenarios(FIXTURE_SCENARIOS)
 from cdi.linker.graphio import load_config
 from cdi.pipeline import baseline as B
 from cdi.pipeline.scanrun import ScanRunner

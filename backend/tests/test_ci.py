@@ -3,7 +3,9 @@ No test here touches the network: urllib.request.urlopen is replaced by a functi
 import argparse, copy, json, pathlib, re
 import pytest, yaml
 from conftest import ROOT, BACKEND, FIXTURE_CONFIG, Project, make_branch
-from cdi.eval.scenarios import SCENARIOS
+from cdi.eval.scenarios import load_scenarios
+from conftest import FIXTURE_SCENARIOS
+SCENARIOS = load_scenarios(FIXTURE_SCENARIOS)
 from cdi.ci import adapters, comment, payloads, policy
 from cdi.impact import engine
 from cdi.linker.graphio import Graph, load_config

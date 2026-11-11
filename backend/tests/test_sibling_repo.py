@@ -1,4 +1,4 @@
-"""Scan the full sample repository (the sibling checkout) and compare with the pinned fixture.
+"""Scan the full sample repository (the sibling checkout, with its OWN .cdi/config.yml) and compare with the pinned fixture.
 
 Set CDI_SAMPLE_REPO to the path of a checkout of the sample repository. Skipped otherwise.
 The checkout is copied (tracked files only) into a temporary git repo, so the scan reads nothing from this tool repo
@@ -15,9 +15,6 @@ REPOS = ("web", "api", "db")
 @pytest.fixture(scope="module")
 def sibling(tmp_path_factory):
     root = tmp_path_factory.mktemp("sibling")
-    shutil.copytree(FIXTURE_CONFIG.parent, root / ".cdi")
-    repos = root / ".cdi" / "config.yml"
-    repos.write_text(repos.read_text().replace("path: samples/", "path: "))     # the sibling has web/ api/ db/ at its root
     files = sh(["git", "ls-files", "-z"], cwd=SIBLING).stdout.split("\0")
     for f in filter(None, files):
         dst = root / f
@@ -53,3 +50,14 @@ def test_sibling_counts_cover_the_fixture(sibling_scans, full):
         assert {n["id"] for n in f["nodes"]} <= {n["id"] for n in s["nodes"]}, r
         key = lambda e: (e["type"], e["source"], e["target"], e["confidence"])
         assert {key(e) for e in f["edges"]} <= {key(e) for e in s["edges"]}, r
+
+
+def test_sibling_scenarios_apply_to_its_files():
+    from cdi.eval.scenarios import load_scenarios
+    import yaml
+    specs = yaml.safe_load((pathlib.Path(SIBLING) / ".cdi/scenarios.yml").read_text())["scenarios"]
+    assert set(specs) == set(load_scenarios(pathlib.Path(SIBLING) / ".cdi/scenarios.yml"))
+    for name, sc in specs.items():
+        for e in sc["edits"]:
+            text = (pathlib.Path(SIBLING) / e["path"]).read_text()          # the edited file exists in the sample repo
+            assert e.get("delete") or e["old"] in text, (name, e["path"])

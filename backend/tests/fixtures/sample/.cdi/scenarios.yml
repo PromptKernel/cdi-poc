@@ -1,0 +1,39 @@
+# Synthetic PR scenarios for demos, tests and the evaluation harness. Each scenario becomes ONE commit on a local branch off the base branch.
+# Edit kinds: replace {old, new[, count]} on a file (the edit must change the file), or delete: true. Paths are relative to the repository root.
+scenarios:
+  pr-a-sp-body:
+    description: change the body of a stored procedure
+    edits:
+      - path: samples/db/synthetic/procedures/spGetAllEmployees.sql
+        old: "    ORDER BY EmployeeID;"
+        new: "    WHERE Name <> ''\n    ORDER BY EmployeeID;"
+  pr-b-view:
+    description: change a synthetic view
+    edits:
+      - path: samples/db/synthetic/views/vwEmployeeDepartment.sql
+        old: "SELECT e.EmployeeID, e.Name,"
+        new: "SELECT e.EmployeeID, d.DepartmentID, e.Name,"
+  pr-c-ts-service:
+    description: change the TypeScript service method that calls the list endpoint
+    edits:
+      - path: samples/web/src/app/services/employee.service.ts
+        old: "  getEmployees() {\n"
+        new: "  getEmployees() {\n    console.log('loading employees');\n"
+  pr-d-dynamic-sql:
+    description: change a synthetic procedure that contains dynamic SQL
+    edits:
+      - path: samples/db/synthetic/procedures/spSearchEmployees.sql
+        old: "SELECT EmployeeID, Name FROM dbo.tblEmployee WHERE "
+        new: "SELECT TOP 50 EmployeeID, Name FROM dbo.tblEmployee WHERE "
+  pr-e-delete-proc:
+    description: delete a synthetic procedure that has consumers
+    edits:
+      - path: samples/db/synthetic/procedures/spGetDepartmentHeadcount.sql
+        delete: true
+  pr-f-route:
+    description: change a controller route template so the frontend request no longer matches
+    edits:
+      - path: samples/api/Controllers/EmployeeController.cs
+        old: '[Route("Index")]'
+        new: '[Route("List")]'
+        count: 1

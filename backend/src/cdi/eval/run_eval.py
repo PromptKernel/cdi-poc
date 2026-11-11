@@ -130,10 +130,11 @@ def run(source=".", gt_path="eval/ground_truth.yml", out="out/eval", baseline="m
     from cdi.eval import scenarios as S
     from cdi.pipeline import baseline as B
     from cdi.pipeline.scanrun import ScanRunner
+    defined = S.load_scenarios(pathlib.Path(source) / S.DEFAULT_FILE)
     names = [n for n in gt["scenarios"] if not scenarios_only or n in scenarios_only]
-    unknown = [n for n in names if n not in S.SCENARIOS]
+    unknown = [n for n in names if n not in defined]
     if unknown:
-        raise SystemExit(f"ground truth names scenarios that cdi/eval/scenarios.py does not define: {unknown}")
+        raise SystemExit(f"ground truth names scenarios that .cdi/scenarios.yml does not define: {unknown}")
     kinds = gt["workflow_kinds"]
     with tempfile.TemporaryDirectory(prefix="cdi-eval-") as td:
         td = pathlib.Path(td)
@@ -157,7 +158,7 @@ def run(source=".", gt_path="eval/ground_truth.yml", out="out/eval", baseline="m
         universe = set(G.workflow_names(base, kinds))
         per = []
         for n in names:
-            S.make_branch(clone, n, S.SCENARIOS[n], base="main", workdir=td, ident=GIT_ID)
+            S.make_branch(clone, n, defined[n], base="main", workdir=td, ident=GIT_ID)
             keep = {}
             res = engine.analyze(clone, tool_root, clone / ".cdi/config.yml", "main", n, base, fresh, name=n, runner=runner, keep=keep)
             per.append(evaluate_scenario(n, gt["scenarios"][n], res, keep["base"], keep["head"], kinds, universe))
