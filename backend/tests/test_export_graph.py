@@ -3,7 +3,7 @@ import json, os, pathlib, shutil
 import pytest
 import export_graph as X
 
-ROOT = pathlib.Path(__file__).resolve().parents[1]
+ROOT = pathlib.Path(__file__).resolve().parents[2]
 CFG = ROOT / "config"
 
 

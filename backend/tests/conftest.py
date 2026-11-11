@@ -3,7 +3,7 @@ so they can exercise commit_id, the dirty-tree check and --only overlays without
 import json, os, pathlib, shutil, subprocess, sys
 import pytest
 
-ROOT = pathlib.Path(__file__).resolve().parents[1]
+ROOT = pathlib.Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "tools"))
 ENV = {**os.environ, "DOTNET_CLI_TELEMETRY_OPTOUT": "1"}
 if "DOTNET_ROOT" not in ENV and pathlib.Path("/opt/homebrew/opt/dotnet/libexec").is_dir():

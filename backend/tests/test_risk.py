@@ -2,7 +2,7 @@ import pathlib, copy
 import pytest
 from impact import risk, report
 
-ROOT = pathlib.Path(__file__).resolve().parents[1]
+ROOT = pathlib.Path(__file__).resolve().parents[2]
 CFG = risk.load(ROOT / "config/risk-rules.yml")
 
 

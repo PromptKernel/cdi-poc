@@ -4,7 +4,7 @@ from linker.graphio import Graph, load_config
 from linker.link import Linker, build_fragment
 from impact import traverse as T
 
-ROOT = pathlib.Path(__file__).resolve().parents[1]
+ROOT = pathlib.Path(__file__).resolve().parents[2]
 pytestmark = pytest.mark.skipif(not os.environ.get("NEO4J_PASSWORD"), reason="NEO4J_PASSWORD not set")
 
 

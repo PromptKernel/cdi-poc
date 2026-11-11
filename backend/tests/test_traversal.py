@@ -5,7 +5,7 @@ from linker.link import Linker
 from linker.graphio import load_config
 from helpers import node, edge, graph
 
-ROOT = pathlib.Path(__file__).resolve().parents[1]
+ROOT = pathlib.Path(__file__).resolve().parents[2]
 A, B, C, D = (node("r", "METHOD", n) for n in "ABCD")
 
 
