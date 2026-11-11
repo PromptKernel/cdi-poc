@@ -1,6 +1,6 @@
 # GitHub flow
 
-Two workflows and one composite action turn the impact engine into a pull-request check on GitHub. **Status (2026-11-11): run on github.com against the sample repository
+Two workflows and one composite action turn the impact engine into a pull-request check on GitHub. **Status (2026-11-11, re-verified against the merged tool `b42bae8` on `main`): run on github.com against the sample repository
 `promptkernel/cdi-sample-app` ([PR 1](https://github.com/PromptKernel/cdi-sample-app/pull/1), [PR 2](https://github.com/PromptKernel/cdi-sample-app/pull/2), [PR 3](https://github.com/PromptKernel/cdi-sample-app/pull/3)); see "Verified on real GitHub" and
 "Not verified" at the end for exactly what that covers.**
 
@@ -144,6 +144,20 @@ Run by the tool's author from this repository's `restructure` branch; the sample
 | The `pull_request` run uses the workflow file of the merge result: after `main` re-pinned the action, PR runs used the new version although the PR branches still carried the old file | PR runs after each re-pin |
 | Runtime: job 29-37 s, the analysis step 22-27 s, tool run 3-5 s (small sample) | step timings |
 
+## Re-verified against the merged tool (2026-11-11)
+`restructure` was fast-forwarded into `main` (`2e44f06` to `6fdebb5`), and the sample's workflows were re-pinned to a commit on `main`: first `6fdebb5`, then `b42bae8` (current). Evidence:
+
+| What | Evidence |
+|---|---|
+| The pin is a commit on `main`, not on a feature branch; the action resolves and runs | baseline runs [43061818694](https://github.com/PromptKernel/cdi-sample-app/actions/runs/43061818694) (`6fdebb5`) and [43063478330](https://github.com/PromptKernel/cdi-sample-app/actions/runs/43063478330) (`b42bae8`); cache keys `cdi-baseline-v1-43fa78ab…` and `cdi-baseline-v1-651dd7a0…` |
+| All three PRs re-ran on `b42bae8` and each still has exactly one bot comment with the same id, updated in place | [43063639938](https://github.com/PromptKernel/cdi-sample-app/actions/runs/43063639938) (PR 1, comment 6797310661), [43063647025](https://github.com/PromptKernel/cdi-sample-app/actions/runs/43063647025) (PR 2, 6797314921), [43063657025](https://github.com/PromptKernel/cdi-sample-app/actions/runs/43063657025) (PR 3, 6799075229) |
+| Statuses: Medium and "no label" start "advisory:", High starts "Advisory only (status stays success)", all `success` | `commits/<sha>/status` of the three heads |
+| **Positive case of the stale-target rule:** after a commit to `main` that changed a scanned file (a comment line in `spGetCityList.sql`) PR 1's comment shows both "Baseline is STALE for 'db' (built from f16eb60f, target at 8466e234)" and "The PR branch is based on an OLDER target … 1 file(s) the scanners read … changed (for example `db/synthetic/procedures/spGetCityList.sql`)"; the warning is correct (the file is scanned and changed after the merge-base) | run [43062467286](https://github.com/PromptKernel/cdi-sample-app/actions/runs/43062467286) (tool `6fdebb5`) and the three runs above (`b42bae8`) |
+| The warning also appears, correctly, on the README-only PR, whose merge-base is older than that scanned-file change | PR 3 comment |
+| A merge into `main` through the gate: the gate scans commits not yet on the remote plus the whole tree | `scripts/prepush_gate.sh` output |
+
+Differences from the previous run of the same PRs: only the commit shas, the target tip, the run link and the timing (3.1-6.4 s), plus the warnings that the scanned-file change on `main` now legitimately causes.
+
 ### Defects found by the real runs, and their fixes
 1. The Basis line showed `origin/main` and the head sha twice; the footer pointed at `out/report-<pr>.md` on the runner; the footer called the repository "synthetic-scale". Fixed in `e76ceb2` (verified on the second real run).
 2. The full report named `origin/main` and the head sha and said "Baseline graph (Neo4j, read-only)" for a JSON baseline. Fixed in `9837aab`/`81abdde` (verified on the third round of runs).
@@ -154,10 +168,16 @@ Run by the tool's author from this repository's `restructure` branch; the sample
 7. A README-only PR said "Changed files: 0". Fixed in `64a288c`.
 8. The tool left a `cdi-scanner-config-*` directory in the temp folder on every run (234 had accumulated). Fixed in `ba4a55f`; tested locally (normal exit, failure, SIGTERM). On the runner it was not observable.
 
+9. A registry bug in that cleanup (a refused directory was forgotten, so it could never be removed): fixed in `7c09946`; a full test run now leaves nothing behind.
+10. On the stale-target positive case the OLDER-target warning said "the baseline graph reflects the target tip", which is false: the baseline restored for a PR belongs to the PR's own base commit. Fixed in `b42bae8`; verified on the final runs.
+11. The pre-push gate re-flagged commits that were already public when merging an already-pushed branch; it now scans only commits not yet on the remote (plus the whole tree). Not a GitHub behaviour; local tests.
+
+Still imperfect (cosmetic, not fixed): the STALE message says "the target branch is at 8466e234", meaning the last commit that touched that folder, while the OLDER-target message names the branch tip (`651dd7a0`); the two shas differ legitimately but read as a contradiction.
+
 ## Not verified
 * **Fork pull requests** (this needs a second account): the skip is tested only against the fake server.
 * **Real 403, 404 and 422 responses.** The declared permissions worked, so no error path ran. The adapter's messages are tested against the fake server only; GitHub's actual error bodies are unseen.
-* **Baseline fallbacks on GitHub:** a cache miss, a schema-version mismatch, an unmatched or "behind" baseline, and the `limits.max_changed_files` skip were exercised against the fake server and local git only. The run on GitHub always had a current baseline.
+* **Baseline fallbacks on GitHub:** a cache miss, a schema-version mismatch, an unmatched or "behind" baseline, and the `limits.max_changed_files` skip were exercised against the fake server and local git only. On GitHub the baseline restored for a PR always matched its base commit (the stale-target warnings above are about `main` moving on, not about a mismatching baseline).
 * **The baseline size warning** and anything near the 10 GB cache limit or 7-day eviction: the real baseline is 150 KB.
 * **Larger repositories**: timing and memory beyond the small sample.
 * **GitHub's own limits**: the 65,536-character comment cap and the 140-character status description cap are still community-reported, not seen in the official REST pages; the real comments were far below them.

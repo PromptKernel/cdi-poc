@@ -1,9 +1,9 @@
 # cdi-poc
 
-> **Status (2026-11-11).** The tool is on `main`: backend, read-only API, explorer, the Docker-free two-terminal setup and the GitHub flow. The GitHub flow has run on github.com against the sample repository
+> **Status (2026-11-11).** The tool is on `main` (re-verified on GitHub against `b42bae8`, the commit the sample repository pins): backend, read-only API, explorer, the Docker-free two-terminal setup and the GitHub flow. The GitHub flow has run on github.com against the sample repository
 > [`promptkernel/cdi-sample-app`](https://github.com/PromptKernel/cdi-sample-app) ([PR 1](https://github.com/PromptKernel/cdi-sample-app/pull/1), [PR 2](https://github.com/PromptKernel/cdi-sample-app/pull/2), [PR 3](https://github.com/PromptKernel/cdi-sample-app/pull/3)).
 > **Verified there:** the composite action runs from a pinned commit; the baseline is built on push to the base branch and cached; PR runs restore it (restore only); one advisory comment is created and then updated in place; a commit status is set;
-> results match the local reports; a README-only PR gets a short comment; the stale-target warning stays quiet when only non-scanned files moved. **Not verified on GitHub:** fork PRs, real 403/404/422 responses, cache-miss / schema-mismatch /
+> results match the local reports; a README-only PR gets a short comment; the stale-target warning stays quiet when only non-scanned files moved and appears, correctly, when a scanned file changed on the base branch. **Not verified on GitHub:** fork PRs, real 403/404/422 responses, cache-miss / schema-mismatch /
 > stale-baseline fallbacks, large repositories, GitHub's published comment-size limits. Details and dates: [docs/github-flow.md](docs/github-flow.md).
 
 A cross-layer dependency graph and pull-request impact proof of concept. Static scanners read a frontend (TypeScript/Angular), an API (C#/.NET) and SQL Server code and emit one
