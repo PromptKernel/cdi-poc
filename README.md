@@ -78,7 +78,7 @@ export NEO4J_PASSWORD='<your password>'; docker compose -f graph/docker-compose.
 backend/scripts/make_demo_branches.sh --reports neo4j              # from a clean main: recreate the branches, write out/report-<branch>.md/.json
 ```
 Re-run the script after `main` moves (the branches are re-pointed to the new `main`); otherwise reports warn that the PR branch is based on an older target.
-Without Neo4j: `python -m cdi.pipeline.baseline full --no-neo4j` then `backend/scripts/make_demo_branches.sh --reports files`.
+Without Neo4j (the default store is a JSON file, `out/baseline.json`): `python -m cdi.pipeline.baseline full` then `backend/scripts/make_demo_branches.sh --reports json`; see docs/graph-store.md.
 Remove the demo branches yourself with `git branch -D <names>` when you no longer need them (they are unmerged, so `-d` refuses).
 
 ## Tests

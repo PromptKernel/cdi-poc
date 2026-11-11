@@ -16,6 +16,7 @@ limits:
   max_changed_files: 500
 graph:
   store: json
+  json: {path: out/baseline.json}
   neo4j:
     uri: bolt://localhost:7687
     user: neo4j

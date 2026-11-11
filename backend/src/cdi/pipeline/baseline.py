@@ -1,7 +1,7 @@
 """Baseline runner.
-  full:        scan all logical repos from a committed revision, link, and REPLACE the graph in Neo4j.
+  full:        scan all logical repos from a committed revision, link, and REPLACE the baseline in the store (JSON file by default, Neo4j optional).
   incremental: given a commit range, re-scan only the changed files (plus files that depend on changed definitions) with --only,
-               merge into the baseline, RE-LINK the whole graph (ROUTES_TO / RESOLVES_TO / TESTS are fully recomputed), and sync Neo4j.
+               merge into the baseline, RE-LINK the whole graph (ROUTES_TO / RESOLVES_TO / TESTS are fully recomputed), and sync the store.
 A full rebuild of the same commit must produce an identical graph (same node and edge ids); tests/test_baseline.py checks that.
 usage: python -m cdi.pipeline.baseline full [--rev HEAD]
        python -m cdi.pipeline.baseline incremental --from <rev> --to <rev>"""
@@ -114,33 +114,34 @@ def main(argv=None):
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("mode", choices=["full", "incremental"])
     ap.add_argument("--rev", default="HEAD"); ap.add_argument("--from", dest="frm"); ap.add_argument("--to", default="HEAD")
-    ap.add_argument("--config", default=None, help="path to .cdi/config.yml (default: $CDI_CONFIG or .cdi/config.yml)"); ap.add_argument("--out", default="out/graph"); ap.add_argument("--no-neo4j", action="store_true")
+    ap.add_argument("--config", default=None, help="path to .cdi/config.yml (default: $CDI_CONFIG or .cdi/config.yml)")
+    ap.add_argument("--out", default="out/graph", help="folder for the per-repo scanner fragments and baseline.meta.json (intermediate files)")
+    ap.add_argument("--store", default=None, choices=["json", "neo4j"], help="baseline store (default: graph.store from the config)")
+    ap.add_argument("--store-path", default=None, help="JSON baseline file (default: graph.json.path)")
     a = ap.parse_args(argv)
     root = pathlib.Path(".").resolve()
     cfg = load_config(a.config)
     runner = ScanRunner(TOOL_ROOT, cfg["dir"], root / "out/work")
-    driver = db = None
-    if not a.no_neo4j:
-        from cdi.graph.load_neo4j import connect
-        driver, db = connect(cfg)
-    from cdi.graph import store
-    if a.mode == "full":
-        frags, linked, g, meta = full(runner, root, cfg, a.rev)
-        fresh = store.make_freshness(g, meta["commits"], "full", to_commit=meta["rev"])
-        if driver:
-            meta["neo4j"] = store.write_full(driver, db, g, fresh)
-    else:
-        if not a.frm:
-            sys.exit("incremental needs --from <rev>")
-        if not driver:
-            sys.exit("incremental reads the stored baseline from Neo4j; set NEO4J_PASSWORD")
-        base, fresh0 = store.read_graph(driver, db)
-        if not fresh0:
-            sys.exit("no baseline in Neo4j: run `full` first")
-        frags, linked, g, meta = incremental(runner, root, cfg, base, fresh0["commits"], a.frm, a.to)
-        fresh = store.make_freshness(g, meta["commits"], "incremental", meta["from"], meta["to"])
-        meta["neo4j"] = store.sync(driver, db, g, fresh)
-    meta["loaded_at"] = (fresh or {}).get("loaded_at")
+    from cdi import store as S
+    with S.open_store(cfg, a.store, a.store_path, root=root) as st:
+        if a.mode == "full":
+            frags, linked, g, meta = full(runner, root, cfg, a.rev)
+            fresh = S.make_freshness(g, meta["commits"], "full", to_commit=meta["rev"])
+            meta["store"] = {"kind": st.describe(), **st.write_full(g, fresh)}
+        else:
+            if not a.frm:
+                sys.exit("incremental needs --from <rev>")
+            try:
+                base, fresh0 = st.read()
+            except S.BaselineMissing:
+                sys.exit(f"no baseline in {st.describe()}: run `full` first")
+            except S.BaselineSchemaMismatch as e:
+                sys.exit(f"{e}: run `full` to rebuild it")
+            frags, linked, g, meta = incremental(runner, root, cfg, base, fresh0["commits"], a.frm, a.to)
+            fresh = S.make_freshness(g, meta["commits"], "incremental", meta["from"], meta["to"])
+            meta["store"] = {"kind": st.describe(), **st.sync(g, fresh)}
+    meta["loaded_at"] = fresh["loaded_at"]
+    meta["schema_version"] = fresh["schema_version"]
     write_files(a.out, frags, linked, meta)
     print(json.dumps(meta, indent=2))
 

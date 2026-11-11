@@ -5,7 +5,7 @@ result to files. `config.example/optional/azure/azure-pipelines.yml` is a thin w
 payload shapes below were tested against a real service.**
 
 ## Entry point
-`backend/scripts/run_pr.sh --target main --pr <branch|sha> [--name pr-17] [--baseline neo4j|files] [--out out] [--blocking]`
+`backend/scripts/run_pr.sh --pr <branch|sha> [--target main] [--name pr-17] [--store json|neo4j] [--out out] [--blocking]`
 (= `python -m cdi.pipeline.run_pr`). Steps: read the baseline graph read-only and check its freshness, run the impact engine, build the comment and the
 status, publish through the adapter, print timing.
 

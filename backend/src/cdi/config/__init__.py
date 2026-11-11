@@ -164,7 +164,7 @@ def as_legacy(cfg: dict) -> dict:
     lim = cfg["limits"]
     ci = copy.deepcopy(cfg["ci"])
     ci["comment"]["max_chars"] = lim["comment_max_chars"]
-    graph = {**{k: copy.deepcopy(cfg["graph"][k]) for k in ("neo4j", "load", "trace")},
+    graph = {**{k: copy.deepcopy(cfg["graph"][k]) for k in ("neo4j", "load", "trace", "json")},
              "impact": {**copy.deepcopy(cfg["impact"]), "max_depth_downstream": lim["max_depth_downstream"], "max_depth_upstream": lim["max_depth_upstream"]}}
     return {**v, "graph": graph, "risk-rules": copy.deepcopy(cfg["risk"]), "ci": ci, "limits": copy.deepcopy(lim), "branches": copy.deepcopy(cfg["branches"]),
             "store": cfg["graph"]["store"], "dir": str(materialize(cfg)), "root": cfg["_root"], "file": cfg["_file"]}

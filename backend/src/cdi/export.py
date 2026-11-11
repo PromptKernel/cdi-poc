@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """Export the graph for the local explorer: out/explorer/graph.json, plus copies of the impact reports and the latest simulated PR comment/status.
-Source: the baseline in Neo4j via a READ-ONLY session when NEO4J_PASSWORD is set (and the store has a baseline), else the scan/linker files in out/graph.
+Source: the baseline in the configured store (JSON file by default; Neo4j via a READ-ONLY session when configured), read-only.
 Generated data stays under out/ (git-ignored). Nothing is deleted: files are overwritten, never removed.
-usage: python -m cdi.export [--source auto|neo4j|files] [--out out/explorer] [--graph out/graph] [--config config] [--reports-dir out]"""
+usage: python -m cdi.export [--source auto|json|neo4j] [--out out/explorer] [--store-path FILE] [--config .cdi/config.yml] [--reports-dir out]"""
 from __future__ import annotations
 import argparse, datetime, json, os, pathlib, shutil, sys
 
@@ -25,45 +25,27 @@ def edge_json(e):
             "reason": e.get("reason"), "evidence": e.get("evidence") or "", "analysis_method": e["analysis_method"], "attrs": e.get("attrs") or {}}
 
 
-def load_graph(source, cfg, graph_dir):
-    """Return (graph, baseline_info|None, actual_source)."""
-    if source in ("auto", "neo4j") and os.environ.get(cfg["graph"]["neo4j"]["password_env"]):
+def load_graph(source, cfg, store_path=None):
+    """Return (graph, freshness, actual_source). source: auto | json | neo4j. `auto` uses Neo4j when configured and reachable, else the JSON baseline."""
+    from cdi import store as S
+    order = {"auto": [cfg["store"], "json"], "json": ["json"], "files": ["json"], "neo4j": ["neo4j"]}[source]
+    last = None
+    for kind in dict.fromkeys(order):
         try:
-            from cdi.graph.load_neo4j import connect
-            from cdi.graph import store
-            driver, db = connect(cfg, wait=5)
-            try:
-                g, fresh = store.read_graph(driver, db)          # read-only session
-            finally:
-                driver.close()
-            if fresh and g.nodes:
-                return g, fresh, "neo4j"
-            if source == "neo4j":
-                raise RuntimeError("Neo4j has no baseline")
-        except Exception as e:
-            if source == "neo4j":
+            with S.open_store(cfg, kind, store_path, **({"wait": 5} if kind == "neo4j" else {})) as st:
+                g, fresh = st.read()
+            return g, fresh, kind
+        except (S.StoreError, SystemExit, OSError, RuntimeError, ImportError) as e:
+            last = e
+            if source != "auto":
                 raise
-            print(f"[export] Neo4j not usable ({type(e).__name__}); falling back to files", file=sys.stderr)
-    elif source == "neo4j":
-        raise SystemExit("source=neo4j needs the NEO4J_PASSWORD environment variable")
-    names = [r["name"] for r in cfg["repos"]["repos"]]
-    frags = load_fragments(graph_dir, names, include_linked=True)
-    if not frags:
-        raise SystemExit(f"no scan/linker files in {graph_dir}; run pipeline/scan_all.sh and pipeline/link_and_load.sh first")
-    g = Graph.from_fragments(frags)
-    meta_file = pathlib.Path(graph_dir) / "baseline.meta.json"
-    fresh = None
-    if meta_file.exists():
-        m = json.loads(meta_file.read_text())
-        fresh = {"commits": m.get("commits"), "loaded_at": m.get("loaded_at"), "mode": m.get("mode")}
-    elif g.commits:
-        fresh = {"commits": dict(g.commits), "loaded_at": None, "mode": "files"}
-    return g, fresh, "files"
+            print(f"[export] {kind} store not usable ({type(e).__name__}: {e}); trying the next", file=sys.stderr)
+    raise SystemExit(f"no usable baseline store: {last}")
 
 
-def export(source="auto", out="out/explorer", graph_dir="out/graph", config=None, reports_dir="out"):
+def export(source="auto", out="out/explorer", store_path=None, config=None, reports_dir="out"):
     cfg = load_config(config)
-    g, fresh, actual = load_graph(source, cfg, graph_dir)
+    g, fresh, actual = load_graph(source, cfg, store_path)
     out = pathlib.Path(out)
     (out / "reports").mkdir(parents=True, exist_ok=True)
     (out / "pr").mkdir(parents=True, exist_ok=True)
@@ -104,10 +86,10 @@ def export(source="auto", out="out/explorer", graph_dir="out/graph", config=None
 
 def main(argv=None):
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument("--source", default="auto", choices=["auto", "neo4j", "files"]); ap.add_argument("--out", default="out/explorer")
-    ap.add_argument("--graph", default="out/graph"); ap.add_argument("--config", default=None); ap.add_argument("--reports-dir", default="out")
+    ap.add_argument("--source", default="auto", choices=["auto", "json", "neo4j"]); ap.add_argument("--out", default="out/explorer")
+    ap.add_argument("--store-path", default=None); ap.add_argument("--config", default=None); ap.add_argument("--reports-dir", default="out")
     a = ap.parse_args(argv)
-    print(json.dumps(export(a.source, a.out, a.graph, a.config, a.reports_dir)))
+    print(json.dumps(export(a.source, a.out, a.store_path, a.config, a.reports_dir)))
 
 
 if __name__ == "__main__":

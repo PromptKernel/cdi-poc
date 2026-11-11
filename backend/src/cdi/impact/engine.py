@@ -117,6 +117,12 @@ def graph_delta(base: Graph, head: Graph):
             "edges_moved": [{"from": a, "to": b} for a, b in moved], "edges_changed": sorted(changed)}
 
 
+class PRTooLarge(Exception):
+    def __init__(self, changed, limit):
+        self.changed, self.limit = changed, limit
+        super().__init__(f"This PR changes {changed} files; the limit is {limit} (limits.max_changed_files).")
+
+
 def analyze(project_root, tool_root, config_dir, target, pr, baseline: Graph, freshness, name=None, scratch=None, runner=None, keep=None):
     t_start = time.perf_counter()
     root = pathlib.Path(project_root)
@@ -140,6 +146,10 @@ def analyze(project_root, tool_root, config_dir, target, pr, baseline: Graph, fr
     base_frags = M.split_scanner_fragments(baseline, names, commits)
     base_scanner = Graph.from_fragments(list(base_frags.values()))
 
+    limit = cfg["limits"]["max_changed_files"]
+    n_changed = sum(len(D.changes(root, mb, head_sha, r["path"])) for r in repos)
+    if n_changed > limit:
+        raise PRTooLarge(n_changed, limit)
     # ---- diff + overlay scan of the PR revision (never the baseline store) ----
     t_scan = time.perf_counter()
     files, overlays, head_frags, plan = [], {}, dict(base_frags), {}

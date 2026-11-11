@@ -41,20 +41,21 @@ def read_graph(driver, db):
     fresh = None
     if f:
         f = f["f"]
-        fresh = {"commits": json.loads(f["commits"]), "loaded_at": f["loaded_at"], "mode": f["mode"], "from_commit": f.get("from_commit"),
+        fresh = {"schema_version": f.get("schema_version"), "commits": json.loads(f["commits"]), "loaded_at": f["loaded_at"], "mode": f["mode"], "from_commit": f.get("from_commit"),
                  "to_commit": f.get("to_commit"), "counts": json.loads(f["counts"])}
         g.commits = dict(fresh["commits"])
     return g, fresh
 
 
 def _write_freshness(s, fresh):
-    s.run("MERGE (f:Freshness {id:'baseline'}) SET f.commits=$c, f.loaded_at=$t, f.mode=$m, f.from_commit=$fc, f.to_commit=$tc, f.counts=$n",
-          c=json.dumps(fresh["commits"]), t=fresh["loaded_at"], m=fresh["mode"], fc=fresh.get("from_commit"), tc=fresh.get("to_commit"),
+    s.run("MERGE (f:Freshness {id:'baseline'}) SET f.schema_version=$sv, f.commits=$c, f.loaded_at=$t, f.mode=$m, f.from_commit=$fc, f.to_commit=$tc, f.counts=$n",
+          sv=fresh.get("schema_version"), c=json.dumps(fresh["commits"]), t=fresh["loaded_at"], m=fresh["mode"], fc=fresh.get("from_commit"), tc=fresh.get("to_commit"),
           n=json.dumps(fresh["counts"])).consume()
 
 
 def make_freshness(graph, commits, mode, from_commit=None, to_commit=None):
-    return {"commits": dict(commits), "loaded_at": datetime.datetime.now(datetime.timezone.utc).isoformat(timespec="seconds"), "mode": mode,
+    from cdi.store import SCHEMA_VERSION
+    return {"schema_version": SCHEMA_VERSION, "commits": dict(commits), "loaded_at": datetime.datetime.now(datetime.timezone.utc).isoformat(timespec="seconds"), "mode": mode,
             "from_commit": from_commit, "to_commit": to_commit, "counts": {"nodes": len(graph.nodes), "edges": len(graph.edges)}}
 
 

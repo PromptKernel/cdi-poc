@@ -16,11 +16,13 @@ def files_env(full, tmp_path):
     cfg = load_config(CFG)
     g = Graph.from_fragments([full["web"], full["api"], full["db"]])
     linked = build_fragment(Linker(g, cfg).run())
+    from cdi import store as S
+    from cdi.store.json_store import JsonStore
     gd = tmp_path / "graph"; gd.mkdir()
-    for r, f in full.items():
-        (gd / f"{r}.json").write_text(json.dumps(f))
-    (gd / "linked.json").write_text(json.dumps(linked))
-    (gd / "baseline.meta.json").write_text(json.dumps({"mode": "full", "commits": {r: f["commit_id"] for r, f in full.items()}, "loaded_at": "2026-01-01T00:00:00+00:00"}))
+    full_graph = Graph.from_fragments([full["web"], full["api"], full["db"], linked])
+    fresh = S.make_freshness(full_graph, {r: f["commit_id"] for r, f in full.items()}, "full")
+    fresh["loaded_at"] = "2026-01-01T00:00:00+00:00"
+    JsonStore(gd / "baseline.json").write_full(full_graph, fresh)
     rep = tmp_path / "reports"; rep.mkdir()
     (rep / "report-pr-x.md").write_text("# Impact report: pr-x\n"); (rep / "report-pr-x.json").write_text(json.dumps({"meta": {"pr": "pr-x", "warnings": []}, "objects": [{"risk": {"label": "High"}}, {"risk": None}]}))
     (rep / "report-orphan.md").write_text("# no json\n")
@@ -30,13 +32,13 @@ def files_env(full, tmp_path):
 
 def run_export(files_env, **kw):
     gd, rep, out = files_env
-    return X.export(source=kw.get("source", "files"), out=str(out), graph_dir=str(gd), config=str(CFG), reports_dir=str(rep)), out
+    return X.export(source=kw.get("source", "json"), out=str(out), store_path=str(gd / "baseline.json"), config=str(CFG), reports_dir=str(rep)), out
 
 
 def test_graph_json_has_the_fields_the_explorer_needs(files_env, full):
     res, out = run_export(files_env)
     d = json.loads((out / "graph.json").read_text())
-    assert res["source"] == "files" and d["meta"]["source"] == "files" and "SYNTHETIC" in d["meta"]["notice"]
+    assert res["source"] == "json" and d["meta"]["source"] == "json" and "SYNTHETIC" in d["meta"]["notice"]
     assert d["meta"]["counts"] == {"nodes": len(d["nodes"]), "edges": len(d["edges"])} and d["meta"]["repos"]["api"] == {"path": "samples/api", "kind": "api"}
     assert d["meta"]["baseline"]["commits"].keys() == {"web", "api", "db"}
     assert set(d["nodes"][0]) == {"id", "kind", "name", "repo", "file", "line", "end_line", "synthetic", "attrs"}
@@ -94,15 +96,16 @@ def test_export_never_deletes_existing_files(files_env):
     assert "old" not in [r["name"] for r in json.loads((out / "reports/index.json").read_text())["reports"]], "the index lists only what this run copied"
 
 
-def test_no_scan_files_is_a_clear_error(tmp_path):
-    with pytest.raises(SystemExit, match="no scan/linker files"):
-        X.export(source="files", out=str(tmp_path / "o"), graph_dir=str(tmp_path / "none"), config=str(CFG), reports_dir=str(tmp_path))
+def test_no_baseline_is_a_clear_error(tmp_path):
+    from cdi.store import BaselineMissing
+    with pytest.raises(BaselineMissing, match="baseline file not found"):
+        X.export(source="json", out=str(tmp_path / "o"), store_path=str(tmp_path / "none.json"), config=str(CFG), reports_dir=str(tmp_path))
 
 
-def test_auto_falls_back_to_files_when_no_password(files_env, monkeypatch):
+def test_auto_uses_the_json_baseline_when_neo4j_is_not_configured(files_env, monkeypatch):
     monkeypatch.delenv("NEO4J_PASSWORD", raising=False)
     res, _ = run_export(files_env, source="auto")
-    assert res["source"] == "files"
+    assert res["source"] == "json"
     with pytest.raises(SystemExit, match="NEO4J_PASSWORD"):
         run_export(files_env, source="neo4j")
 

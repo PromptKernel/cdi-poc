@@ -42,11 +42,12 @@ def main(argv=None):
     ap.add_argument("node"); ap.add_argument("--direction", default="both", choices=["forward", "reverse", "both"])
     ap.add_argument("--backend", default="memory", choices=["memory", "neo4j"])
     ap.add_argument("--include-types", default=""); ap.add_argument("--max-depth", type=int, default=25)
-    ap.add_argument("--graph", default="out/graph"); ap.add_argument("--config", default=None, help="path to .cdi/config.yml (default: $CDI_CONFIG or .cdi/config.yml)")
+    ap.add_argument("--store", default=None, choices=["json", "neo4j"]); ap.add_argument("--store-path", default=None); ap.add_argument("--config", default=None, help="path to .cdi/config.yml (default: $CDI_CONFIG or .cdi/config.yml)")
     ap.add_argument("--kind", default=None)
     a = ap.parse_args(argv)
     cfg = load_config(a.config)
-    g = Graph.from_fragments(load_fragments(a.graph, [r["name"] for r in cfg["repos"]["repos"]], include_linked=True))
+    from cdi.impact.cli import load_baseline
+    g, _ = load_baseline(cfg, a.store, a.store_path)
     excl = [t for t in ((cfg.get("graph") or {}).get("trace", {}).get("default_exclude_types", [])) if t not in a.include_types.split(",")]
     hits = T.find_nodes(g, a.node, [a.kind] if a.kind else None)
     if len(hits) != 1:

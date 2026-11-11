@@ -2,7 +2,7 @@
 
 `python -m cdi.impact.cli --target main --pr <branch> [--name <label>]` compares a PR branch with the target branch and writes
 `out/report-<name>.md` and `out/report-<name>.json`. The baseline graph is read from Neo4j in a **read-only session** (or from `out/graph` with
-`--baseline files`); a PR run never writes to it.
+`--store json`); a PR run never writes to it.
 
 ## Steps
 1. `git diff --no-renames` between the **merge-base** and the PR head (three-dot), per logical repo folder: added / modified / deleted files and hunks.

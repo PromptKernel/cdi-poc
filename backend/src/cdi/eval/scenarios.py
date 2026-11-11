@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Synthetic PR scenarios for the impact engine demo, tests and evaluation. Each scenario is ONE commit on a local branch off the base branch
 (never pushed). Scenarios are defined by the target repository in `.cdi/scenarios.yml`; nothing about any sample lives in this module.
-usage: python -m cdi.eval.scenarios [--base main] [--file .cdi/scenarios.yml]   creates the local branches (existing ones are re-pointed with `-B`)
+usage: python -m cdi.eval.scenarios [--base <branch>] [--file .cdi/scenarios.yml]   creates the local branches (existing ones are re-pointed with `-B`)
 Worktrees are created at named paths under out/work and removed again with `git worktree remove` on exactly those paths."""
 import argparse, pathlib, subprocess
 import yaml
@@ -57,8 +57,11 @@ def make_branch(repo, branch, edits, base="main", workdir=None, ident=()):
 
 def main(argv=None):
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument("--base", default="main"); ap.add_argument("--file", default=DEFAULT_FILE); ap.add_argument("--names", nargs="*")
+    ap.add_argument("--base", default=None, help="base branch (default: branches.base from .cdi/config.yml)"); ap.add_argument("--file", default=DEFAULT_FILE); ap.add_argument("--names", nargs="*")
     a = ap.parse_args(argv)
+    if not a.base:
+        from cdi.linker.graphio import load_config
+        a.base = load_config()["branches"]["base"]
     for b, e in load_scenarios(a.file).items():
         if a.names and b not in a.names:
             continue

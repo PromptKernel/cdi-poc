@@ -163,11 +163,23 @@ def build_report_comment(result, basis, ccfg, violations=(), blocking=False):
     return text, {"chars": len(text), "cap": cap, "scale": level, "hard_truncated": hard}
 
 
-def build_skipped_comment(reason, basis):
+SKIP_TEXT = {
+    "missing": ("Baseline missing, analysis skipped.",
+                "No baseline graph exists for the target branch, so the impact of this PR cannot be computed. A baseline is built by the baseline pipeline "
+                "(full scan of the target branch, incremental update on merge), not inside a PR run."),
+    "schema": ("Baseline unusable (schema version mismatch), analysis skipped.",
+               "The stored baseline was written by a different version of the tool, so it is not trusted. Rebuild it with the baseline pipeline; "
+               "a PR run never rewrites the baseline."),
+    "too_large": ("PR too large, analysis skipped.",
+                  "The pull request changes more files than the configured limit (`limits.max_changed_files` in .cdi/config.yml), so no impact analysis "
+                  "was attempted. Raise the limit or split the change. This is advisory and does not block the merge."),
+}
+
+
+def build_skipped_comment(reason, basis, kind="missing"):
+    head, detail = SKIP_TEXT[kind]
     lines = _header(basis, "Dependency impact — analysis skipped")
-    lines += [f"**Baseline missing, analysis skipped.** {reason}", "",
-              "No baseline graph exists for the target branch, so the impact of this PR cannot be computed. A baseline is built by the baseline pipeline "
-              "(full scan of the target branch, incremental update on merge), not inside a PR run.", ""]
+    lines += [f"**{head}** {reason}", "", detail, ""]
     return "\n".join(lines).rstrip() + "\n"
 
 

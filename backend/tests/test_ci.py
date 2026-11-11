@@ -37,7 +37,7 @@ def world(tmp_path_factory):
 
 def args_for(world, branch, out, **kw):
     p, g, fresh = world
-    d = dict(target="main", pr=branch, name=branch, baseline="files", graph="x", config=str(p.path / ".cdi/config.yml"), out=str(out), adapter=None,
+    d = dict(target="main", pr=branch, name=branch, store="json", store_path=None, config=str(p.path / ".cdi/config.yml"), out=str(out), adapter=None,
              enable_azure_adapter=False, pull_request_id=None, blocking=False)
     d.update(kw)
     return argparse.Namespace(**d)
@@ -184,7 +184,7 @@ def test_missing_baseline_posts_skipped_comment_not_applicable_and_does_not_buil
 
 def test_absent_baseline_files_count_as_missing_baseline_not_as_a_tool_error(world, tmp_path):
     p, g, fresh = world
-    args = args_for(world, "pr-f-route", tmp_path, baseline="files", graph=str(tmp_path / "no-such-graph-dir"))
+    args = args_for(world, "pr-f-route", tmp_path, store="json", store_path=str(tmp_path / "no-such-baseline.json"))
     summary, code = run_pr.run(args, root=p.path, tool_root=BACKEND)         # real loader, files that do not exist
     assert code == 0 and summary["state"] == "notApplicable" and summary["skipped"] and summary["error"] is None
     assert "Baseline missing, analysis skipped" in (tmp_path / "pr-comment.md").read_text()
@@ -462,3 +462,58 @@ def test_ci_config_has_only_placeholders_and_no_secrets():
     assert all(az[k].startswith("<") and az[k].endswith(">") for k in ("organization", "project", "repository_id"))
     assert az["token_env"] == "AZDO_TOKEN" and "token" not in {k for k in az if k != "token_env" and k != "auth_scheme"}
     assert "placeholder, unvalidated" in (BACKEND / "src/cdi/config/profiles/_base.yml").read_text()
+
+
+# ------------------------------------------------------------------ store, target default, size limit
+def test_target_defaults_to_branches_base_and_an_explicit_target_overrides_it(world, tmp_path, monkeypatch):
+    s, code = go(world, "pr-f-route", tmp_path / "a", target=None)                       # branches.base = main from the config
+    assert code == 0 and s["state"] == "succeeded"
+    monkeypatch.setenv("CDI__branches__base", "no-such-branch")
+    s, code = go(world, "pr-f-route", tmp_path / "b", target=None)                       # the default is now a branch that does not exist
+    assert code == 0 and s["state"] == "error" and "no-such-branch" in s["error"]
+    s, code = go(world, "pr-f-route", tmp_path / "c", target="main")                     # explicit --target wins over the default
+    assert code == 0 and s["state"] == "succeeded"
+
+
+def test_baseline_from_another_schema_version_is_rejected_and_says_rebuild(world, tmp_path):
+    from cdi import store as S
+    from cdi.store.json_store import JsonStore
+    p, g, fresh = world
+    f = tmp_path / "base.json"
+    st = JsonStore(f)
+    st.write_full(g, S.make_freshness(g, g.commits, "full"))
+    doc = json.loads(f.read_text()); doc["schema_version"] = S.SCHEMA_VERSION + 1
+    f.write_text(json.dumps(doc))
+    args = args_for(world, "pr-f-route", tmp_path / "o", store="json", store_path=str(f))
+    summary, code = run_pr.run(args, root=p.path, tool_root=BACKEND)                     # real loader
+    assert code == 0 and summary["state"] == "notApplicable" and summary["skip_reason"] == "baseline_schema_mismatch"
+    md = (tmp_path / "o" / "pr-comment.md").read_text()
+    assert "schema version mismatch" in md and "rebuild" in md and "**Advisory:**" in md
+    assert not list((tmp_path / "o").glob("report-*"))
+
+
+def test_a_real_json_baseline_round_trips_through_a_pr_run(world, tmp_path):
+    from cdi import store as S
+    from cdi.store.json_store import JsonStore
+    p, g, fresh = world
+    f = tmp_path / "base.json"
+    JsonStore(f).write_full(g, S.make_freshness(g, g.commits, "full"))
+    before = f.read_bytes()
+    summary, code = run_pr.run(args_for(world, "pr-f-route", tmp_path / "o", store="json", store_path=str(f)), root=p.path, tool_root=BACKEND)
+    assert code == 0 and summary["state"] == "succeeded"
+    assert f.read_bytes() == before, "a PR run never writes the baseline"
+
+
+def test_too_many_changed_files_skips_with_a_clear_comment(world, tmp_path, monkeypatch):
+    p, g, fresh = world
+    make_branch(p, "pr-two-files", {**SCENARIOS["pr-a-sp-body"], **SCENARIOS["pr-b-view"]})
+    monkeypatch.setenv("CDI__limits__max_changed_files", "1")
+    summary, code = go(world, "pr-two-files", tmp_path)
+    assert code == 0 and summary["state"] == "notApplicable" and summary["skip_reason"] == "too_many_changed_files"
+    md = (tmp_path / "pr-comment.md").read_text()
+    assert "PR too large, analysis skipped" in md and "changes 2 files" in md and "limit is 1" in md and "limits.max_changed_files" in md
+    assert json.loads((tmp_path / "pr-status.json").read_text())["status"]["state"] == "notApplicable"
+    assert not list(tmp_path.glob("report-*"))
+    monkeypatch.setenv("CDI__limits__max_changed_files", "2")                            # at the limit is allowed
+    summary, code = go(world, "pr-two-files", tmp_path / "ok")
+    assert summary["state"] == "succeeded"

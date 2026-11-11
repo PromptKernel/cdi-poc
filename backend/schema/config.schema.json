@@ -133,6 +133,7 @@
       "type": "object", "additionalProperties": false,
       "properties": {
         "store": {"enum": ["json", "neo4j"], "description": "Baseline store. json is the default; neo4j is optional."},
+        "json": {"type": "object", "additionalProperties": false, "properties": {"path": {"type": "string", "minLength": 1, "description": "Baseline file, relative to the repository root."}}},
         "neo4j": {
           "type": "object", "additionalProperties": false,
           "properties": {"uri": {"type": "string"}, "user": {"type": "string"}, "password_env": {"type": "string", "description": "NAME of the environment variable holding the password; the password itself is never stored."}, "database": {"type": "string"}}
