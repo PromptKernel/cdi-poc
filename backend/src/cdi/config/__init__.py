@@ -191,7 +191,7 @@ def cleanup_materialized() -> list[str]:
     for key, d in list(_MATERIALIZED.items()):
         if _remove_created_dir(d):
             removed.append(str(d))
-        _MATERIALIZED.pop(key, None)
+            _MATERIALIZED.pop(key, None)         # a refused directory stays registered, so a later cleanup (e.g. at exit) can still remove it
     return removed
 
 

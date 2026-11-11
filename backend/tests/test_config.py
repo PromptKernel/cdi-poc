@@ -153,6 +153,17 @@ def test_linker_default_schema_comes_from_config(full):
 import os, subprocess, sys, tempfile
 
 
+@pytest.fixture(autouse=True)
+def _keep_the_registry_for_the_exit_cleanup():
+    """These tests exercise cleanup with a patched temp dir; the directories created by OTHER tests must stay registered so that the exit cleanup still removes them."""
+    before = dict(C._MATERIALIZED)
+    yield
+    for k in list(C._MATERIALIZED):
+        if k not in before:
+            C._remove_created_dir(C._MATERIALIZED[k])
+    C._MATERIALIZED.clear(); C._MATERIALIZED.update({k: v for k, v in before.items() if v.is_dir()})
+
+
 def _view_dirs(root):
     return sorted(p.name for p in pathlib.Path(root).iterdir() if p.name.startswith(C.CONFIG_DIR_PREFIX))
 
@@ -176,7 +187,6 @@ def test_cleanup_removes_exactly_the_directory_it_created(tmp_path, monkeypatch)
     assert C.cleanup_materialized() == [str(d)]
     assert not d.exists() and other.is_dir() and (other / "repos.yml").is_file() and unrelated.is_dir()
     assert C.cleanup_materialized() == [], "a second cleanup does nothing"
-    assert not C._MATERIALIZED
 
 
 def test_cleanup_refuses_symlinks_foreign_places_and_unexpected_content(tmp_path, monkeypatch):
@@ -197,7 +207,6 @@ def test_cleanup_refuses_symlinks_foreign_places_and_unexpected_content(tmp_path
     wrong = tmp / "other-name"; wrong.mkdir()
     C._MATERIALIZED["k2"] = wrong
     assert C._remove_created_dir(wrong) is False and wrong.is_dir()
-    C._MATERIALIZED.clear()
 
 
 @pytest.mark.parametrize("ending", ["raise SystemExit(0)", "raise SystemExit(3)", "raise RuntimeError('boom')"])
@@ -220,3 +229,15 @@ def test_sigterm_in_a_cli_run_still_cleans_up(tmp_path):
     r = subprocess.run([sys.executable, "-c", code], env={**os.environ, "TMPDIR": str(sandbox)}, capture_output=True, text=True, timeout=60)
     assert r.returncode == 143, r.stderr
     assert _view_dirs(sandbox) == []
+
+
+def test_a_refused_directory_stays_registered_so_the_exit_cleanup_can_still_remove_it(tmp_path, monkeypatch):
+    """Found while cleaning up: cleanup with another temp dir in effect refused the directory but also forgot it, so it leaked for good."""
+    cfg = C.load(write(tmp_path, MIN), environ={})
+    d = C.materialize(cfg)
+    with monkeypatch.context() as m:
+        elsewhere = tmp_path / "elsewhere"; elsewhere.mkdir()
+        m.setattr(tempfile, "tempdir", str(elsewhere))
+        assert C.cleanup_materialized() == [] and d.is_dir(), "refused: it is not a child of the temp dir now in effect"
+        assert d in C._MATERIALIZED.values(), "...but it is still registered"
+    assert str(d) in C.cleanup_materialized() and not d.exists()          # (other tests' directories may be removed in the same call)
