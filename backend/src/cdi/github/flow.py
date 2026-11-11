@@ -149,9 +149,14 @@ def run_pr_flow(root=".", config=None, store_path=None, out=None, environ=None, 
     except RuntimeError as e:
         sm.warning(f"{e}. Nothing was analysed.", "cdi")
         sm.write(); return 0
+    report_ref = (f"in the log of [this run]({run_url}), group \"cdi full report\"" if run_url else "in the job log, group \"cdi full report\"")
     ns = argparse.Namespace(target=target_rev, pr=pr.head_sha, name=f"pr-{pr.number}", store="json", store_path=None,
-                            config=config, out=str(out), adapter=None, enable_azure_adapter=False, pull_request_id=None, blocking=False)
+                            config=config, out=str(out), adapter=None, enable_azure_adapter=False, pull_request_id=None, blocking=False,
+                            target_display=pr.base_ref, pr_display=pr.head_ref, report_ref=report_ref)
     summary_d, code = run_pr.run(ns, root=root, tool_root=tool_root, load_baseline=make_loader(root, cfg, store, pr, notes, tool_root, out), adapter=adapter)
+    report = out / f"report-{ns.name}.md"
+    if report.is_file():
+        sm.echo("cdi full report", report.read_text())               # the comment points here: the runner's files are not otherwise reachable
     sm.add(f"**State:** `{summary_d['state']}` · target `{pr.base_ref}` (from the PR event) · PR head `{pr.head_sha[:8]}` · mode {summary_d['mode']}")
     for n in notes:
         sm.add(f"- {n}")

@@ -54,12 +54,13 @@ class Summary:
     def text(self):
         return "\n".join(self.lines) + "\n"
 
-    def echo(self):
-        """Print the summary into the log, inert: see the module docstring."""
+    def echo(self, title="cdi job summary", text=None):
+        """Print text (default: the summary) into the log, inert: see the module docstring."""
         marker = secrets.token_hex(16)
-        print("::group::cdi job summary", file=self.stream)
+        body = self.text() if text is None else self._clean(text)
+        print(f"::group::{title}", file=self.stream)
         print(f"::stop-commands::{marker}", file=self.stream)
-        for line in self.text().splitlines():
+        for line in body.splitlines():
             print("  " + line, file=self.stream)
         print(f"::{marker}::", file=self.stream)
         print("::endgroup::", file=self.stream)

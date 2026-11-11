@@ -517,3 +517,10 @@ def test_too_many_changed_files_skips_with_a_clear_comment(world, tmp_path, monk
     monkeypatch.setenv("CDI__limits__max_changed_files", "2")                            # at the limit is allowed
     summary, code = go(world, "pr-two-files", tmp_path / "ok")
     assert summary["state"] == "succeeded"
+
+
+def test_footer_points_at_local_files_unless_a_report_location_is_given():
+    md, _ = comment.build_report_comment(fake_result(2, 2, 1), BASIS, CI["comment"])
+    assert "_Full report: `out/report-pr-9.md` and `.json`. PR run 1.0 s._" in md and "synthetic-scale" not in md
+    md, _ = comment.build_report_comment(fake_result(2, 2, 1), {**BASIS, "report_ref": "in the log of [this run](https://x.invalid/r/1)"}, CI["comment"])
+    assert "_Full report: in the log of [this run](https://x.invalid/r/1). PR run 1.0 s._" in md and "out/report-" not in md

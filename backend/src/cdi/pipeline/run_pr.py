@@ -20,14 +20,16 @@ from cdi.store import BaselineMissing, BaselineSchemaMismatch
 from cdi.paths import BACKEND_ROOT as TOOL_ROOT
 
 
-def make_basis(root, target, pr, name, ci, mode, baseline_fresh=None):
+def make_basis(root, target, pr, name, ci, mode, baseline_fresh=None, display=None):
+    """`display` (optional) names how the comment shows things: target (the base branch name, not a remote-tracking ref), pr (the head branch name), report_ref (where the full report can be read)."""
+    display = display or {}
     def safe(fn, default="?" * 40):
         try:
             return fn()
         except Exception:
             return default
     tsha = safe(lambda: D.resolve(root, target)); psha = safe(lambda: D.resolve(root, pr))
-    return {"pr_name": name, "pr_branch": pr, "pr_sha": psha, "target": target, "target_sha": tsha,
+    return {"pr_name": name, "pr_branch": display.get("pr") or pr, "pr_sha": psha, "target": display.get("target") or target, "target_sha": tsha, "report_ref": display.get("report_ref"),
             "merge_base": safe(lambda: D.merge_base(root, tsha, psha)), "marker": ci["comment"]["marker"], "mode": mode,
             "baseline_commits": (baseline_fresh or {}).get("commits"), "baseline_loaded_at": (baseline_fresh or {}).get("loaded_at"),
             "baseline_mode": (baseline_fresh or {}).get("mode"), "baseline_notes": (baseline_fresh or {}).get("notes") or []}
@@ -53,7 +55,8 @@ def run(args, root=None, tool_root=TOOL_ROOT, now=time.perf_counter, load_baseli
     target = args.target or cfg["branches"]["base"]
     out = pathlib.Path(args.out)
     summary = {"name": name, "mode": mode, "state": None, "skipped": False, "error": None, "violations": [], "post": None}
-    basis = make_basis(root, target, args.pr, name, ci, mode)
+    display = {"target": getattr(args, "target_display", None), "pr": getattr(args, "pr_display", None), "report_ref": getattr(args, "report_ref", None)}
+    basis = make_basis(root, target, args.pr, name, ci, mode, display=display)
     status_context = ci["status"]["context"]
     maxd = ci["status"]["description_max_chars"]
     try:
@@ -61,7 +64,7 @@ def run(args, root=None, tool_root=TOOL_ROOT, now=time.perf_counter, load_baseli
         if not fresh or not base.nodes:
             raise BaselineMissing("No baseline graph was found for the target branch (no freshness record or an empty graph).")
         base.commits = dict(fresh["commits"])
-        basis = make_basis(root, target, args.pr, name, ci, mode, fresh)
+        basis = make_basis(root, target, args.pr, name, ci, mode, fresh, display)
         result = engine.analyze(root, tool_root, cfgdir, target, args.pr, base, fresh, name=name)
         out.mkdir(parents=True, exist_ok=True)
         slug = name.replace("/", "_")

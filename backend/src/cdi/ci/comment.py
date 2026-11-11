@@ -141,7 +141,8 @@ def _render(result, b, ccfg, scale, violations, blocking):
         lines.append(f"- `{t['name']}`")
     m = _more(len(conv), min(len(conv), lim("max_convention_tests")))
     if m: lines.append(m)
-    lines += ["", f"_Full report: `out/report-{b['pr_name']}.md` and `.json`. PR run {meta['timing_s']['total_pr_run']} s (synthetic-scale repository)._"]
+    where = b.get("report_ref") or f"`out/report-{b['pr_name']}.md` and `.json`"
+    lines += ["", f"_Full report: {where}. PR run {meta['timing_s']['total_pr_run']} s._"]
     return lines
 
 

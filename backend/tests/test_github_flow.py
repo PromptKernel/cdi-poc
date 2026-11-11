@@ -307,3 +307,17 @@ def test_flow_summary_reaches_the_log_without_credentials(world, tmp_path, capfd
     summary = (tmp_path / "summary.md").read_text()
     for text in (out, summary):
         assert TOKEN not in text and "Authorization" not in text and "Bearer" not in text
+
+
+def test_comment_shows_branch_names_and_points_at_a_report_that_exists(world, tmp_path, capfd):
+    """Found on the first real run: the comment showed `origin/main`, the head sha twice, and pointed at files on the runner that nobody can open."""
+    p, bl = world
+    with FakeGitHub() as gh:
+        run_flow(tmp_path, p, bl, gh)
+        body = comment_body(gh)
+    out = capfd.readouterr().out
+    assert "compared with target `main` @" in body and "origin/main" not in body
+    assert "PR commit `" in body and "(`pr-f-route`)" in body, "the head branch name, not the sha again"
+    assert "out/report-" not in body and "[this run](https://github.example/o/r/actions/runs/99)" in body and 'group "cdi full report"' in body
+    assert "::group::cdi full report" in out and "# Impact report: pr-7" in out, "the full report is in the log"
+    assert TOKEN not in out
