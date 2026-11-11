@@ -3,8 +3,8 @@
 A cross-layer dependency graph and PR impact proof of concept: static scanners for a frontend (TypeScript/Angular), an API
 (C#/.NET) and SQL Server code emit one shared, evidence-backed graph schema.
 
-**Status: milestone 3 of the PoC (schema, three scanners, cross-repo linker, Neo4j load, bidirectional trace, baseline runner, PR impact report).** CI wrapper,
-explorer and evaluation are planned and not in this repository yet. See `LIMITATIONS.md`.
+**Status: milestone 4 of the PoC (schema, three scanners, cross-repo linker, Neo4j load, bidirectional trace, baseline runner, PR impact report, simulated CI check).** Explorer
+and evaluation are planned and not in this repository yet. See `LIMITATIONS.md`.
 
 ## What is real and what is synthetic
 - `samples/*` start from an upstream MIT-licensed sample (Angular + ASP.NET Core + ADO.NET), see `NOTICE` and `docs/changes.md`.
@@ -41,6 +41,13 @@ python3 -m venv .venv && .venv/bin/pip install -r requirements.txt
 7. PR impact report for one branch: `.venv/bin/python -m impact.cli --target main --pr <branch>` writes `out/report-<branch>.md` / `.json`. See `docs/impact-report.md`.
 8. `.venv/bin/python tools/show_workflow.py FetchEmployeeComponent spGetAllEmployees` - raw scanner edges with the cited source line re-read from disk.
 
+## Simulated CI check (advisory)
+`pipeline/run_pr.sh --target main --pr <branch>` is the single local entry point: freshness check, impact engine, then `out/pr-comment.md` and `out/pr-status.json`
+(Azure DevOps comment-thread and status bodies, **shapes not tested against a real service**), with timing. Advisory by default: exit code 0 in every case. A missing baseline
+posts a "baseline missing, analysis skipped" comment (`notApplicable`); a tool failure posts an `error` status and says the analysis did not run. Blocking is off and, when enabled,
+fails only on two deterministic policies. `azure-pipelines.yml` is an unrun wrapper with placeholders; the Azure DevOps adapter is disabled unless explicitly enabled and was never executed.
+Details, doc URLs and limits: `docs/ci-simulation.md`.
+
 ## Demo branches and reports
 Six synthetic scenarios (all local, never pushed): `pr-a-sp-body` (stored-procedure body), `pr-b-view` (view), `pr-c-ts-service` (TypeScript service method),
 `pr-d-dynamic-sql` (proc containing dynamic SQL), `pr-e-delete-proc` (deleted procedure), `pr-f-route` (controller route no longer matches the frontend request).
@@ -59,6 +66,6 @@ git copy of `config/` + `samples/`. `tests/expected_edges.yml` is a **hand-writt
 sample; `tools/compare_expected.py` reports recall against it (synthetic data only).
 
 ## Layout
-`samples/` logical repos - `scanners/` - `linker/` (cross-repo linking) - `graph/` (Neo4j compose, loader, Cypher queries) - `impact/` (traversal, trace CLI, PR impact engine and report) - `scripts/` (demo branches) -
+`samples/` logical repos - `scanners/` - `linker/` (cross-repo linking) - `graph/` (Neo4j compose, loader, Cypher queries) - `impact/` (traversal, trace CLI, PR impact engine and report) - `ci/` (comment, payloads, policies, adapters) - `scripts/` (demo branches) -
 `schema/` - `config/` (repo paths, route/naming conventions, graph store) - `docs/` - `tools/` - `pipeline/` - `tests/`.
-Planned: CI simulation, `explorer-api/`, `explorer/`, `eval/`.
+Planned: `explorer-api/`, `explorer/`, `eval/`.

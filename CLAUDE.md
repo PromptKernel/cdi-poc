@@ -7,8 +7,8 @@ carries them; later milestones link them across repos, load a graph store, and r
 ## Layout
 - `samples/web|api|db` - the three logical repos (folders of this one git repo). `samples/*/LICENSE` is the upstream MIT licence; see `NOTICE`.
 - `scanners/` - Roslyn (C#), ts-morph (TypeScript), ScriptDom (SQL); `scanners/common-dotnet` is shared.
-- `linker/` (cross-repo links), `graph/` (Neo4j), `impact/` (traversal, PR impact engine, report), `pipeline/` (scan, baseline), `schema/`, `config/`, `docs/`, `tools/`, `scripts/`, `tests/`.
-- Planned: CI simulation, `explorer-api/`, `explorer/`, `eval/`.
+- `linker/` (cross-repo links), `graph/` (Neo4j), `impact/` (traversal, PR impact engine, report), `ci/` (PR comment, status payloads, blocking policies, posting adapters), `pipeline/` (scan, baseline, PR run), `schema/`, `config/`, `docs/`, `tools/`, `scripts/`, `tests/`.
+- Planned: `explorer-api/`, `explorer/`, `eval/`.
 
 ## Working rules
 - Every claim in a report must trace to a stored edge with file:line, method, confidence and commit.
@@ -16,7 +16,7 @@ carries them; later milestones link them across repos, load a graph store, and r
 - Keep paths, route patterns, naming conventions and rule thresholds in `config/`; nothing hardcoded to the samples.
 - Anything that is not upstream sample code is labelled synthetic. Do not present synthetic results as real-world accuracy.
 - Scanners refuse to run only when the logical repo's own folder has uncommitted changes (changes elsewhere in the git repo are ignored); commit first.
-- No cloud calls: CI and AI integrations are local stubs.
+- No cloud calls: CI and AI integrations are local stubs; the Azure DevOps adapter is disabled by default and has never been run.
 - `private/` and `docs/source/` are git-ignored; never commit them.
 
 ## Safety rules (always)
