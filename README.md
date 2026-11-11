@@ -4,7 +4,7 @@ A cross-layer dependency graph and PR impact proof of concept: static scanners f
 (C#/.NET) and SQL Server code emit one shared, evidence-backed graph schema.
 
 **Status: milestone 5 of the PoC (schema, three scanners, cross-repo linker, Neo4j load, bidirectional trace, baseline runner, PR impact report, simulated CI check, local explorer UI).**
-The evaluation harness is planned and not in this repository yet. See `LIMITATIONS.md`.
+The evaluation harness (`eval/`) is built; it needs a ground-truth file written by you first (see below). See `LIMITATIONS.md`.
 
 ## What is real and what is synthetic
 - `samples/*` start from an upstream MIT-licensed sample (Angular + ASP.NET Core + ADO.NET), see `NOTICE` and `docs/changes.md`.
@@ -51,6 +51,12 @@ drawn by line style, colour and arrowhead; unresolved/not-found nodes are distin
 impact reports and a PR comment preview shows the (simulated) comment. Read-only, local, no telemetry, no CDNs. Tests: `cd explorer && npm test && npm run test:e2e`.
 It shows structure only, on synthetic sample data. Details: `docs/explorer.md`.
 
+## Evaluation harness
+`eval/` compares the affected workflows the tool reports for the synthetic scenarios with a ground truth you write **before** running anything (`docs/eval/ground_truth_input.template.md`).
+`python -m eval.ground_truth list-workflows | convert | validate`, commit `eval/ground_truth.yml`, then `python -m eval.run_eval` (it refuses unless the file is committed and unmodified)
+and writes `out/eval/summary.md` / `.json`: recall and false-positive numbers, unresolved/not-found counts, PR run time, baseline freshness, and an explanation for every miss.
+All numbers are measured on synthetic data. Method and limits: `docs/evaluation.md`.
+
 ## Simulated CI check (advisory)
 `pipeline/run_pr.sh --target main --pr <branch>` is the single local entry point: freshness check, impact engine, then `out/pr-comment.md` and `out/pr-status.json`
 (Azure DevOps comment-thread and status bodies, **shapes not tested against a real service**), with timing. Advisory by default: exit code 0 in every case. A missing baseline
@@ -76,6 +82,6 @@ git copy of `config/` + `samples/`. `tests/expected_edges.yml` is a **hand-writt
 sample; `tools/compare_expected.py` reports recall against it (synthetic data only).
 
 ## Layout
-`samples/` logical repos - `scanners/` - `linker/` (cross-repo linking) - `graph/` (Neo4j compose, loader, Cypher queries) - `impact/` (traversal, trace CLI, PR impact engine and report) - `ci/` (comment, payloads, policies, adapters) - `explorer/` (local graph UI) - `scripts/` (demo branches) -
+`samples/` logical repos - `scanners/` - `linker/` (cross-repo linking) - `graph/` (Neo4j compose, loader, Cypher queries) - `impact/` (traversal, trace CLI, PR impact engine and report) - `ci/` (comment, payloads, policies, adapters) - `explorer/` (local graph UI) - `eval/` (evaluation harness) - `scripts/` (demo branches) -
 `schema/` - `config/` (repo paths, route/naming conventions, graph store) - `docs/` - `tools/` - `pipeline/` - `tests/`.
-Planned: `eval/` (an optional read-only API for the explorer is not built).
+An optional read-only API for the explorer is not built.

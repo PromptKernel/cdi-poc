@@ -1,6 +1,6 @@
 # Limitations (what this PoC does not prove)
 
-Status: milestone 5 (schema, scanners, linker, Neo4j load, trace, baseline runner, PR impact report, simulated CI check, local explorer). Items for later milestones are marked *(planned)*.
+Status: milestone 6 (schema, scanners, linker, Neo4j load, trace, baseline runner, PR impact report, simulated CI check, local explorer, evaluation harness). Items for later milestones are marked *(planned)*.
 
 * **Multiple repos are simulated with folders.** `samples/web|api|db` are folders of one git repository. Commit IDs come from
   `git log -1 -- <folder>`. The PoC does not test real multi-repo checkouts, per-repo branches, access control or cross-repo PR flows.
@@ -58,5 +58,9 @@ Status: milestone 5 (schema, scanners, linker, Neo4j load, trace, baseline runne
   unauthenticated (bound to 127.0.0.1 by default) and not hardened for hosting. "View on GitHub" links use the edge's commit id and only resolve if that commit exists in the configured repository.
   Layouts are automatic and large expansions become hard to read; filters and depth are the tools for that. Accessibility was considered (text list of visible nodes, line style plus colour,
   focus outlines) but not audited. The Playwright smoke test covers one end-to-end path in one browser (Chromium); it is not a full UI test suite.
-* **Not built *(planned)*:** evaluation harness. An optional read-only API for the explorer (live from Neo4j) was not built.
+* **The evaluation measures behaviour on synthetic data only.** Scenarios and ground truth are written by the tool's author on a tiny sample, so recall and false-positive numbers show consistency with
+  those expectations, not detection of real defects; they are not evidence of accuracy on real code. The ground truth is written before the run and never edited to fit output, but the author of
+  the ground truth is also the author of the tool, so it is not independent. "Workflow" means a screen or an API endpoint (configurable); another definition gives other numbers.
+  Real regression history, critical-workflow test coverage and freshness over time cannot be measured here.
+* **Not built:** an optional read-only API for the explorer (live from Neo4j).
 * **No licence for the tooling.** The repository has no top-level licence file; only the upstream-derived sample is MIT.
