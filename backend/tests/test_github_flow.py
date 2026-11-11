@@ -319,5 +319,7 @@ def test_comment_shows_branch_names_and_points_at_a_report_that_exists(world, tm
     assert "compared with target `main` @" in body and "origin/main" not in body
     assert "PR commit `" in body and "(`pr-f-route`)" in body, "the head branch name, not the sha again"
     assert "out/report-" not in body and "[this run](https://github.example/o/r/actions/runs/99)" in body and 'group "cdi full report"' in body
-    assert "::group::cdi full report" in out and "# Impact report: pr-7" in out, "the full report is in the log"
+    assert "::group::cdi full report" in out and "# Impact report: pr-7 → main" in out, "the full report is in the log, naming the base branch"
+    assert "origin/main" not in out and "Neo4j" not in out and "PR branch `pr-f-route`" in out, "no remote-tracking ref, no wrong store name, no sha as branch name"
+    assert "Baseline graph (read-only)" in out
     assert TOKEN not in out

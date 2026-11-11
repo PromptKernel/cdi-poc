@@ -65,7 +65,7 @@ def run(args, root=None, tool_root=TOOL_ROOT, now=time.perf_counter, load_baseli
             raise BaselineMissing("No baseline graph was found for the target branch (no freshness record or an empty graph).")
         base.commits = dict(fresh["commits"])
         basis = make_basis(root, target, args.pr, name, ci, mode, fresh, display)
-        result = engine.analyze(root, tool_root, cfgdir, target, args.pr, base, fresh, name=name)
+        result = engine.analyze(root, tool_root, cfgdir, target, args.pr, base, fresh, name=name, target_label=display["target"], pr_label=display["pr"])
         out.mkdir(parents=True, exist_ok=True)
         slug = name.replace("/", "_")
         (out / f"report-{slug}.md").write_text(report.render(result))

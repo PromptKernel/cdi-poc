@@ -123,7 +123,8 @@ class PRTooLarge(Exception):
         super().__init__(f"This PR changes {changed} files; the limit is {limit} (limits.max_changed_files).")
 
 
-def analyze(project_root, tool_root, config_dir, target, pr, baseline: Graph, freshness, name=None, scratch=None, runner=None, keep=None):
+def analyze(project_root, tool_root, config_dir, target, pr, baseline: Graph, freshness, name=None, scratch=None, runner=None, keep=None, target_label=None, pr_label=None):
+    """target_label / pr_label: how the report names the base and head (branch names); the revisions actually used are `target` and `pr`."""
     t_start = time.perf_counter()
     root = pathlib.Path(project_root)
     cfg = load_config(config_dir)
@@ -347,7 +348,7 @@ def analyze(project_root, tool_root, config_dir, target, pr, baseline: Graph, fr
         keep.update(base=base, head=head)
     synthetic_any = any(o["synthetic"] for o in results) or any(f["synthetic"] for f in file_reports)
     return {
-        "meta": {"pr": name or pr, "pr_branch": pr, "target": target, "target_sha": tgt, "pr_sha": head_sha, "merge_base": mb,
+        "meta": {"pr": name or pr, "pr_branch": pr_label or pr, "target": target_label or target, "target_sha": tgt, "pr_sha": head_sha, "merge_base": mb,
                  "baseline_commits": (freshness or {}).get("commits"), "baseline_loaded_at": (freshness or {}).get("loaded_at"),
                  "baseline_mode": (freshness or {}).get("mode"), "target_commits": target_commits, "warnings": warnings,
                  "synthetic_notice": synthetic_any, "scan_plan": plan,

@@ -50,7 +50,7 @@ def render(res):
     t = m["timing_s"]
     a("## Run")
     a(f"- PR branch `{m['pr_branch']}` @ `{m['pr_sha'][:8]}`; target `{m['target']}` @ `{m['target_sha'][:8]}`; merge-base `{m['merge_base'][:8]}` (diff is merge-base..PR, three-dot)")
-    a(f"- Baseline graph (Neo4j, read-only): commits {json.dumps({k: v[:8] for k, v in (m['baseline_commits'] or {}).items()})}, loaded {m['baseline_loaded_at']} ({m['baseline_mode']})")
+    a(f"- Baseline graph (read-only): commits {json.dumps({k: v[:8] for k, v in (m['baseline_commits'] or {}).items()})}, loaded {m['baseline_loaded_at']} ({m['baseline_mode']})")
     a(f"- Graph before/after PR (in memory; the stored baseline is not modified): nodes/edges {res['graph_counts']['baseline']} → {res['graph_counts']['after_pr']}")
     a(f"- Depth limits (config, placeholder): downstream {m['depth_limits']['downstream']}, upstream {m['depth_limits']['upstream']}")
     a(f"- **PR run duration {t['total_pr_run']} s** (overlay scan {t['overlay_scan']} s; rest = query, mapping, traversal) — measured on this small synthetic sample only")
