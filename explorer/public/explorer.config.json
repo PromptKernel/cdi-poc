@@ -1,0 +1,5 @@
+{
+  "githubBaseUrl": "https://github.com/promptkernel/cdi-poc",
+  "linkTemplate": "{base}/blob/{commit}/{repoPath}/{file}#L{line}",
+  "_note": "Change githubBaseUrl to point 'view source' links at another repository. {commit} is the edge's commit_id; {repoPath} is the logical repo's folder from config/repos.yml."
+}

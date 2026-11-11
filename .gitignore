@@ -26,3 +26,8 @@ neo4j-data/
 neo4j-logs/
 .env
 .env.*
+
+# Explorer test artefacts
+test-results/
+playwright-report/
+*.bak
