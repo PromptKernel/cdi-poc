@@ -1,0 +1,136 @@
+# HAND-WRITTEN expected edges for the sample (synthetic-extended). NOT generated from scanner output:
+# every row was written by reading the source files and noting the file and line where the relationship is written.
+# Used by tests/test_expected_edges.py (tools/compare_expected.py). Recall measured against this list is a measure on
+# SYNTHETIC data written by the tool's author; it says nothing about real code bases.
+#
+# Edge match: repo + type + source node name + target node name (or target_kind) + source_file + line + confidence.
+# Names may start with an alias ($KEY) that is expanded from `aliases`.
+version: 1
+aliases:
+  C:  ASPCoreWithAngular.Controllers.EmployeeController
+  I:  ASPCoreWithAngular.Interfaces.IEmployee
+  D:  ASPCoreWithAngular.DataAccess.EmployeeDataAccessLayer
+  M:  ASPCoreWithAngular.Models
+  S:  ASPCoreWithAngular.Synthetic.Services
+  DC: ASPCoreWithAngular.Synthetic.Controllers.DepartmentController
+  SI: ASPCoreWithAngular.Synthetic.Services.IDepartmentReportService
+  SV: ASPCoreWithAngular.Synthetic.Services.DepartmentReportService
+  DA: ASPCoreWithAngular.Synthetic.DataAccess.DepartmentDataAccess
+  SP: ASPCoreWithAngular.Synthetic.DataAccess.SqlPatternsDataAccess
+
+edges:
+  # ---------------- web (TypeScript) ----------------
+  - {repo: web, type: CALLS, source: FetchEmployeeComponent, target: EmployeeService.getEmployees, file: src/app/fetch-employee/fetch-employee.component.ts, line: 19, confidence: CONFIRMED_STATIC}
+  - {repo: web, type: CALLS, source: FetchEmployeeComponent, target: EmployeeService.deleteEmployee, file: src/app/fetch-employee/fetch-employee.component.ts, line: 27, confidence: CONFIRMED_STATIC}
+  - {repo: web, type: CALLS, source: AddEmployeeComponent, target: EmployeeService.getCityList, file: src/app/add-employee/add-employee.component.ts, line: 37, confidence: CONFIRMED_STATIC}
+  - {repo: web, type: CALLS, source: AddEmployeeComponent, target: EmployeeService.getEmployeeById, file: src/app/add-employee/add-employee.component.ts, line: 43, confidence: CONFIRMED_STATIC}
+  - {repo: web, type: CALLS, source: AddEmployeeComponent, target: EmployeeService.saveEmployee, file: src/app/add-employee/add-employee.component.ts, line: 57, confidence: CONFIRMED_STATIC}
+  - {repo: web, type: CALLS, source: AddEmployeeComponent, target: EmployeeService.updateEmployee, file: src/app/add-employee/add-employee.component.ts, line: 62, confidence: CONFIRMED_STATIC}
+  - {repo: web, type: CALLS, source: DepartmentReportComponent, target: DepartmentReportService.getHeadcount, file: src/synthetic/department-report/department-report.component.ts, line: 18, confidence: CONFIRMED_STATIC}
+  - {repo: web, type: CALLS, source: DepartmentReportComponent, target: DepartmentReportService.getEmployeesIn, file: src/synthetic/department-report/department-report.component.ts, line: 22, confidence: CONFIRMED_STATIC}
+  - {repo: web, type: CALLS, source: DepartmentReportComponent, target: DepartmentReportService.archive, file: src/synthetic/department-report/department-report.component.ts, line: 26, confidence: CONFIRMED_STATIC}
+  - {repo: web, type: CALLS, source: DepartmentReportService.getHeadcount, target: RuntimeConfigService.get, file: src/synthetic/department-report.service.ts, line: 16, confidence: CONFIRMED_STATIC}
+  - {repo: web, type: MAKES_REQUEST, source: EmployeeService.getCityList, target: "GET api/Employee/GetCityList", file: src/app/services/employee.service.ts, line: 18, confidence: CONFIRMED_STATIC}
+  - {repo: web, type: MAKES_REQUEST, source: EmployeeService.getEmployees, target: "GET api/Employee/Index", file: src/app/services/employee.service.ts, line: 26, confidence: CONFIRMED_STATIC}
+  - {repo: web, type: MAKES_REQUEST, source: EmployeeService.getEmployeeById, target: "GET api/Employee/Details/{}", file: src/app/services/employee.service.ts, line: 33, confidence: CONFIRMED_STATIC}
+  - {repo: web, type: MAKES_REQUEST, source: EmployeeService.saveEmployee, target: "POST api/Employee/Create", file: src/app/services/employee.service.ts, line: 41, confidence: CONFIRMED_STATIC}
+  - {repo: web, type: MAKES_REQUEST, source: EmployeeService.updateEmployee, target: "PUT api/Employee/Edit", file: src/app/services/employee.service.ts, line: 49, confidence: CONFIRMED_STATIC}
+  - {repo: web, type: MAKES_REQUEST, source: EmployeeService.deleteEmployee, target: "DELETE api/Employee/Delete/{}", file: src/app/services/employee.service.ts, line: 57, confidence: CONFIRMED_STATIC}
+  - {repo: web, type: MAKES_REQUEST, source: DepartmentReportService.getEmployeesIn, target: "GET api/Department/Employees/{}", file: src/synthetic/department-report.service.ts, line: 21, confidence: CONFIRMED_STATIC}
+  - {repo: web, type: MAKES_REQUEST, source: DepartmentReportService.archive, target: "POST api/Department/Archive/{}", file: src/synthetic/department-report.service.ts, line: 30, confidence: CONFIRMED_STATIC}
+  - {repo: web, type: MAKES_REQUEST, source: FetchDataComponent, target: "GET api/SampleData/WeatherForecasts", file: src/app/fetch-data/fetch-data.component.ts, line: 12, confidence: CONFIRMED_STATIC}
+  # config-built route and whole-URL-is-a-parameter: must be UNRESOLVED
+  - {repo: web, type: MAKES_REQUEST, source: DepartmentReportService.getHeadcount, target_kind: UNRESOLVED, file: src/synthetic/department-report.service.ts, line: 17, confidence: UNRESOLVED}
+  - {repo: web, type: MAKES_REQUEST, source: DepartmentReportService.exportReport, target_kind: UNRESOLVED, file: src/synthetic/department-report.service.ts, line: 26, confidence: UNRESOLVED}
+  # type references
+  - {repo: web, type: USES_TYPE, source: FetchEmployeeComponent, target: Employee, file: src/app/fetch-employee/fetch-employee.component.ts, line: 12, confidence: CONFIRMED_STATIC}
+  - {repo: web, type: USES_TYPE, source: FetchEmployeeComponent, target: Employee, file: src/app/fetch-employee/fetch-employee.component.ts, line: 20, confidence: CONFIRMED_STATIC}
+  - {repo: web, type: USES_TYPE, source: AddEmployeeComponent, target: City, file: src/app/add-employee/add-employee.component.ts, line: 19, confidence: CONFIRMED_STATIC}
+  - {repo: web, type: USES_TYPE, source: AddEmployeeComponent, target: City, file: src/app/add-employee/add-employee.component.ts, line: 38, confidence: CONFIRMED_STATIC}
+  - {repo: web, type: USES_TYPE, source: AddEmployeeComponent, target: Employee, file: src/app/add-employee/add-employee.component.ts, line: 44, confidence: CONFIRMED_STATIC}
+  - {repo: web, type: USES_TYPE, source: EmployeeService.saveEmployee, target: Employee, file: src/app/services/employee.service.ts, line: 40, confidence: CONFIRMED_STATIC}
+  - {repo: web, type: USES_TYPE, source: EmployeeService.updateEmployee, target: Employee, file: src/app/services/employee.service.ts, line: 48, confidence: CONFIRMED_STATIC}
+  - {repo: web, type: USES_TYPE, source: FetchDataComponent, target: WeatherForecast, file: src/app/fetch-data/fetch-data.component.ts, line: 9, confidence: CONFIRMED_STATIC}
+  - {repo: web, type: USES_TYPE, source: FetchDataComponent, target: WeatherForecast, file: src/app/fetch-data/fetch-data.component.ts, line: 12, confidence: CONFIRMED_STATIC}
+
+  # ---------------- api (C#) ----------------
+  # Program.cs line 16: Main calls CreateWebHostBuilder (found missing from this list on first comparison; added from the source)
+  - {repo: api, type: CALLS, source: "ASPCoreWithAngular.Program.Main(string[])", target: "ASPCoreWithAngular.Program.CreateWebHostBuilder(string[])", file: Program.cs, line: 16, confidence: CONFIRMED_STATIC}
+  # controller -> interface method (symbol resolved)
+  - {repo: api, type: CALLS, source: "$C.Index()", target: "$I.GetAllEmployees()", file: Controllers/EmployeeController.cs, line: 27, confidence: CONFIRMED_STATIC}
+  - {repo: api, type: CALLS, source: "$C.Create($M.Employee)", target: "$I.AddEmployee($M.Employee)", file: Controllers/EmployeeController.cs, line: 34, confidence: CONFIRMED_STATIC}
+  - {repo: api, type: CALLS, source: "$C.Details(int)", target: "$I.GetEmployeeData(int)", file: Controllers/EmployeeController.cs, line: 41, confidence: CONFIRMED_STATIC}
+  - {repo: api, type: CALLS, source: "$C.Edit($M.Employee)", target: "$I.UpdateEmployee($M.Employee)", file: Controllers/EmployeeController.cs, line: 48, confidence: CONFIRMED_STATIC}
+  - {repo: api, type: CALLS, source: "$C.Delete(int)", target: "$I.DeleteEmployee(int)", file: Controllers/EmployeeController.cs, line: 55, confidence: CONFIRMED_STATIC}
+  - {repo: api, type: CALLS, source: "$C.Details()", target: "$I.GetCities()", file: Controllers/EmployeeController.cs, line: 62, confidence: CONFIRMED_STATIC}
+  - {repo: api, type: CALLS, source: "$DC.Headcount()", target: "$SI.GetHeadcountReport()", file: Synthetic/Controllers/DepartmentController.cs, line: 22, confidence: CONFIRMED_STATIC}
+  - {repo: api, type: CALLS, source: "$DC.EmployeesIn(string)", target: "$SI.GetEmployeeNames(string)", file: Synthetic/Controllers/DepartmentController.cs, line: 29, confidence: CONFIRMED_STATIC}
+  - {repo: api, type: CALLS, source: "$DC.Archive(int)", target: "$SI.ArchiveEmployee(int)", file: Synthetic/Controllers/DepartmentController.cs, line: 36, confidence: CONFIRMED_STATIC}
+  - {repo: api, type: CALLS, source: "$SV.GetHeadcountReport()", target: "$DA.ReadHeadcount()", file: Synthetic/Services/DepartmentReportService.cs, line: 20, confidence: CONFIRMED_STATIC}
+  - {repo: api, type: CALLS, source: "$SV.GetHeadcountReport()", target: "$SV.IsOverLimit($S.DepartmentHeadcount)", file: Synthetic/Services/DepartmentReportService.cs, line: 23, confidence: CONFIRMED_STATIC}
+  - {repo: api, type: CALLS, source: "$SV.GetEmployeeNames(string)", target: "$DA.ReadEmployeesByDepartment(string)", file: Synthetic/Services/DepartmentReportService.cs, line: 35, confidence: CONFIRMED_STATIC}
+  - {repo: api, type: CALLS, source: "$SV.ArchiveEmployee(int)", target: "$DA.Archive(int)", file: Synthetic/Services/DepartmentReportService.cs, line: 40, confidence: CONFIRMED_STATIC}
+  # interface -> implementation (always INFERRED: runtime DI); evidenced at the implementing method
+  - {repo: api, type: DISPATCHES_TO, source: "$I.GetAllEmployees()", target: "$D.GetAllEmployees()", file: DataAccess/EmployeeDataAccessLayer.cs, line: 22, confidence: INFERRED}
+  - {repo: api, type: DISPATCHES_TO, source: "$I.AddEmployee($M.Employee)", target: "$D.AddEmployee($M.Employee)", file: DataAccess/EmployeeDataAccessLayer.cs, line: 59, confidence: INFERRED}
+  - {repo: api, type: DISPATCHES_TO, source: "$I.UpdateEmployee($M.Employee)", target: "$D.UpdateEmployee($M.Employee)", file: DataAccess/EmployeeDataAccessLayer.cs, line: 86, confidence: INFERRED}
+  - {repo: api, type: DISPATCHES_TO, source: "$I.GetEmployeeData(int)", target: "$D.GetEmployeeData(int)", file: DataAccess/EmployeeDataAccessLayer.cs, line: 114, confidence: INFERRED}
+  - {repo: api, type: DISPATCHES_TO, source: "$I.DeleteEmployee(int)", target: "$D.DeleteEmployee(int)", file: DataAccess/EmployeeDataAccessLayer.cs, line: 146, confidence: INFERRED}
+  - {repo: api, type: DISPATCHES_TO, source: "$I.GetCities()", target: "$D.GetCities()", file: DataAccess/EmployeeDataAccessLayer.cs, line: 169, confidence: INFERRED}
+  - {repo: api, type: DISPATCHES_TO, source: "$SI.GetHeadcountReport()", target: "$SV.GetHeadcountReport()", file: Synthetic/Services/DepartmentReportService.cs, line: 18, confidence: INFERRED}
+  - {repo: api, type: DISPATCHES_TO, source: "$SI.GetEmployeeNames(string)", target: "$SV.GetEmployeeNames(string)", file: Synthetic/Services/DepartmentReportService.cs, line: 33, confidence: INFERRED}
+  - {repo: api, type: DISPATCHES_TO, source: "$SI.ArchiveEmployee(int)", target: "$SV.ArchiveEmployee(int)", file: Synthetic/Services/DepartmentReportService.cs, line: 38, confidence: INFERRED}
+  # stored-procedure calls (SqlCommand + CommandType.StoredProcedure)
+  - {repo: api, type: CALLS_PROCEDURE, source: "$D.GetAllEmployees()", target: dbo.spGetAllEmployees, file: DataAccess/EmployeeDataAccessLayer.cs, line: 30, confidence: CONFIRMED_STATIC}
+  - {repo: api, type: CALLS_PROCEDURE, source: "$D.AddEmployee($M.Employee)", target: dbo.spAddEmployee, file: DataAccess/EmployeeDataAccessLayer.cs, line: 65, confidence: CONFIRMED_STATIC}
+  - {repo: api, type: CALLS_PROCEDURE, source: "$D.UpdateEmployee($M.Employee)", target: dbo.spUpdateEmployee, file: DataAccess/EmployeeDataAccessLayer.cs, line: 92, confidence: CONFIRMED_STATIC}
+  - {repo: api, type: CALLS_PROCEDURE, source: "$D.DeleteEmployee(int)", target: dbo.spDeleteEmployee, file: DataAccess/EmployeeDataAccessLayer.cs, line: 152, confidence: CONFIRMED_STATIC}
+  - {repo: api, type: CALLS_PROCEDURE, source: "$D.GetCities()", target: dbo.spGetCityList, file: DataAccess/EmployeeDataAccessLayer.cs, line: 177, confidence: CONFIRMED_STATIC}
+  - {repo: api, type: CALLS_PROCEDURE, source: "$DA.ReadHeadcount()", target: dbo.spGetDepartmentHeadcount, file: Synthetic/DataAccess/DepartmentDataAccess.cs, line: 24, confidence: CONFIRMED_STATIC}
+  - {repo: api, type: CALLS_PROCEDURE, source: "$DA.ReadEmployeesByDepartment(string)", target: dbo.spGetEmployeesByDepartment, file: Synthetic/DataAccess/DepartmentDataAccess.cs, line: 46, confidence: CONFIRMED_STATIC}
+  # scanner-level this is a normal reference; the LINKER must report it as "referenced, not found" (spArchiveEmployee has no SQL definition)
+  - {repo: api, type: CALLS_PROCEDURE, source: "$DA.Archive(int)", target: dbo.spArchiveEmployee, file: Synthetic/DataAccess/DepartmentDataAccess.cs, line: 64, confidence: CONFIRMED_STATIC}
+  # SqlCommand pattern coverage (samples/api/Synthetic/DataAccess/SqlPatternsDataAccess.cs)
+  - {repo: api, type: CALLS_PROCEDURE, source: "$SP.ConstantField()", target: dbo.spGetCityList, file: Synthetic/DataAccess/SqlPatternsDataAccess.cs, line: 18, confidence: CONFIRMED_STATIC}
+  - {repo: api, type: CALLS_PROCEDURE, source: "$SP.ConstantConcatenation()", target: dbo.spGetAllEmployees, file: Synthetic/DataAccess/SqlPatternsDataAccess.cs, line: 30, confidence: CONFIRMED_STATIC}
+  - {repo: api, type: CALLS_PROCEDURE, source: "$SP.ObjectInitializer()", target: dbo.spGetDepartmentHeadcount, file: Synthetic/DataAccess/SqlPatternsDataAccess.cs, line: 42, confidence: CONFIRMED_STATIC}
+  - {repo: api, type: CALLS_PROCEDURE, source: "$SP.CommandTextAssignment()", target: dbo.spGetEmployeesByDepartment, file: Synthetic/DataAccess/SqlPatternsDataAccess.cs, line: 58, confidence: CONFIRMED_STATIC}
+  - {repo: api, type: CALLS_PROCEDURE, source: "$SP.TargetTypedNew()", target: dbo.spDeleteEmployee, file: Synthetic/DataAccess/SqlPatternsDataAccess.cs, line: 72, confidence: CONFIRMED_STATIC}
+  - {repo: api, type: CALLS_PROCEDURE, source: "$SP.CtorWithInitializer()", target: dbo.spAddEmployee, file: Synthetic/DataAccess/SqlPatternsDataAccess.cs, line: 84, confidence: CONFIRMED_STATIC}
+  # dynamic / inline SQL: UNRESOLVED
+  - {repo: api, type: EXECUTES_DYNAMIC_SQL, source: "$D.GetEmployeeData(int)", target_kind: UNRESOLVED, file: DataAccess/EmployeeDataAccessLayer.cs, line: 123, confidence: UNRESOLVED}
+  - {repo: api, type: EXECUTES_DYNAMIC_SQL, source: "$SP.InterpolatedSql(string)", target_kind: UNRESOLVED, file: Synthetic/DataAccess/SqlPatternsDataAccess.cs, line: 96, confidence: UNRESOLVED}
+  - {repo: api, type: EXECUTES_DYNAMIC_SQL, source: "$SP.InlineLiteralSql()", target_kind: UNRESOLVED, file: Synthetic/DataAccess/SqlPatternsDataAccess.cs, line: 107, confidence: UNRESOLVED}
+
+  # ---------------- db (T-SQL) ----------------
+  - {repo: db, type: READS_TABLE, source: dbo.spGetAllEmployees, target: dbo.tblEmployee, file: synthetic/procedures/spGetAllEmployees.sql, line: 7, confidence: CONFIRMED_STATIC}
+  - {repo: db, type: WRITES_TABLE, source: dbo.spAddEmployee, target: dbo.tblEmployee, file: synthetic/procedures/spAddEmployee.sql, line: 7, confidence: CONFIRMED_STATIC}
+  - {repo: db, type: WRITES_TABLE, source: dbo.spUpdateEmployee, target: dbo.tblEmployee, file: synthetic/procedures/spUpdateEmployee.sql, line: 7, confidence: CONFIRMED_STATIC}
+  - {repo: db, type: WRITES_TABLE, source: dbo.spDeleteEmployee, target: dbo.tblEmployee, file: synthetic/procedures/spDeleteEmployee.sql, line: 7, confidence: CONFIRMED_STATIC}
+  - {repo: db, type: READS_TABLE, source: dbo.spGetCityList, target: dbo.tblCities, file: synthetic/procedures/spGetCityList.sql, line: 6, confidence: CONFIRMED_STATIC}
+  - {repo: db, type: READS_TABLE, source: dbo.spGetDepartmentHeadcount, target: dbo.tblDepartment, file: synthetic/procedures/spGetDepartmentHeadcount.sql, line: 7, confidence: CONFIRMED_STATIC}
+  - {repo: db, type: READS_TABLE, source: dbo.spGetDepartmentHeadcount, target: dbo.tblEmployee, file: synthetic/procedures/spGetDepartmentHeadcount.sql, line: 8, confidence: CONFIRMED_STATIC}
+  - {repo: db, type: READS_VIEW, source: dbo.spGetEmployeesByDepartment, target: dbo.vwEmployeeDepartment, file: synthetic/procedures/spGetEmployeesByDepartment.sql, line: 7, confidence: CONFIRMED_STATIC}
+  - {repo: db, type: READS_TABLE, source: dbo.vwEmployeeDepartment, target: dbo.tblEmployee, file: synthetic/views/vwEmployeeDepartment.sql, line: 5, confidence: CONFIRMED_STATIC}
+  - {repo: db, type: READS_TABLE, source: dbo.vwEmployeeDepartment, target: dbo.tblDepartment, file: synthetic/views/vwEmployeeDepartment.sql, line: 6, confidence: CONFIRMED_STATIC}
+  - {repo: db, type: EXECUTES_DYNAMIC_SQL, source: dbo.spSearchEmployees, target_kind: UNRESOLVED, file: synthetic/procedures/spSearchEmployees.sql, line: 9, confidence: UNRESOLVED}
+  - {repo: db, type: CALLS_PROCEDURE, source: "DepartmentTests.test spGetDepartmentHeadcount counts employees per department", target: dbo.spGetDepartmentHeadcount, file: synthetic/tests/test_spGetDepartmentHeadcount.sql, line: 7, confidence: CONFIRMED_STATIC}
+
+# Things that must NOT appear (false-positive guards)
+absent:
+  - {repo: api, type: CALLS_PROCEDURE, source: "$D.GetEmployeeData(int)", why: "command text is built at runtime; must not be resolved"}
+  - {repo: api, type: CALLS_PROCEDURE, source: "$SP.InterpolatedSql(string)", why: "interpolated runtime string"}
+  - {repo: api, type: CALLS_PROCEDURE, source: "$SP.InlineLiteralSql()", why: "inline SELECT text is not a procedure call"}
+  - {repo: api, type: DISPATCHES_TO, target_contains: FakeReport, why: "test fakes are not production dispatch targets"}
+  - {repo: web, type: MAKES_REQUEST, source: DepartmentReportService.getHeadcount, confidence: CONFIRMED_STATIC, why: "config-built route"}
+  - {repo: web, type: MAKES_REQUEST, source: DepartmentReportService.exportReport, confidence: CONFIRMED_STATIC, why: "whole URL is a parameter"}
+  - {repo: db, type: READS_TABLE, source: dbo.spSearchEmployees, why: "table name appears only inside a dynamic SQL string"}
+
+# Test nodes and the @covers annotations that belong to each (per test, not per file)
+tests:
+  - {repo: web, name: "DepartmentReportService > should be created", covers: []}
+  - {repo: web, name: "DepartmentReportService > archive posts to the Department API", covers: ["DepartmentReportService.archive"]}
+  - {repo: web, name: "DepartmentReportComponent > is declared", covers: ["DepartmentReportComponent"]}
+  - {repo: api, name: "Api.Tests.DepartmentTests.DepartmentController_Headcount_ReturnsRows()", covers: []}
+  - {repo: api, name: "Api.Tests.DepartmentTests.OverLimit_flag_true_when_headcount_exceeds_limit()", covers: ["ASPCoreWithAngular.Synthetic.Services.DepartmentReportService.IsOverLimit(ASPCoreWithAngular.Synthetic.Services.DepartmentHeadcount)"]}
+  - {repo: db, name: "DepartmentTests.test spGetDepartmentHeadcount counts employees per department", covers: ["dbo.spGetDepartmentHeadcount"]}

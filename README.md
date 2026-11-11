@@ -30,6 +30,11 @@ python3 -m venv .venv && .venv/bin/pip install -r requirements.txt
    against `schema/graph.schema.json`. Output: `out/graph/{web,api,db}.json` (git-ignored).
 3. `.venv/bin/python tools/show_workflow.py FetchEmployeeComponent spGetAllEmployees` - prints edges with the cited source line re-read from disk.
 
+## Tests
+`.venv/bin/python -m pytest tests` (needs the setup above and the .NET 10 SDK). The scanner tests run the real scanners on a temporary
+git copy of `config/` + `samples/`. `tests/expected_edges.yml` is a **hand-written** list of expected edges for the synthetic-extended
+sample; `tools/compare_expected.py` reports recall against it (synthetic data only).
+
 ## Layout
 `samples/` logical repos - `scanners/` - `schema/` - `config/` (repo paths, route and naming conventions) - `docs/` (`schema.md`, `design-notes.md`,
 `changes.md`) - `tools/` - `pipeline/`. Planned: `linker/ graph/ impact/ explorer-api/ explorer/ eval/ tests/`.

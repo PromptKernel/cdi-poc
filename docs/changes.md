@@ -34,3 +34,10 @@ Not imported: `ASPCoreWithAngular.sln` (project paths no longer match the split)
 | API tests (naming convention and `@covers`), SQL test (`@covers`), TS spec (file convention) | samples/api/tests, samples/db/synthetic/tests, samples/web/src/synthetic |
 | Config-built route | samples/web/src/synthetic/department-report.service.ts `getHeadcount()` |
 | Non-synthetic dynamic SQL already in upstream | `EmployeeDataAccessLayer.GetEmployeeData` |
+
+## Added for scanner testing (synthetic)
+| Item | Path |
+|---|---|
+| One method per `SqlCommand` construction pattern (const field, constant concatenation, object initializer, `CommandText` assignment, target-typed `new()`, constructor + initializer, interpolated string, inline literal SQL) | samples/api/Synthetic/DataAccess/SqlPatternsDataAccess.cs |
+| A request whose whole URL is a runtime value | samples/web/src/synthetic/department-report.service.ts `exportReport()` |
+| Per-test and per-describe `@covers` examples | samples/web/src/synthetic/department-report.service.spec.ts |
