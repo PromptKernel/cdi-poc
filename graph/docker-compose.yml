@@ -1,0 +1,22 @@
+# Local Neo4j Community for the PoC. Credentials are NOT stored in the repo: export NEO4J_PASSWORD before `docker compose up`.
+# Ports are bound to localhost only. Data lives in a named volume (never in the working tree).
+services:
+  neo4j:
+    image: neo4j:5.26-community
+    container_name: cdi-poc-neo4j
+    environment:
+      NEO4J_AUTH: "neo4j/${NEO4J_PASSWORD:?set NEO4J_PASSWORD (min 8 chars) in your shell}"
+      NEO4J_server_memory_heap_initial__size: 256m
+      NEO4J_server_memory_heap_max__size: 512m
+    ports:
+      - "127.0.0.1:7475:7474"   # browser
+      - "127.0.0.1:7688:7687"   # bolt
+    volumes:
+      - cdi_poc_neo4j_data:/data
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q -O /dev/null http://localhost:7474 || exit 1"]
+      interval: 5s
+      timeout: 5s
+      retries: 30
+volumes:
+  cdi_poc_neo4j_data:
