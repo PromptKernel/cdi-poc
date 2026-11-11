@@ -3,8 +3,8 @@
 A cross-layer dependency graph and PR impact proof of concept: static scanners for a frontend (TypeScript/Angular), an API
 (C#/.NET) and SQL Server code emit one shared, evidence-backed graph schema.
 
-**Status: milestone 1 of the PoC (schema + three scanners).** Linker, graph load, impact engine, report, explorer and
-evaluation are planned and not in this repository yet. See `LIMITATIONS.md`.
+**Status: milestone 2 of the PoC (schema, three scanners, cross-repo linker, Neo4j load, bidirectional trace).** Impact engine, PR report,
+CI wrapper, explorer and evaluation are planned and not in this repository yet. See `LIMITATIONS.md`.
 
 ## What is real and what is synthetic
 - `samples/*` start from an upstream MIT-licensed sample (Angular + ASP.NET Core + ADO.NET), see `NOTICE` and `docs/changes.md`.
@@ -18,17 +18,25 @@ This repository has **no top-level licence file**. The upstream-derived sample c
 `samples/api/LICENSE`, `samples/db/LICENSE`, credited in `NOTICE`). No licence is granted for the other files.
 
 ## Setup
-Requirements: git, Node 20+, Python 3.10+, .NET 10 SDK.
+Requirements: git, Node 20+, Python 3.10+, .NET 10 SDK, Docker (for Neo4j).
 ```
 python3 -m venv .venv && .venv/bin/pip install -r requirements.txt
 (cd scanners/ts-morph && npm ci)
 ```
 
-## Run order (milestone 1)
-1. Commit your working tree. Scanners **refuse to run on uncommitted changes**, so `commit_id` matches the scanned files.
-2. `pipeline/scan_all.sh` - builds the .NET scanners, runs Roslyn/ts-morph/ScriptDom per logical repo, validates the output
-   against `schema/graph.schema.json`. Output: `out/graph/{web,api,db}.json` (git-ignored).
-3. `.venv/bin/python tools/show_workflow.py FetchEmployeeComponent spGetAllEmployees` - prints edges with the cited source line re-read from disk.
+## Run order
+1. Commit your working tree. Scanners **refuse to run on uncommitted changes in the logical repo's folder**, so `commit_id` matches the scanned files.
+2. `pipeline/scan_all.sh` - builds the .NET scanners, runs Roslyn/ts-morph/ScriptDom per logical repo, validates against
+   `schema/graph.schema.json`. Output: `out/graph/{web,api,db}.json` (git-ignored).
+3. Neo4j (local, Community): `export NEO4J_PASSWORD='<choose one>'` then `docker compose -f graph/docker-compose.yml up -d`
+   (ports bound to localhost 7688/7475; the password is never stored in the repo).
+4. `pipeline/link_and_load.sh` - links across repos (`out/graph/linked.json`: HTTP route -> API endpoint, SQL reference -> definition,
+   test -> covered node) and loads everything into Neo4j.
+5. Trace, in both directions, with file:line evidence for every hop:
+   `.venv/bin/python -m impact.trace FetchEmployeeComponent --kind UI_COMPONENT --direction forward --backend neo4j`
+   `.venv/bin/python -m impact.trace dbo.tblEmployee --kind SQL_TABLE --direction reverse --backend neo4j`
+   (`--backend memory` runs the same traversal without a database.) UNRESOLVED links are listed with their reason, never traversed.
+6. `.venv/bin/python tools/show_workflow.py FetchEmployeeComponent spGetAllEmployees` - raw scanner edges with the cited source line re-read from disk.
 
 ## Tests
 `.venv/bin/python -m pytest tests` (needs the setup above and the .NET 10 SDK). The scanner tests run the real scanners on a temporary
@@ -36,5 +44,6 @@ git copy of `config/` + `samples/`. `tests/expected_edges.yml` is a **hand-writt
 sample; `tools/compare_expected.py` reports recall against it (synthetic data only).
 
 ## Layout
-`samples/` logical repos - `scanners/` - `schema/` - `config/` (repo paths, route and naming conventions) - `docs/` (`schema.md`, `design-notes.md`,
-`changes.md`) - `tools/` - `pipeline/`. Planned: `linker/ graph/ impact/ explorer-api/ explorer/ eval/ tests/`.
+`samples/` logical repos - `scanners/` - `linker/` (cross-repo linking) - `graph/` (Neo4j compose, loader, Cypher queries) - `impact/` (traversal, trace CLI) -
+`schema/` - `config/` (repo paths, route/naming conventions, graph store) - `docs/` - `tools/` - `pipeline/` - `tests/`.
+Planned: `explorer-api/ explorer/ eval/`, impact engine and PR report.

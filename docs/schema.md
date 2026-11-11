@@ -30,6 +30,12 @@ i.e. the last commit that touched the folder. Because that value only describes 
 changes in other folders of the git repository do not matter). Edge `commit_id` and fragment `commit_id` both use this value.
 If a logical repo is later pointed at a separate checkout, the same command is run inside it.
 
+## Linker output
+`out/graph/linked.json` has `repo: "linked"` and an `inputs` map (logical repo -> commit_id of the fragments it consumed); its fragment
+`commit_id` is a SHA-1 over those pairs. Its edges carry the commit of the repo that evidences them (e.g. a `ROUTES_TO` edge is evidenced at the
+request site in the frontend, with `attrs.target_location` pointing at the endpoint). Unmatched links become `UNRESOLVED` edges to
+placeholder nodes `linker:unresolved:<cause>:<key>` (`no_matching_route`, `referenced_not_found`, `annotation_target_not_found`).
+
 ## Overlay fragments (`--only`)
 `--only <file-with-paths>` restricts which files may *emit* nodes and edges. The scanner still builds the node-id map for the
 whole logical repo, so an edge from a changed file to a symbol in an unchanged file is emitted with its real target id. Such a
@@ -52,12 +58,12 @@ Node id = `{repo}:{kind-slug}:{qualified-name}`; method names include the parame
 | `DISPATCHES_TO` | Roslyn | interface method -> implementing method; always `INFERRED` (runtime DI) |
 | `USES_TYPE` | ts-morph | component/service -> model type |
 | `MAKES_REQUEST` | ts-morph | UI service method -> `HTTP_REQUEST` node (verb + URL template) |
-| `ROUTES_TO` | linker (planned) | `HTTP_REQUEST` -> `API_ENDPOINT` (route match, cross-repo) |
+| `ROUTES_TO` | linker | `HTTP_REQUEST` -> `API_ENDPOINT` (route match, cross-repo) |
 | `CALLS_PROCEDURE` | Roslyn, ScriptDom | C# method -> `SQL_REF`, or SQL proc -> proc |
-| `RESOLVES_TO` | linker (planned) | `SQL_REF` -> `SQL_PROC` (cross-repo name match), or UNRESOLVED if not found |
+| `RESOLVES_TO` | linker | `SQL_REF` -> `SQL_PROC` (cross-repo name match), or UNRESOLVED if not found |
 | `READS_TABLE` / `WRITES_TABLE` / `READS_VIEW` | ScriptDom | SQL object -> table/view |
 | `EXECUTES_DYNAMIC_SQL` | ScriptDom, Roslyn | -> `UNRESOLVED` node; target cannot be known statically |
-| `TESTS` | linker (planned) | `TEST` -> covered node; `attrs.mapping_method` = `naming-convention` or `annotation` |
+| `TESTS` | linker | `TEST` -> covered node; `attrs.mapping_method` = `naming-convention` or `annotation` |
 
 Edges are stored source -> target meaning "depends on". Impact ("who is affected by a change to X") follows edges in
 reverse; root-cause tracing ("what does X depend on") follows them forward.

@@ -1,6 +1,6 @@
 # Limitations (what this PoC does not prove)
 
-Status: milestone 1 only (schema + scanners). Items for later milestones are marked *(planned)*.
+Status: milestone 2 (schema, scanners, linker, Neo4j load, bidirectional trace). Items for later milestones are marked *(planned)*.
 
 * **Multiple repos are simulated with folders.** `samples/web|api|db` are folders of one git repository. Commit IDs come from
   `git log -1 -- <folder>`. The PoC does not test real multi-repo checkouts, per-repo branches, access control or cross-repo PR flows.
@@ -24,5 +24,15 @@ Status: milestone 1 only (schema + scanners). Items for later milestones are mar
 * **Interface dispatch** is always INFERRED, so every path through an interface call has at least one INFERRED hop.
 * **Column-level impact** is not implemented (`SQL_COLUMN` is reserved).
 * **Sample build state:** the upstream Angular 8 frontend was not built; only the .NET 10 retarget builds and tests.
-* **Not built *(planned)*:** linker, graph store load, impact engine, PR report, CI wrapper, explorer, evaluation harness.
+* **Route matching is template-based.** It handles literal segments, `{param}`/constraint segments, case, slashes and query strings.
+  It does not model optional or catch-all parameters, areas, API versioning, route prefixes set elsewhere (`MapControllerRoute`, `UsePathBase`),
+  conventional routing, or a gateway that rewrites paths. A request with a runtime-valued segment matching a literal route is only INFERRED.
+* **SQL reference resolution is exact name matching** (case-insensitive, default schema applied). Synonyms, cross-database names, `USE`
+  context, schema search paths and aliases are not modelled.
+* **Test mapping by file or name convention fans out** (a spec file maps to every service method in the matching source file) and is
+  therefore only INFERRED; only explicit `@covers` annotations are CONFIRMED. No coverage data is used.
+* **Traversal skips UNRESOLVED links**, so anything reachable only through dynamic SQL, a config-built route or a missing definition is
+  invisible to the trace (it is listed as an unresolved link at the node where the chain stops). This lowers recall by construction.
+* **Neo4j is a local single Community instance** with no authentication beyond a local password and no persistence guarantees beyond a Docker volume.
+* **Not built *(planned)*:** impact engine, PR report, CI wrapper, explorer API and UI, evaluation harness.
 * **No licence for the tooling.** The repository has no top-level licence file; only the upstream-derived sample is MIT.

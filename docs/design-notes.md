@@ -11,3 +11,9 @@ Pipeline: scanners -> shared graph schema -> linker (cross-repo edges) -> graph 
 * **Test mapping**: naming convention plus explicit `@covers` annotations; the method is recorded on each TESTS edge.
 * **Deferred**: column-level impact (`SQL_COLUMN` is reserved in the schema); table-level comes first.
 * **Simulation**: no cloud services are called. A CI wrapper, when added, is a thin shell around the local runner.
+* **Linker** (`linker/`): route matching (verb + template), SQL reference -> definition by name, test -> node by annotation or convention.
+  Exact unique matches are CONFIRMED_STATIC, ambiguous or heuristic ones INFERRED, everything else an UNRESOLVED edge with a reason.
+* **Graph store**: Neo4j Community in Docker (`graph/`); nodes carry the `:Node` label plus a kind label, relationships use the edge type and keep
+  every edge field as properties. Loading is idempotent (MERGE by id).
+* **Trace**: `impact/traverse.py` (in-memory) and `graph/neo4j_query.py` (Cypher) return the same maximal paths; tests assert they are identical.
+  A path's confidence is its weakest hop.
