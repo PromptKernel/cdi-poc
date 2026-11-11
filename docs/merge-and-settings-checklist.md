@@ -1,5 +1,3 @@
-# Merge preparation and repository settings (commands are prepared, NOT run)
-
 # Merge status and repository settings (state on 2026-11-11, after the merge)
 
 ## What has been done
