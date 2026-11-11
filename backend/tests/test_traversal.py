@@ -95,7 +95,8 @@ def test_find_nodes_exact_name_then_substring():
 # ---------- on the real (synthetic) sample ----------
 @pytest.fixture(scope="module")
 def real(full):
-    cfg = load_config(ROOT / "config")
+    from conftest import FIXTURE_CONFIG
+    cfg = load_config(FIXTURE_CONFIG)
     g = Graph.from_fragments([full["web"], full["api"], full["db"]])
     lk = Linker(g, cfg).run()
     for n in lk.nodes_out.values():

@@ -11,7 +11,8 @@ pytestmark = pytest.mark.skipif(not os.environ.get("NEO4J_PASSWORD"), reason="NE
 @pytest.fixture(scope="module")
 def db(full):
     from cdi.graph.load_neo4j import connect, load
-    cfg = load_config(ROOT / "config")
+    from conftest import FIXTURE_CONFIG
+    cfg = load_config(FIXTURE_CONFIG)
     try:
         drv, name = connect(cfg, wait=10)
     except Exception as e:

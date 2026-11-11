@@ -4,7 +4,8 @@ import pytest
 from cdi import export as X
 
 ROOT = pathlib.Path(__file__).resolve().parents[2]
-CFG = ROOT / "config"
+from conftest import FIXTURE_CONFIG
+CFG = FIXTURE_CONFIG
 
 
 @pytest.fixture()

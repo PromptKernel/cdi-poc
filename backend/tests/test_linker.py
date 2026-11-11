@@ -5,7 +5,8 @@ from cdi.linker.graphio import Graph, load_config
 from helpers import node, edge, graph
 
 ROOT = pathlib.Path(__file__).resolve().parents[2]
-CFG = load_config(ROOT / "config")
+from conftest import FIXTURE_CONFIG
+CFG = load_config(FIXTURE_CONFIG)
 
 
 def run(nodes, edges):

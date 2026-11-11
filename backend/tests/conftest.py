@@ -5,6 +5,8 @@ import pytest
 
 ROOT = pathlib.Path(__file__).resolve().parents[2]    # repository root (config/, samples/ still live here until the fixture switch)
 BACKEND = ROOT / "backend"
+FIXTURE = pathlib.Path(__file__).resolve().parent / "fixtures" / "sample"       # pinned copy of the sample (config/ + samples/)
+FIXTURE_CONFIG = FIXTURE / "config"
 sys.path.insert(0, str(ROOT / "tools"))
 ENV = {**os.environ, "DOTNET_CLI_TELEMETRY_OPTOUT": "1"}
 if "DOTNET_ROOT" not in ENV and pathlib.Path("/opt/homebrew/opt/dotnet/libexec").is_dir():
@@ -37,10 +39,10 @@ class Project:
     """A copy of config/ + samples/ in a temp dir, committed to its own git repo."""
     def __init__(self, path, tweak=None):
         self.path = path
-        shutil.copytree(ROOT / "config", path / "config")
+        shutil.copytree(FIXTURE_CONFIG, path / "config")
         if tweak:
             tweak(path)
-        shutil.copytree(ROOT / "samples", path / "samples", ignore=shutil.ignore_patterns("bin", "obj", "node_modules"))
+        shutil.copytree(FIXTURE / "samples", path / "samples", ignore=shutil.ignore_patterns("bin", "obj", "node_modules"))
         sh(["git", "init", "-q", "-b", "main"], cwd=path)
         sh(["git", "add", "-A"], cwd=path)
         sh(["git", *GIT_ID, "commit", "-q", "-m", "fixture"], cwd=path)

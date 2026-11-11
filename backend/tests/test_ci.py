@@ -2,7 +2,7 @@
 No test here touches the network: urllib.request.urlopen is replaced by a function that fails the test."""
 import argparse, copy, json, pathlib, re
 import pytest, yaml
-from conftest import ROOT, BACKEND, Project, make_branch
+from conftest import ROOT, BACKEND, FIXTURE_CONFIG, Project, make_branch
 from cdi.eval.scenarios import SCENARIOS
 from cdi.ci import adapters, comment, payloads, policy
 from cdi.impact import engine
@@ -10,7 +10,7 @@ from cdi.linker.graphio import Graph, load_config
 from cdi.pipeline import baseline as B, run_pr
 from cdi.pipeline.scanrun import ScanRunner
 
-CI = yaml.safe_load((ROOT / "config/ci.yml").read_text())
+CI = yaml.safe_load((FIXTURE_CONFIG / "ci.yml").read_text())
 
 
 @pytest.fixture(autouse=True)
@@ -459,4 +459,4 @@ def test_ci_config_has_only_placeholders_and_no_secrets():
     az = CI["adapter"]["azure"]
     assert all(az[k].startswith("<") and az[k].endswith(">") for k in ("organization", "project", "repository_id"))
     assert az["token_env"] == "AZDO_TOKEN" and "token" not in {k for k in az if k != "token_env" and k != "auth_scheme"}
-    assert "placeholder, unvalidated" in (ROOT / "config/ci.yml").read_text()
+    assert "placeholder, unvalidated" in (FIXTURE_CONFIG / "ci.yml").read_text()
