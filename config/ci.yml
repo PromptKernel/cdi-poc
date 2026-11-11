@@ -1,0 +1,33 @@
+# CI simulation settings. Nothing here is a secret. Organization, project and repository values are PLACEHOLDERS.
+comment:
+  # Stable marker written into every comment body so a re-run finds and updates ITS OWN thread instead of creating a new one.
+  marker: "cdi-poc:impact-report"
+  # placeholder, unvalidated: the Azure DevOps REST pages consulted (see docs/ci-simulation.md) state no limit for comment content,
+  # so this is a conservative cap of ours. Lower-priority sections are dropped first when the comment would exceed it.
+  max_chars: 20000
+  # placeholder, unvalidated: how many items are listed per section before "+N more" (the full report has everything)
+  max_confirmed_consumers: 10
+  max_confirmed_tests: 10
+  max_unresolved_items: 8
+  max_inferred_consumers: 5
+  max_convention_tests: 5
+status:
+  # context.name must be unique and is the only required status field per the docs; genre is free text (typically the tool name)
+  context: {name: "cdi-poc/impact-analysis", genre: "cdi-poc"}
+  # placeholder, unvalidated: no limit for the status description is stated in the docs consulted
+  description_max_chars: 300
+adapter:
+  default: file                       # file | azure ; azure is never used unless --enable-azure-adapter is passed
+  azure:
+    organization: "<ORGANIZATION>"
+    project: "<PROJECT>"
+    repository_id: "<REPOSITORY_ID>"
+    api_version: "7.1"
+    token_env: AZDO_TOKEN             # the TOKEN VALUE is read from this environment variable; it is never stored anywhere
+    auth_scheme: basic                # basic (personal access token) | bearer (OAuth token); UNVERIFIED against the auth docs
+blocking:
+  # OFF by default. When enabled, a run may fail ONLY on a deterministic policy listed below, never on a risk label.
+  enabled: false
+  policies:
+    - P1-referenced-not-found-introduced     # the PR leaves a procedure/table/view referenced but not defined
+    - P2-route-unmatched-introduced          # a frontend request no longer matches any API route

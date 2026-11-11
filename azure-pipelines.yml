@@ -1,0 +1,52 @@
+# Thin wrapper around pipeline/run_pr.sh. WRITTEN, NEVER RUN: no Azure DevOps resources exist for this PoC and nothing here has been tested on a real agent.
+# Only placeholders (<...>) appear for organisation, project, repository and connection names. No tokens are stored here.
+# Variable names follow the predefined-variables page cited in docs/ci-simulation.md.
+trigger: none
+pr:
+  branches:
+    include: [ main ]            # <TARGET_BRANCH> placeholder: branches whose PRs should run this check
+
+pool:
+  vmImage: ubuntu-latest         # <AGENT_POOL> placeholder
+
+steps:
+  - checkout: self
+    fetchDepth: 0                # three-dot diffs need the merge-base, so full history
+
+  - task: UseDotNet@2
+    inputs: { packageType: sdk, version: 10.x }
+  - task: NodeTool@0
+    inputs: { versionSpec: 20.x }
+  - script: |
+      python3 -m venv .venv && .venv/bin/pip install -r requirements.txt
+      (cd scanners/ts-morph && npm ci)
+    displayName: Install tooling
+
+  # Advisory PR check. The baseline graph must already exist (built by the baseline pipeline; see the commented example below).
+  # With the default file sink nothing is posted: out/pr-comment.md and out/pr-status.json are published as build artifacts.
+  - script: >
+      pipeline/run_pr.sh
+      --target origin/$(System.PullRequest.targetBranchName)
+      --pr $(System.PullRequest.SourceCommitId)
+      --name pr-$(System.PullRequest.PullRequestId)
+      --baseline neo4j
+    displayName: Dependency impact (advisory)
+    env:
+      NEO4J_PASSWORD: $(NEO4J_PASSWORD)          # <VARIABLE_GROUP> placeholder: a secret pipeline variable, never committed
+    continueOnError: true                         # advisory: a problem must never fail the PR
+
+  - publish: out
+    artifact: impact-report
+    condition: always()
+
+# To POST to the pull request instead of writing files (DISABLED by default, never run): append to the run_pr.sh command above
+#     --adapter azure --enable-azure-adapter --pull-request-id $(System.PullRequest.PullRequestId)
+# and add to the step:  env:  AZDO_TOKEN: $(System.AccessToken)   (the token must be mapped explicitly in YAML)
+# and set adapter.azure.organization / project / repository_id in config/ci.yml (they are <ORGANIZATION>, <PROJECT>, <REPOSITORY_ID> placeholders).
+#
+# COMMENTED EXAMPLE - baseline refresh on merge to the target branch (not part of the PR check):
+# trigger:
+#   branches: { include: [ main ] }
+# steps:
+#   - script: .venv/bin/python -m pipeline.baseline incremental --from $(Build.SourceVersion)~1 --to $(Build.SourceVersion)
+#     env: { NEO4J_PASSWORD: $(NEO4J_PASSWORD) }

@@ -31,7 +31,8 @@ def cite(g: Graph, edge_id):
             "method": e["analysis_method"], "commit": e["commit_id"], "synthetic": e["synthetic"], "reason": e.get("reason"),
             "evidence": e.get("evidence", ""), "source": g.nodes.get(e["source"], {}).get("name", e["source"]),
             "target": g.nodes.get(e["target"], {}).get("name", e["target"]), "attrs": e.get("attrs") or {},
-            "source_kind": g.nodes.get(e["source"], {}).get("kind", "?"), "target_kind": g.nodes.get(e["target"], {}).get("kind", "?")}
+            "source_kind": g.nodes.get(e["source"], {}).get("kind", "?"), "target_kind": g.nodes.get(e["target"], {}).get("kind", "?"),
+            "target_id": e["target"], "target_cause": (g.nodes.get(e["target"], {}).get("attrs") or {}).get("cause")}
 
 
 def path_view(g, path, head_keys=None, head=None):
