@@ -35,8 +35,8 @@ describe('direction (matches docs/schema.md)', () => {
     for (const y of up) expect(expand(ix, [y], 'downstream', 10, F()).nodes.has('UI')).toBe(true)
   })
   it('labels name both words so the toggle is unambiguous', () => {
-    expect(directionLabel('downstream')).toMatch(/consumers/i)
-    expect(directionLabel('upstream')).toMatch(/dependencies/i)
+    expect(directionLabel('downstream')).toBe('Downstream: affected by this (consumers)')
+    expect(directionLabel('upstream')).toBe('Upstream: depends on (dependencies)')
   })
 })
 

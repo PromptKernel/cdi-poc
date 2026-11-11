@@ -83,7 +83,7 @@ export function search(ix: Index, query: string, f: Filters, limit = 20): GNode[
 }
 
 export const directionLabel = (d: Direction) =>
-  d === 'downstream' ? 'Downstream: consumers (who depends on this)' : 'Upstream: dependencies (what this depends on)'
+  d === 'downstream' ? 'Downstream: affected by this (consumers)' : 'Upstream: depends on (dependencies)'
 
 export function distinctValues(ix: Index, key: 'repo' | 'kind'): string[] {
   return [...new Set([...ix.nodes.values()].map((n) => n[key]))].sort()

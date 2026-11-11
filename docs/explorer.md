@@ -16,8 +16,8 @@ cd explorer && npm ci && npm run build && npm run preview     # http://127.0.0.1
 * **Search** by name (exact, prefix, last segment, substring). Pick a result to put it on the canvas.
 * **Expand**: click a node (or "Expand selected"). The **depth** slider sets how many hops; the note under it says when the expansion stopped at the depth limit.
 * **Direction** follows `docs/schema.md`. Edges mean "A depends on B".
-  **Downstream = consumers** (who depends on this node; follows edges in reverse; the impact of a change).
-  **Upstream = dependencies** (what this node depends on; follows edges forward; root-cause tracing).
+  **Downstream: affected by this (consumers)** - who depends on this node; follows edges in reverse; the impact of a change.
+  **Upstream: depends on (dependencies)** - what this node depends on; follows edges forward; root-cause tracing.
   A screen's SQL tables are therefore its *upstream* dependencies even though they are drawn lower in the picture.
 * **Filters**: repo, node kind, confidence, and whether `USES_TYPE` edges are shown. Filtered-out nodes are not traversed.
 * **Edge style by confidence** (never colour alone): `CONFIRMED_STATIC` solid blue with a triangle head; `INFERRED` dashed orange with a vee head; `UNRESOLVED` dotted red with a bar head.

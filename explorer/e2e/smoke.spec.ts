@@ -60,7 +60,7 @@ test('explorer smoke: search, expand, trace UI -> SQL in both directions, styles
   await test.step('reverse direction: from the SQL table, downstream consumers reach the screen', async () => {
     await page.getByRole('button', { name: 'Clear' }).click()
     await pick(page, 'dbo.tblEmployee', 'SQL_TABLE')
-    await page.getByLabel(/Downstream: consumers/).check()
+    await page.getByLabel(/Downstream: affected by this \(consumers\)/).check()
     await page.locator('#depth').fill('12')
     await page.getByRole('button', { name: 'Expand selected' }).click()
     await expect(visible(page)).toContainText('FetchEmployeeComponent')
@@ -70,7 +70,7 @@ test('explorer smoke: search, expand, trace UI -> SQL in both directions, styles
   await test.step('unresolved / not-found nodes are distinct and explain why', async () => {
     await page.getByRole('button', { name: 'Clear' }).click()
     await pick(page, 'DepartmentReportService.getHeadcount', 'UI_SERVICE_METHOD')
-    await page.getByLabel(/Upstream: dependencies/).check()
+    await page.getByLabel(/Upstream: depends on \(dependencies\)/).check()
     await page.getByRole('button', { name: 'Expand selected' }).click()
     await visible(page).getByRole('button', { name: /✕|unresolved|<unresolved URL>/i }).first().click()
     const np = page.getByTestId('node-panel')
@@ -84,7 +84,7 @@ test('explorer smoke: search, expand, trace UI -> SQL in both directions, styles
     await page.getByRole('button', { name: 'Clear' }).click()
     await page.getByLabel('INFERRED', { exact: true }).uncheck()
     await pick(page, 'FetchEmployeeComponent', 'UI_COMPONENT')
-    await page.getByLabel(/Upstream: dependencies/).check()
+    await page.getByLabel(/Upstream: depends on \(dependencies\)/).check()
     await page.locator('#depth').fill('12')
     await page.getByRole('button', { name: 'Expand selected' }).click()
     await expect(visible(page)).toContainText('EmployeeController.Index()')

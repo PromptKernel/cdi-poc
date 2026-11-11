@@ -46,7 +46,7 @@ python3 -m venv .venv && .venv/bin/pip install -r requirements.txt
 python tools/export_graph.py                                   # out/explorer/ (git-ignored): graph.json + copies of reports and the simulated PR comment/status
 cd explorer && npm ci && npm run build && npm run preview      # http://127.0.0.1:4173  (npm run dev for hot reload)
 ```
-Search by name, expand a node by depth, toggle direction (downstream = consumers, upstream = dependencies, as in `docs/schema.md`), filter by repo/kind/confidence; confidence is
+Search by name, expand a node by depth, toggle direction ("Downstream: affected by this (consumers)" / "Upstream: depends on (dependencies)", as in `docs/schema.md`), filter by repo/kind/confidence; confidence is
 drawn by line style, colour and arrowhead; unresolved/not-found nodes are distinct and explain why; the side panel links to the exact file and line on GitHub; a Reports page renders the
 impact reports and a PR comment preview shows the (simulated) comment. Read-only, local, no telemetry, no CDNs. Tests: `cd explorer && npm test && npm run test:e2e`.
 It shows structure only, on synthetic sample data. Details: `docs/explorer.md`.
