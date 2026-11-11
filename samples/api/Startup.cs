@@ -23,6 +23,9 @@ namespace ASPCoreWithAngular
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddTransient<IEmployee, EmployeeDataAccessLayer>();
+            // SYNTHETIC registrations (PoC)
+            services.AddTransient<ASPCoreWithAngular.Synthetic.DataAccess.DepartmentDataAccess>();
+            services.AddTransient<ASPCoreWithAngular.Synthetic.Services.IDepartmentReportService, ASPCoreWithAngular.Synthetic.Services.DepartmentReportService>();
             services.AddMvc(options => options.EnableEndpointRouting = false);
 
             // In production, the Angular files will be served from this directory
