@@ -9,3 +9,16 @@ load:
 trace:
   # edge types skipped by default in trace output (noise for UI->API->SQL tracing); re-enable with --include-types
   default_exclude_types: [USES_TYPE]
+impact:
+  # Traversal depth limits (number of edges followed). placeholder, unvalidated: chosen to be larger than any chain in the sample.
+  # When a traversal stops at the limit the report says so.
+  max_depth_downstream: 12
+  max_depth_upstream: 12
+  # consumers/dependencies of these node kinds are listed in the report; other kinds are intermediate hops
+  consumer_kinds:
+    screen: [UI_COMPONENT]
+    ui_service: [UI_SERVICE_METHOD]
+    api_endpoint: [API_ENDPOINT]
+    business: [SERVICE_METHOD, DATA_ACCESS_METHOD, INTERFACE_METHOD, METHOD]
+    sql: [SQL_PROC, SQL_VIEW, SQL_TABLE]
+  changed_object_excluded_kinds: [HTTP_REQUEST, SQL_REF, UNRESOLVED, UI_MODEL]
