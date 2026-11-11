@@ -1,6 +1,6 @@
 """Cross-repo linker: adds ROUTES_TO, RESOLVES_TO and TESTS edges to the scanner fragments.
 
-Everything it needs comes from config/ (routes.yml `matching`, naming.yml `sql` and `tests`), nothing is specific to the sample.
+Everything it needs comes from .cdi/config.yml (`conventions.matching`, `conventions.sql`, `conventions.tests`), nothing is specific to the sample.
 It never promotes confidence: exact unique matches are CONFIRMED_STATIC, heuristic or ambiguous matches are INFERRED,
 and anything that cannot be matched becomes an UNRESOLVED edge to an UNRESOLVED placeholder node with a reason.
 """

@@ -1,0 +1,62 @@
+# Annotated example of a target repository's `.cdi/config.yml`. Copy it to `.cdi/config.yml` in the repository you want to analyse.
+# Validated against backend/schema/config.schema.json. Secrets never go here: the file only names the environment variable that holds them.
+#
+# Precedence (low to high): tool defaults < framework profile < this file < environment overrides.
+# Environment overrides: CDI__<section>__<key>=<YAML value>, for example  CDI__ci__blocking__enabled=true  or  CDI__limits__max_depth_downstream=6.
+# The config file location itself can be set with CDI_CONFIG.
+version: 1
+
+# Framework profile: default conventions (routes, naming, SQL access patterns, test conventions). List them with `cdi config profiles`.
+profile: aspnet-angular-sqlserver
+
+# Logical repositories. They may be folders of one git repository or separate checkouts. `path` is relative to the repository
+# root (the parent of .cdi/) or absolute. Each repo names a scanner plugin; include/exclude globs select the files it reads
+# (defaults come from the plugin: dotnet-roslyn, ts-morph, sql-scriptdom).
+repos:
+  - name: web
+    path: web
+    scanner: {plugin: ts-morph, exclude: ["**/node_modules/**", "**/*.d.ts", "e2e/**"]}
+  - name: api
+    path: api
+    scanner: {plugin: dotnet-roslyn}
+  - name: db
+    path: db
+    scanner: {plugin: sql-scriptdom}
+
+# Anything written for a demo rather than by the project's authors can be labelled synthetic: a path segment, or a marker in the
+# first lines of a file. Reports then say so.
+synthetic:
+  path_segments: [synthetic]
+  header_marker: SYNTHETIC
+
+branches:
+  base: main                      # the baseline is built from this branch; PRs are compared with it
+
+limits:                           # all values are placeholders of ours, not measurements
+  max_depth_downstream: 12        # traversal depth; reports say when a traversal stopped at the limit
+  max_depth_upstream: 12
+  comment_max_chars: 20000        # PR comment cap; lower-priority sections are dropped first
+  max_changed_files: 500
+
+# Override any convention of the profile; lists replace the profile's list.
+# conventions:
+#   sql: {default_schema: dbo}
+#   sql_access: {command_types: [SqlCommand], stored_procedure_markers: [StoredProcedure]}
+
+risk:
+  critical_objects: []            # glob patterns on object names, e.g. ["dbo.spPayroll*"]
+  # `rules` and `labels` default to the tool's rule set (see backend/src/cdi/config/profiles/_base.yml). First matching rule wins;
+  # there is no catch-all, so an object no rule matches gets no label.
+
+graph:
+  store: json                     # json (default) | neo4j (optional)
+  neo4j:
+    uri: bolt://localhost:7687
+    user: neo4j
+    password_env: NEO4J_PASSWORD  # the NAME of the variable that holds the password
+
+ci:
+  comment: {marker: "cdi:impact-report"}      # hidden marker used to find and update the tool's own comment
+  blocking:
+    enabled: false                # advisory by default; when true, only the deterministic policies below can fail a run
+    policies: [P1-referenced-not-found-introduced, P2-route-unmatched-introduced]

@@ -45,7 +45,7 @@ class AzureDevOpsAdapter(PostingAdapter):
             raise AdapterDisabled("pull request id is required (--pull-request-id)")
         for k in ("organization", "project", "repository_id"):
             if str(self.cfg.get(k, "")).startswith("<"):
-                raise AdapterDisabled(f"config/ci.yml adapter.azure.{k} is still a placeholder")
+                raise AdapterDisabled(f".cdi/config.yml ci.adapter.azure.{k} is still a placeholder")
 
     def _token(self):
         tok = self._environ.get(self.cfg["token_env"])

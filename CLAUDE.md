@@ -9,12 +9,13 @@ carries them; later milestones link them across repos, load a graph store, and r
 - `frontend/` - the local React + Cytoscape graph explorer.
 - `config.example/` - optional adapters and examples; `docs/` - documentation.
 - `samples/` - the sample application, still here only until its own repository is approved and created (upstream MIT licence; see `NOTICE`).
-- Not built yet: the live API, the GitHub flow, the `cdi` CLI.
+- Configuration: the target repo's `.cdi/config.yml` (see `docs/configuration.md`); `cdi audit` enforces that `backend/` and `frontend/` name nothing from the sample.
+- Not built yet: the live API, the GitHub flow, most of the `cdi` CLI (only `audit` and `config` exist).
 
 ## Working rules
 - Every claim in a report must trace to a stored edge with file:line, method, confidence and commit.
 - Never promote an INFERRED or UNRESOLVED edge to CONFIRMED_STATIC.
-- Keep paths, route patterns, naming conventions and rule thresholds in `config/`; nothing hardcoded to the samples.
+- Keep paths, route patterns, naming conventions and rule thresholds in `.cdi/config.yml` (or a framework profile); nothing hardcoded to the samples. Run `cdi audit`.
 - Anything that is not upstream sample code is labelled synthetic. Do not present synthetic results as real-world accuracy.
 - Scanners refuse to run only when the logical repo's own folder has uncommitted changes (changes elsewhere in the git repo are ignored); commit first.
 - No cloud calls: CI and AI integrations are local stubs; the Azure DevOps adapter is disabled by default and has never been run.

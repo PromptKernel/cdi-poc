@@ -199,7 +199,7 @@ def render(res):
         a(f"- `{t_['name']}` — {t_['repo']}:{t_['file']}:{t_['line']}; via {t_['path'][-1]['target']} ({t_['path'][-1]['attrs'].get('mapping_method')})")
     a("")
     a("---")
-    a("Risk labels come only from `config/risk-rules.yml` (first matching rule; no catch-all). An object with no matching rule has no label. The default critical list is a placeholder.")
+    a("Risk labels come only from the `risk` section of `.cdi/config.yml` (first matching rule; no catch-all). An object with no matching rule has no label. The default critical list is a placeholder.")
     return "\n".join(L) + "\n"
 
 

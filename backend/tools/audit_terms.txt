@@ -1,0 +1,13 @@
+# Vocabulary that must not appear in backend/ or frontend/ source: the names of the sample application and its upstream project.
+# One case-insensitive regular expression per line: "<category> <TAB> <regex>". Lines starting with # are ignored.
+# This file and the audit tool are excluded from the scan. Add a term here whenever a new sample-specific name could leak into the tool.
+domain	employee
+domain	department
+domain	\bcit(y|ies)\b|(tbl|sp\w*)cit(y|ies)
+upstream	ASPCore
+upstream	AnkitSharma
+upstream	ClientApp
+upstream	WeatherForecast
+upstream	SampleData
+repo-name	cdi-sample-app
+layout	\bsamples/

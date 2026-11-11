@@ -129,19 +129,19 @@
    }
   },
   {
-   "id": "api:api_endpoint:ShopApp.Controllers.SampleDataController.WeatherForecasts()",
+   "id": "api:api_endpoint:ShopApp.Controllers.DemoDataController.Readings()",
    "kind": "API_ENDPOINT",
-   "name": "ShopApp.Controllers.SampleDataController.WeatherForecasts()",
+   "name": "ShopApp.Controllers.DemoDataController.Readings()",
    "repo": "api",
-   "file": "Controllers/SampleDataController.cs",
+   "file": "Controllers/DemoDataController.cs",
    "line": 17,
    "end_line": 27,
    "synthetic": false,
    "attrs": {
     "http_method": "GET",
-    "route_template": "api/SampleData/WeatherForecasts",
-    "route_normalized": "api/SampleData/WeatherForecasts",
-    "class": "ShopApp.Controllers.SampleDataController"
+    "route_template": "api/DemoData/Readings",
+    "route_normalized": "api/DemoData/Readings",
+    "class": "ShopApp.Controllers.DemoDataController"
    }
   },
   {
@@ -1002,17 +1002,17 @@
    }
   },
   {
-   "id": "web:http_request:GET api/SampleData/WeatherForecasts",
+   "id": "web:http_request:GET api/DemoData/Readings",
    "kind": "HTTP_REQUEST",
-   "name": "GET api/SampleData/WeatherForecasts",
+   "name": "GET api/DemoData/Readings",
    "repo": "web",
-   "file": "src/app/fetch-data/fetch-data.component.ts",
+   "file": "src/app/list-data/list-data.component.ts",
    "line": 12,
    "end_line": 12,
    "synthetic": false,
    "attrs": {
     "verb": "GET",
-    "url_template": "api/SampleData/WeatherForecasts"
+    "url_template": "api/DemoData/Readings"
    }
   },
   {
@@ -1245,19 +1245,19 @@
    }
   },
   {
-   "id": "web:ui_component:FetchDataComponent",
+   "id": "web:ui_component:ListDataComponent",
    "kind": "UI_COMPONENT",
-   "name": "FetchDataComponent",
+   "name": "ListDataComponent",
    "repo": "web",
-   "file": "src/app/fetch-data/fetch-data.component.ts",
+   "file": "src/app/list-data/list-data.component.ts",
    "line": 4,
    "end_line": 16,
    "synthetic": false,
    "attrs": {
     "screen_routes": [
-     "fetch-data"
+     "list-data"
     ],
-    "selector": "app-fetch-data"
+    "selector": "app-list-data"
    }
   },
   {
@@ -1329,11 +1329,11 @@
    "attrs": {}
   },
   {
-   "id": "web:ui_model:WeatherForecast",
+   "id": "web:ui_model:Reading",
    "kind": "UI_MODEL",
-   "name": "WeatherForecast",
+   "name": "Reading",
    "repo": "web",
-   "file": "src/app/fetch-data/fetch-data.component.ts",
+   "file": "src/app/list-data/list-data.component.ts",
    "line": 18,
    "end_line": 23,
    "synthetic": false,
@@ -2432,19 +2432,19 @@
    "attrs": {}
   },
   {
-   "id": "MAKES_REQUEST|web:ui_component:FetchDataComponent|web:http_request:GET api/SampleData/WeatherForecasts|src/app/fetch-data/fetch-data.component.ts:12:5",
+   "id": "MAKES_REQUEST|web:ui_component:ListDataComponent|web:http_request:GET api/DemoData/Readings|src/app/list-data/list-data.component.ts:12:5",
    "type": "MAKES_REQUEST",
-   "source": "web:ui_component:FetchDataComponent",
-   "target": "web:http_request:GET api/SampleData/WeatherForecasts",
+   "source": "web:ui_component:ListDataComponent",
+   "target": "web:http_request:GET api/DemoData/Readings",
    "confidence": "CONFIRMED_STATIC",
-   "source_file": "src/app/fetch-data/fetch-data.component.ts",
+   "source_file": "src/app/list-data/list-data.component.ts",
    "line": 12,
    "column": 5,
    "commit_id": "23f6a2631edd015c6912abd5f59c81c5b7ff6a8d",
    "repo": "web",
    "synthetic": false,
    "reason": null,
-   "evidence": "http.get<WeatherForecast[]>(baseUrl + 'api/SampleData/WeatherForecasts').subscribe(result => {",
+   "evidence": "http.get<Reading[]>(baseUrl + 'api/DemoData/Readings').subscribe(result => {",
    "analysis_method": "tsmorph:http-url-fold",
    "attrs": {}
   },
@@ -3024,24 +3024,24 @@
    }
   },
   {
-   "id": "ROUTES_TO|web:http_request:GET api/SampleData/WeatherForecasts|api:api_endpoint:ShopApp.Controllers.SampleDataController.WeatherForecasts()|src/app/fetch-data/fetch-data.component.ts:12:5",
+   "id": "ROUTES_TO|web:http_request:GET api/DemoData/Readings|api:api_endpoint:ShopApp.Controllers.DemoDataController.Readings()|src/app/list-data/list-data.component.ts:12:5",
    "type": "ROUTES_TO",
-   "source": "web:http_request:GET api/SampleData/WeatherForecasts",
-   "target": "api:api_endpoint:ShopApp.Controllers.SampleDataController.WeatherForecasts()",
+   "source": "web:http_request:GET api/DemoData/Readings",
+   "target": "api:api_endpoint:ShopApp.Controllers.DemoDataController.Readings()",
    "confidence": "CONFIRMED_STATIC",
-   "source_file": "src/app/fetch-data/fetch-data.component.ts",
+   "source_file": "src/app/list-data/list-data.component.ts",
    "line": 12,
    "column": 5,
    "commit_id": "23f6a2631edd015c6912abd5f59c81c5b7ff6a8d",
    "repo": "web",
    "synthetic": false,
    "reason": null,
-   "evidence": "http.get<WeatherForecast[]>(baseUrl + 'api/SampleData/WeatherForecasts').subscribe(result => {",
+   "evidence": "http.get<Reading[]>(baseUrl + 'api/DemoData/Readings').subscribe(result => {",
    "analysis_method": "linker:route-match",
    "attrs": {
-    "target_location": "Controllers/SampleDataController.cs:17",
-    "route_template": "api/SampleData/WeatherForecasts",
-    "request_template": "api/SampleData/WeatherForecasts"
+    "target_location": "Controllers/DemoDataController.cs:17",
+    "route_template": "api/DemoData/Readings",
+    "request_template": "api/DemoData/Readings"
    }
   },
   {
@@ -3653,36 +3653,36 @@
    "attrs": {}
   },
   {
-   "id": "USES_TYPE|web:ui_component:FetchDataComponent|web:ui_model:WeatherForecast|src/app/fetch-data/fetch-data.component.ts:12:14",
+   "id": "USES_TYPE|web:ui_component:ListDataComponent|web:ui_model:Reading|src/app/list-data/list-data.component.ts:12:14",
    "type": "USES_TYPE",
-   "source": "web:ui_component:FetchDataComponent",
-   "target": "web:ui_model:WeatherForecast",
+   "source": "web:ui_component:ListDataComponent",
+   "target": "web:ui_model:Reading",
    "confidence": "CONFIRMED_STATIC",
-   "source_file": "src/app/fetch-data/fetch-data.component.ts",
+   "source_file": "src/app/list-data/list-data.component.ts",
    "line": 12,
    "column": 14,
    "commit_id": "23f6a2631edd015c6912abd5f59c81c5b7ff6a8d",
    "repo": "web",
    "synthetic": false,
    "reason": null,
-   "evidence": "http.get<WeatherForecast[]>(baseUrl + 'api/SampleData/WeatherForecasts').subscribe(result => {",
+   "evidence": "http.get<Reading[]>(baseUrl + 'api/DemoData/Readings').subscribe(result => {",
    "analysis_method": "tsmorph:type-reference",
    "attrs": {}
   },
   {
-   "id": "USES_TYPE|web:ui_component:FetchDataComponent|web:ui_model:WeatherForecast|src/app/fetch-data/fetch-data.component.ts:9:21",
+   "id": "USES_TYPE|web:ui_component:ListDataComponent|web:ui_model:Reading|src/app/list-data/list-data.component.ts:9:21",
    "type": "USES_TYPE",
-   "source": "web:ui_component:FetchDataComponent",
-   "target": "web:ui_model:WeatherForecast",
+   "source": "web:ui_component:ListDataComponent",
+   "target": "web:ui_model:Reading",
    "confidence": "CONFIRMED_STATIC",
-   "source_file": "src/app/fetch-data/fetch-data.component.ts",
+   "source_file": "src/app/list-data/list-data.component.ts",
    "line": 9,
    "column": 21,
    "commit_id": "23f6a2631edd015c6912abd5f59c81c5b7ff6a8d",
    "repo": "web",
    "synthetic": false,
    "reason": null,
-   "evidence": "public forecasts: WeatherForecast[];",
+   "evidence": "public forecasts: Reading[];",
    "analysis_method": "tsmorph:type-reference",
    "attrs": {}
   },

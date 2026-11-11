@@ -38,7 +38,7 @@ was loaded, and an **advisory** line.
 `<details>` (collapsing) is not used: none of the pages consulted says PR comments render it, so the lower-priority parts are truncated with counts instead.
 
 **Length limit.** None of the REST pages consulted states a maximum length for comment content or for a status description, and the Azure DevOps "object limits" page
-lists no pull-request comment limit. `config/ci.yml` therefore applies a conservative cap of our own (`comment.max_chars: 20000`, `status.description_max_chars: 300`,
+lists no pull-request comment limit. the `ci` section of `.cdi/config.yml` therefore applies a conservative cap of our own (`comment.max_chars: 20000`, `status.description_max_chars: 300`,
 both marked *placeholder, unvalidated*). Lower-priority sections shrink first; if the comment still exceeds the cap it is hard-cut, keeping the marker, advisory line and basis.
 
 ## Payload shapes (Azure DevOps REST, api-version 7.1)
@@ -70,7 +70,7 @@ The status is posted with the same `context.name` every time, which the docs des
 
 ## Azure DevOps adapter: written, never executed
 `ci/adapters.py: AzureDevOpsAdapter` is **disabled unless `--enable-azure-adapter` is passed** (and `--adapter azure`, a pull request id, non-placeholder organization/project/repository values
-in `config/ci.yml`, and a token in the environment variable named by `adapter.azure.token_env`). Disabled or misconfigured, it raises before any request is built. The token is read from the
+in the `ci` section of `.cdi/config.yml`, and a token in the environment variable named by `adapter.azure.token_env`). Disabled or misconfigured, it raises before any request is built. The token is read from the
 environment only; it is never stored, logged or placed in a URL or body. The real HTTP transport is not even constructed while the adapter is disabled.
 
 ## Blocking hook (OFF by default)

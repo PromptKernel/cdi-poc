@@ -31,3 +31,6 @@ neo4j-logs/
 test-results/
 playwright-report/
 *.bak
+
+# Python packaging
+*.egg-info/

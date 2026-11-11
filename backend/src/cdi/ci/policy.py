@@ -39,7 +39,7 @@ def route_unmatched(result):
 def evaluate(result, enabled_ids):
     unknown = [p for p in enabled_ids if p not in KNOWN]
     if unknown:
-        raise ValueError(f"unknown blocking policy ids in config/ci.yml: {unknown}; known: {sorted(KNOWN)}")
+        raise ValueError(f"unknown blocking policy ids in .cdi/config.yml (ci.blocking.policies): {unknown}; known: {sorted(KNOWN)}")
     return [v for pid in enabled_ids for v in KNOWN[pid](result)]
 
 

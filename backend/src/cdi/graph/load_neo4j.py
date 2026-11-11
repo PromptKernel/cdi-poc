@@ -1,4 +1,4 @@
-"""Load scanner + linker fragments into Neo4j. Config: config/graph.yml (+ NEO4J_PASSWORD env var). Idempotent (MERGE by id).
+"""Load scanner + linker fragments into Neo4j. Config: `graph.neo4j` in .cdi/config.yml (the password comes from the env var named by password_env). Idempotent (MERGE by id).
 usage: python -m cdi.graph.load_neo4j [--config config] [--graph out/graph] [--reset]"""
 from __future__ import annotations
 import argparse, json, os, pathlib, sys, time

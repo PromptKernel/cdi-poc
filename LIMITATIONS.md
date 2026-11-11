@@ -37,7 +37,7 @@ Status: milestone 6 (schema, scanners, linker, Neo4j load, trace, baseline runne
 * **Neo4j is a local single Community instance** with no authentication beyond a local password and no persistence guarantees beyond a Docker volume.
 * **Impact results on the synthetic sample say nothing about accuracy on real code.** The six demo scenarios, the sample, the risk rules and the depth limits are
   written by the tool author; the timings are from a very small repository. No false-positive or false-negative rate on real changes has been measured.
-* **Risk labels are rule outputs, not predictions.** The rules in `config/risk-rules.yml` are unvalidated defaults and the critical list is a placeholder.
+* **Risk labels are rule outputs, not predictions.** The rules in the `risk` section of `.cdi/config.yml` are unvalidated defaults and the critical list is a placeholder.
 * **Incremental updates re-scan changed files plus files that depend on changed definitions**, not a full transitive closure. Cross-file facts that a scanner reads
   from elsewhere (for example the DI registration text shown in an inferred dispatch reason, or a base class changed in another file) can leave a stale `reason` or attribute
   until the next full rebuild; node and edge ids are checked for equality with a full rebuild only on the cases in `backend/tests/test_baseline.py`.

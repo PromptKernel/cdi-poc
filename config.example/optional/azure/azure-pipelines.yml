@@ -42,7 +42,7 @@ steps:
 # To POST to the pull request instead of writing files (DISABLED by default, never run): append to the run_pr.sh command above
 #     --adapter azure --enable-azure-adapter --pull-request-id $(System.PullRequest.PullRequestId)
 # and add to the step:  env:  AZDO_TOKEN: $(System.AccessToken)   (the token must be mapped explicitly in YAML)
-# and set adapter.azure.organization / project / repository_id in config/ci.yml (they are <ORGANIZATION>, <PROJECT>, <REPOSITORY_ID> placeholders).
+# and set adapter.azure.organization / project / repository_id in .cdi/config.yml (ci.adapter.azure) (they are <ORGANIZATION>, <PROJECT>, <REPOSITORY_ID> placeholders).
 #
 # COMMENTED EXAMPLE - baseline refresh on merge to the target branch (not part of the PR check):
 # trigger:
