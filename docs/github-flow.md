@@ -1,7 +1,8 @@
 # GitHub flow
 
-Two workflows and one composite action turn the impact engine into a pull-request check on GitHub. **Status: written and tested against an in-memory fake
-GitHub server; not yet run on github.com.** The real run is Phase 7 (see "Verified and not verified").
+Two workflows and one composite action turn the impact engine into a pull-request check on GitHub. **Status (2026-11-11): run on github.com against the sample repository
+`promptkernel/cdi-sample-app` ([PR 1](https://github.com/PromptKernel/cdi-sample-app/pull/1), [PR 2](https://github.com/PromptKernel/cdi-sample-app/pull/2)); see "Verified on real GitHub" and
+"Not verified" at the end for exactly what that covers.**
 
 | Piece | File |
 |---|---|
@@ -119,15 +120,36 @@ The only unpinned reference is the cdi action itself (`OWNER/cdi-poc/...@<FULL_C
 * Secure use (SHA pinning, `pull_request_target`, injection, least privilege): https://docs.github.com/en/actions/reference/security/secure-use
 * Controlling `GITHUB_TOKEN` permissions: https://docs.github.com/en/actions/writing-workflows/choosing-what-your-workflow-does/controlling-permissions-for-github_token
 
-## Verified and not verified
-**Verified against the docs above:** endpoint paths and methods; the permissions the comment and status endpoints need; the 403/404/422 codes for comments;
-the status states; `github.base_ref`; fork PRs get a read-only token and no secrets; the job-summary size limit; composite-action syntax; cache access, scope
-and immutability rules; SHA pinning advice.
+## Verified on real GitHub (2026-11-11, sample repository `promptkernel/cdi-sample-app`)
+Run by the tool's author from this repository's `restructure` branch; the sample's workflows pin the tool by full commit SHA (a commit on a branch, no tag needed).
 
-**Not stated by the official pages (used as conservative assumptions):** the comment body maximum (65,536 characters: community reports only); the commit
-status description maximum (140: community reports only; the statuses page gives no limit); that `GITHUB_TOKEN` may call the checks API (the page says apps only).
+| What | Evidence |
+|---|---|
+| The composite action resolves from a branch commit by SHA and installs on `ubuntu-latest` (Python 3.13, .NET 10, Node 24, `npm ci`, scanner build) | baseline run [43030377448](https://github.com/PromptKernel/cdi-sample-app/actions/runs/43030377448): 33 s |
+| Baseline built on push to `main` and saved to the Actions cache | cache key `cdi-baseline-v1-<sha>`, 13.08 KiB compressed (153,655 bytes of JSON); the same 115 nodes / 125 edges as on macOS |
+| A PR run restores the baseline from the base branch's cache (exact key hit) and cannot save | log lines "Cache hit for: cdi-baseline-v1-…", "Cache restored successfully"; the PR workflow has no save step |
+| One advisory comment is created, then **updated in place** (same comment id) on later pushes; no duplicate | PR 1 comment id 6797310661, three revisions; PR 2 id 6797314921, two revisions; one bot comment each |
+| A commit status `cdi/impact-analysis` is set on every head commit | `gh pr checks`, `commits/<sha>/status` |
+| The results match the local reports for the same edits | the consumer / unresolved / test lines of both comments are identical to a local `cdi pr` run |
+| PR 1 (procedure body): consumers through the data-access layer, the inferred DI hop, the controller, the UI service and the screen | comment of PR 1 |
+| PR 2 (route renamed): the frontend request is unmatched, the screen is named, risk High | comment of PR 2 |
+| The job summary and the full report appear in the job log inside `::group::` markers, inert and without credentials (the runner masks the `stop-commands` token as `***`) | run logs |
+| The `pull_request` run uses the workflow file of the merge result: after `main` re-pinned the action, PR runs used the new version although the PR branches still carried the old file | PR runs 43032357818, 43032360818 |
+| The "PR branch is based on an OLDER target" warning appears when `main` has moved | PR 2 comment |
+| Runtime: job about 33 s in total, tool run 3.7-5.4 s (small sample) | step timings |
 
-**Not verified at all:** anything on github.com. The fake server in `backend/tests/fake_github.py` implements my reading of the docs, so tests prove the
-tool matches that reading, not that GitHub behaves like it. Unchecked in particular: the exact 403/404/422 response bodies; whether `actions/cache/restore`
-finds a baseline saved by the push workflow across the exact key/prefix rules in practice; runner timing and memory. The Docker image was built and run locally (`cdi github baseline` on a clone of the sample repository gave the same baseline as the host
-run), but not on CI, and base images are referenced by tag, not digest. The cdi action has not been executed by a runner. Phase 7 does the first real run.
+### Defects found by the real run, and their fixes
+1. The comment's Basis line showed the remote-tracking ref (`origin/main`) and the head sha twice; its footer pointed at `out/report-<pr>.md` on the runner, which nobody can open; the footer called the repository
+   "synthetic-scale". Fixed in `e76ceb2`: branch names are shown, the full report is printed into the job log (group `cdi full report`) and the comment links to the run. Verified on the second real run.
+2. The report itself (in that log group) still named `origin/main` and the head sha, and its Run section said "Baseline graph (Neo4j, read-only)" for a JSON baseline. Fixed in `9837aab`; **verified only against the fake
+   server and local runs: the sample repository is pinned to `e76ceb2`**, so its comments do not show this fix until the pin is moved.
+
+## Not verified
+* **Fork pull requests** (this needs a second account): the skip is tested only against the fake server.
+* **Real 403, 404 and 422 responses.** The declared permissions worked, so no error path ran. The adapter's messages are tested against the fake server only; GitHub's actual error bodies are unseen.
+* **Baseline fallbacks on GitHub:** a cache miss, a schema-version mismatch, an unmatched or "behind" baseline, and the `limits.max_changed_files` skip were exercised against the fake server and local git only. The run on GitHub always had a current baseline.
+* **The baseline size warning** and anything near the 10 GB cache limit or 7-day eviction: the real baseline is 150 KB.
+* **Larger repositories**: timing and memory beyond the small sample.
+* **GitHub's own limits**: the 65,536-character comment cap and the 140-character status description cap are still community-reported, not seen in the official REST pages; the real comments were far below them.
+* **Check runs** (not used); GitHub Enterprise Server; Ubuntu 26 (the runner image notice says `ubuntu-latest` migrates from 2026-10-19).
+* The Docker image on CI.
