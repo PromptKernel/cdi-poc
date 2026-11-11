@@ -24,7 +24,8 @@ carries them; later milestones link them across repos, load a graph store, and r
 ## Safety rules (always)
 - Never delete files or folders without first listing exactly what will be removed and getting the owner's approval.
 - Never run `rm -rf` (or any recursive delete) outside this repository.
-- Never push without first showing the pre-push check output (private-name file grep, name search, gitleaks, author check) to the owner.
+- Never push without first showing the pre-push check output to the owner, and only as ONE command: `scripts/prepush_gate.sh && git push ...` (never `;` or `&`; see docs/pre-push-gate.md). Enable the hook: `git config core.hooksPath .githooks`.
+- Stage with explicit file paths only (`git add -- <file>`): never `git add .`, `git add -A` or `git add <directory>`. Never filter `git status` output when checking what is staged.
 
 ## Commands
 - Setup: `python3 -m venv .venv && .venv/bin/pip install -r backend/requirements.txt && .venv/bin/pip install -e backend --no-deps`; `(cd backend/scanners/ts-morph && npm ci)`; .NET 10 SDK required.

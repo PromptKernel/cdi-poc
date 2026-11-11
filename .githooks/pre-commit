@@ -1,0 +1,27 @@
+#!/usr/bin/env bash
+# Rejects staged image files and staged forbidden paths. Enable once per clone:  git config core.hooksPath .githooks
+# Rules come from .prepush-gate.conf (IMAGE_EXTENSIONS, ALLOW_IMAGE_DIRS, FORBIDDEN_PATHS) or PREPUSH_<KEY> variables; images are rejected even if the conf is absent.
+IMAGE_EXTENSIONS="png jpg jpeg gif webp"; ALLOW_IMAGE_DIRS=""; FORBIDDEN_PATHS=""
+TOP="$(git rev-parse --show-toplevel)"; CONF="${PREPUSH_CONFIG:-$TOP/.prepush-gate.conf}"
+if [ -f "$CONF" ]; then
+  while IFS= read -r line || [ -n "$line" ]; do
+    case "$line" in ''|'#'*) continue ;; esac
+    key="${line%%=*}"; val="${line#*=}"; val="${val%\"}"; val="${val#\"}"
+    case "$key" in IMAGE_EXTENSIONS|ALLOW_IMAGE_DIRS|FORBIDDEN_PATHS) printf -v "$key" '%s' "$val" ;; esac
+  done < "$CONF"
+fi
+for k in IMAGE_EXTENSIONS ALLOW_IMAGE_DIRS FORBIDDEN_PATHS; do ev="PREPUSH_$k"; if [ -n "${!ev+x}" ]; then printf -v "$k" '%s' "${!ev}"; fi; done
+bad=0
+while IFS= read -r f; do
+  [ -z "$f" ] && continue
+  lf="$(printf '%s' "$f" | tr '[:upper:]' '[:lower:]')"
+  for e in $IMAGE_EXTENSIONS; do
+    case "$lf" in *."$e")
+      ok=0; for d in $ALLOW_IMAGE_DIRS; do case "$f" in "$d"/*) ok=1 ;; esac; done
+      if [ $ok -eq 0 ]; then echo "pre-commit: image file staged: $f (images are not committed without approval; unstage it with: git restore --staged -- '$f')" >&2; bad=1; fi ;;
+    esac
+  done
+  for p in $FORBIDDEN_PATHS; do case "$f" in "$p"*) echo "pre-commit: forbidden path staged ($p): $f" >&2; bad=1 ;; esac; done
+done < <(git diff --cached --name-only --diff-filter=ACMR)
+[ $bad -eq 0 ] || { echo "pre-commit: commit rejected" >&2; exit 1; }
+exit 0
