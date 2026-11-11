@@ -444,10 +444,10 @@ def test_real_transport_is_only_built_once_enabled(monkeypatch):
 
 # ------------------------------------------------------------------ pipeline file and repo hygiene
 def test_azure_pipelines_yaml_uses_placeholders_only_and_stays_advisory():
-    text = (ROOT / "azure-pipelines.yml").read_text()
+    text = (ROOT / "config.example/optional/azure/azure-pipelines.yml").read_text()
     doc = yaml.safe_load(text)
     scripts = " ".join(str(s.get("script", "")) for s in doc["steps"])
-    assert "pipeline/run_pr.sh" in scripts
+    assert "scripts/run_pr.sh" in scripts
     assert "--enable-azure-adapter" not in scripts and "--adapter azure" not in scripts and "--blocking" not in scripts
     assert all(s.get("continueOnError") for s in doc["steps"] if "run_pr" in str(s.get("script", "")))
     live = "\n".join(l for l in text.splitlines() if not l.lstrip().startswith("#"))

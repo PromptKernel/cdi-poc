@@ -1,4 +1,4 @@
-# Thin wrapper around pipeline/run_pr.sh. WRITTEN, NEVER RUN: no Azure DevOps resources exist for this PoC and nothing here has been tested on a real agent.
+# OPTIONAL, NOT THE DEFAULT FLOW (the default is GitHub; see docs). Thin wrapper around backend/scripts/run_pr.sh. WRITTEN, NEVER RUN: no Azure DevOps resources exist for this PoC and nothing here has been tested on a real agent.
 # Only placeholders (<...>) appear for organisation, project, repository and connection names. No tokens are stored here.
 # Variable names follow the predefined-variables page cited in docs/ci-simulation.md.
 trigger: none
@@ -25,7 +25,7 @@ steps:
   # Advisory PR check. The baseline graph must already exist (built by the baseline pipeline; see the commented example below).
   # With the default file sink nothing is posted: out/pr-comment.md and out/pr-status.json are published as build artifacts.
   - script: >
-      pipeline/run_pr.sh
+      backend/scripts/run_pr.sh
       --target origin/$(System.PullRequest.targetBranchName)
       --pr $(System.PullRequest.SourceCommitId)
       --name pr-$(System.PullRequest.PullRequestId)

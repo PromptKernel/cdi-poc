@@ -1,7 +1,7 @@
 # Shared graph schema (v1.0)
 
 All three scanners, the linker and the impact engine use this one format. Machine-readable form:
-`schema/graph.schema.json` (JSON Schema 2020-12). Each scanner writes one *fragment* per logical repo
+`backend/schema/graph.schema.json` (JSON Schema 2020-12). Each scanner writes one *fragment* per logical repo
 (`out/graph/<repo>.json`); the linker adds cross-repo edges in `out/graph/linked.json`.
 
 ## Required edge fields

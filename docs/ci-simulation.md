@@ -1,12 +1,12 @@
 # CI simulation (advisory PR check)
 
 No Azure DevOps resources exist for this PoC. The PR check is **simulated locally**: `pipeline/run_pr.py` does everything a CI job would do and writes the
-result to files. `azure-pipelines.yml` is a thin wrapper around it and the Azure DevOps adapter is code that **has never been executed**. **None of the
+result to files. `config.example/optional/azure/azure-pipelines.yml` is a thin wrapper around it and the Azure DevOps adapter is code that **has never been executed**. **None of the
 payload shapes below were tested against a real service.**
 
 ## Entry point
-`pipeline/run_pr.sh --target main --pr <branch|sha> [--name pr-17] [--baseline neo4j|files] [--out out] [--blocking]`
-(= `python -m pipeline.run_pr`). Steps: read the baseline graph read-only and check its freshness, run the impact engine, build the comment and the
+`backend/scripts/run_pr.sh --target main --pr <branch|sha> [--name pr-17] [--baseline neo4j|files] [--out out] [--blocking]`
+(= `python -m cdi.pipeline.run_pr`). Steps: read the baseline graph read-only and check its freshness, run the impact engine, build the comment and the
 status, publish through the adapter, print timing.
 
 | Situation | Comment | Status `state` | Exit code |
@@ -81,7 +81,7 @@ Each hit includes file:line, analysis method, commit and reason. It never fails 
 **A deliberate rename or deletion can trigger these**: removing or renaming a procedure, or changing a controller route, is flagged even when the callers are updated in a follow-up PR or
 the frontend is deployed together with the API. That is why blocking is off by default and the policies are individually listed; unlisted policies cannot fire.
 
-## azure-pipelines.yml
-Thin wrapper (`pipeline/run_pr.sh`), PR trigger, full-depth checkout (three-dot diffs need the merge-base), `continueOnError` so the advisory check never fails the PR, artifacts published from `out/`.
+## config.example/optional/azure/azure-pipelines.yml
+Thin wrapper (`backend/scripts/run_pr.sh`), PR trigger, full-depth checkout (three-dot diffs need the merge-base), `continueOnError` so the advisory check never fails the PR, artifacts published from `out/`.
 Placeholders only (`<TARGET_BRANCH>`, `<AGENT_POOL>`, `<VARIABLE_GROUP>`, `<ORGANIZATION>`, `<PROJECT>`, `<REPOSITORY_ID>`); no real organization, project, service-connection name or token. The baseline refresh
 on merge is a **commented example**. The file parses as YAML (tested) but was never run on an agent.

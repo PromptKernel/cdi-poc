@@ -1,6 +1,6 @@
 # Impact analysis and report
 
-`python -m impact.cli --target main --pr <branch> [--name <label>]` compares a PR branch with the target branch and writes
+`python -m cdi.impact.cli --target main --pr <branch> [--name <label>]` compares a PR branch with the target branch and writes
 `out/report-<name>.md` and `out/report-<name>.json`. The baseline graph is read from Neo4j in a **read-only session** (or from `out/graph` with
 `--baseline files`); a PR run never writes to it.
 
@@ -31,6 +31,6 @@
 * Every path hop cites the stored edge: type, confidence, repo:file:line, analysis method, commit.
 
 ## Baseline runner
-`python -m pipeline.baseline full` replaces the graph for the committed revision. `python -m pipeline.baseline incremental --from <rev> --to <rev>`
+`python -m cdi.pipeline.baseline full` replaces the graph for the committed revision. `python -m cdi.pipeline.baseline incremental --from <rev> --to <rev>`
 re-scans changed files (plus dependents), merges, re-links the whole graph and syncs Neo4j. Freshness (commit per logical repo, load time, mode) is stored
-in a `Freshness` node. A full rebuild of the same commit gives identical node and edge ids (`tests/test_baseline.py`).
+in a `Freshness` node. A full rebuild of the same commit gives identical node and edge ids (`backend/tests/test_baseline.py`).

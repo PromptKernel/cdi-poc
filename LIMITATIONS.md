@@ -40,21 +40,21 @@ Status: milestone 6 (schema, scanners, linker, Neo4j load, trace, baseline runne
 * **Risk labels are rule outputs, not predictions.** The rules in `config/risk-rules.yml` are unvalidated defaults and the critical list is a placeholder.
 * **Incremental updates re-scan changed files plus files that depend on changed definitions**, not a full transitive closure. Cross-file facts that a scanner reads
   from elsewhere (for example the DI registration text shown in an inferred dispatch reason, or a base class changed in another file) can leave a stale `reason` or attribute
-  until the next full rebuild; node and edge ids are checked for equality with a full rebuild only on the cases in `tests/test_baseline.py`.
+  until the next full rebuild; node and edge ids are checked for equality with a full rebuild only on the cases in `backend/tests/test_baseline.py`.
 * **Impact is computed on the target-tip baseline plus the PR overlay**, not on a real merge of the PR into the target; semantic conflicts and merge results are not modelled.
   Renames are treated as delete + add. Generated files, build-time code and non-scanned file types are reported as "not scanned".
 * **Consumers of a changed object are the baseline's consumers**: dependents that exist only through UNRESOLVED links (dynamic SQL, config-built routes) cannot be listed;
   section C3 only lists unresolved requests as context.
 * **The CI check is a simulation.** No Azure DevOps service, pipeline run or token was used. The comment, thread and status shapes follow the public REST docs (api-version 7.1,
   URLs in `docs/ci-simulation.md`) and were **not tested against a real service**; the examples in those docs use integer enum values while we send the documented names; the authentication
-  header, how the marker renders and whether the `cdiPocMarker` thread property is accepted are unverified. `azure-pipelines.yml` and the Azure DevOps adapter were never executed
+  header, how the marker renders and whether the `cdiPocMarker` thread property is accepted are unverified. `config.example/optional/azure/azure-pipelines.yml` and the Azure DevOps adapter were never executed
   (the adapter's thread-finding and update logic is tested only against an in-memory fake).
 * **No comment length limit is documented** on the pages consulted; the 20,000-character comment cap and 300-character status description cap are our own placeholders, unvalidated.
   A real service may enforce a different limit, and may not render everything we send.
 * **Blocking policies can fire on intended changes** (a deliberate rename, deletion or route change whose callers are fixed in another PR). Blocking is off by default; it never uses a risk label.
 * **PR-run timing** (about 2 to 5 s) is measured on a tiny synthetic repository on one machine; it says nothing about large repositories or CI agents.
 * **The explorer shows structure only.** It draws stored edges and their evidence; it does not run code, measure behaviour, or judge correctness, and its data is the **synthetic-extended
-  sample**, so it says nothing about real code bases. It is a static snapshot (`tools/export_graph.py`), not a live view: re-export after rebuilding the baseline. It is read-only, local and
+  sample**, so it says nothing about real code bases. It is a static snapshot (`backend/src/cdi/export.py`), not a live view: re-export after rebuilding the baseline. It is read-only, local and
   unauthenticated (bound to 127.0.0.1 by default) and not hardened for hosting. "View on GitHub" links use the edge's commit id and only resolve if that commit exists in the configured repository.
   Layouts are automatic and large expansions become hard to read; filters and depth are the tools for that. Accessibility was considered (text list of visible nodes, line style plus colour,
   focus outlines) but not audited. The Playwright smoke test covers one end-to-end path in one browser (Chromium); it is not a full UI test suite.

@@ -4,11 +4,12 @@
 Static scanners extract evidence-backed dependencies across a frontend, a .NET API and SQL Server code. A shared graph schema
 carries them; later milestones link them across repos, load a graph store, and report which workflows a code change may affect.
 
-## Layout
-- `samples/web|api|db` - the three logical repos (folders of this one git repo). `samples/*/LICENSE` is the upstream MIT licence; see `NOTICE`.
-- `scanners/` - Roslyn (C#), ts-morph (TypeScript), ScriptDom (SQL); `scanners/common-dotnet` is shared.
-- `linker/` (cross-repo links), `graph/` (Neo4j), `impact/` (traversal, PR impact engine, report), `ci/` (PR comment, status payloads, blocking policies, posting adapters), `explorer/` (local React + Cytoscape graph UI), `eval/` (evaluation harness: ground truth is committed before any run and never edited to fit output), `pipeline/` (scan, baseline, PR run), `schema/`, `config/`, `docs/`, `tools/`, `scripts/`, `tests/`.
-- Not built: an optional read-only API for the explorer.
+## Layout (branch `restructure`; see README)
+- `backend/` - `src/cdi/` (linker, graph store, impact engine, CI comment/status/policy/adapters, pipeline, eval, export), `scanners/` (Roslyn C#, ts-morph TypeScript, ScriptDom SQL), `schema/`, `scripts/`, `tests/` (with `tests/fixtures/sample/`, a pinned copy of the sample).
+- `frontend/` - the local React + Cytoscape graph explorer.
+- `config.example/` - optional adapters and examples; `docs/` - documentation.
+- `samples/` - the sample application, still here only until its own repository is approved and created (upstream MIT licence; see `NOTICE`).
+- Not built yet: the live API, the GitHub flow, the `cdi` CLI.
 
 ## Working rules
 - Every claim in a report must trace to a stored edge with file:line, method, confidence and commit.
@@ -25,5 +26,5 @@ carries them; later milestones link them across repos, load a graph store, and r
 - Never push without first showing the pre-push check output (private-name file grep, name search, gitleaks, author check) to the owner.
 
 ## Commands
-- Setup: `python3 -m venv .venv && .venv/bin/pip install -r requirements.txt`; `(cd scanners/ts-morph && npm ci)`; .NET 10 SDK required.
-- Scan: `pipeline/scan_all.sh` -> `out/graph/<repo>.json`.
+- Setup: `python3 -m venv .venv && .venv/bin/pip install -r backend/requirements.txt && .venv/bin/pip install -e backend --no-deps`; `(cd backend/scanners/ts-morph && npm ci)`; .NET 10 SDK required.
+- Tests: `cd backend && ../.venv/bin/python -m pytest` (Neo4j tests skip without `NEO4J_PASSWORD`).

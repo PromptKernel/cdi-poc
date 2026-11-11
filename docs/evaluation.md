@@ -4,10 +4,10 @@ Question answered: *for the synthetic change scenarios, which affected workflows
 Everything is **measured on synthetic data** (the synthetic-extended sample and author-written scenarios). It says nothing about real code bases, and this repository contains no comparison with any outside target.
 
 ## Method
-1. **Ground truth first.** `docs/eval/ground_truth_input.md` (plain language, written by the repository owner without looking at tool output) is converted by `python -m eval.ground_truth convert` to
+1. **Ground truth first.** `docs/eval/ground_truth_input.md` (plain language, written by the repository owner without looking at tool output) is converted by `python -m cdi.eval.ground_truth convert` to
    `eval/ground_truth.yml`, validated (`validate` only *reports* problems; it never edits), and **committed before any evaluation run**. The harness refuses to run unless that file is tracked,
    committed and unmodified, and records its commit and time in the results. It is never edited to match tool output; a suspected error is reported to the owner instead.
-2. **Scenarios.** The local branches defined in `tools/scenarios.py` (six by default; more can be added with their ground truth). All are synthetic.
+2. **Scenarios.** The local branches defined in `backend/src/cdi/eval/scenarios.py` (six by default; more can be added with their ground truth). All are synthetic.
    The harness creates them in a **temporary local clone**, so your branches are never touched, and by default builds the baseline in memory from that clone, so nothing is written to Neo4j.
 3. **Workflow.** A graph node of a kind listed in the ground truth file (`workflow_kinds`, default screens `UI_COMPONENT` and API endpoints `API_ENDPOINT`).
    The tool's *reported* workflows are the changed objects that are workflows plus every workflow-kind consumer of a changed object.
@@ -21,9 +21,9 @@ Everything is **measured on synthetic data** (the synthetic-extended sample and 
 
 ## Run
 ```
-python -m eval.ground_truth list-workflows        # candidate workflow names from the baseline
-python -m eval.run_eval                           # refuses unless eval/ground_truth.yml is committed and unmodified
-python -m eval.run_eval --baseline neo4j          # use the baseline stored in Neo4j instead of an in-memory one
+python -m cdi.eval.ground_truth list-workflows        # candidate workflow names from the baseline
+python -m cdi.eval.run_eval                           # refuses unless eval/ground_truth.yml is committed and unmodified
+python -m cdi.eval.run_eval --baseline neo4j          # use the baseline stored in Neo4j instead of an in-memory one
 ```
 
 ## Limits
