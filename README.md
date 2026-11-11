@@ -38,9 +38,20 @@ python3 -m venv .venv && .venv/bin/pip install -r requirements.txt
    (`--backend memory` runs the same traversal without a database.) UNRESOLVED links are listed with their reason, never traversed.
 6. Baseline runner (replaces steps 2 and 4 for day-to-day use): `.venv/bin/python -m pipeline.baseline full` (scan + link + replace the graph in Neo4j) or
    `.venv/bin/python -m pipeline.baseline incremental --from <rev> --to <rev>` (changed files only).
-7. PR impact report: `.venv/bin/python tools/scenarios.py` creates six local demo branches (never pushed), then
-   `.venv/bin/python -m impact.cli --target main --pr pr-e-delete-proc` writes `out/report-pr-e-delete-proc.md` / `.json`. See `docs/impact-report.md`.
+7. PR impact report for one branch: `.venv/bin/python -m impact.cli --target main --pr <branch>` writes `out/report-<branch>.md` / `.json`. See `docs/impact-report.md`.
 8. `.venv/bin/python tools/show_workflow.py FetchEmployeeComponent spGetAllEmployees` - raw scanner edges with the cited source line re-read from disk.
+
+## Demo branches and reports
+Six synthetic scenarios (all local, never pushed): `pr-a-sp-body` (stored-procedure body), `pr-b-view` (view), `pr-c-ts-service` (TypeScript service method),
+`pr-d-dynamic-sql` (proc containing dynamic SQL), `pr-e-delete-proc` (deleted procedure), `pr-f-route` (controller route no longer matches the frontend request).
+```
+export NEO4J_PASSWORD='<your password>'; docker compose -f graph/docker-compose.yml up -d
+.venv/bin/python -m pipeline.baseline full                 # baseline graph of main in Neo4j
+scripts/make_demo_branches.sh --reports neo4j              # from a clean main: recreate the branches, write out/report-<branch>.md/.json
+```
+Re-run the script after `main` moves (the branches are re-pointed to the new `main`); otherwise reports warn that the PR branch is based on an older target.
+Without Neo4j: `python -m pipeline.baseline full --no-neo4j` then `scripts/make_demo_branches.sh --reports files`.
+Remove the demo branches yourself with `git branch -D <names>` when you no longer need them (they are unmerged, so `-d` refuses).
 
 ## Tests
 `.venv/bin/python -m pytest tests` (needs the setup above and the .NET 10 SDK). The scanner tests run the real scanners on a temporary
