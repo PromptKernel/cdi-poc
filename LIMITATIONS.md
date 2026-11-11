@@ -1,6 +1,6 @@
 # Limitations (what this PoC does not prove)
 
-Status: milestone 4 (schema, scanners, linker, Neo4j load, trace, baseline runner, PR impact report, simulated CI check). Items for later milestones are marked *(planned)*.
+Status: milestone 5 (schema, scanners, linker, Neo4j load, trace, baseline runner, PR impact report, simulated CI check, local explorer). Items for later milestones are marked *(planned)*.
 
 * **Multiple repos are simulated with folders.** `samples/web|api|db` are folders of one git repository. Commit IDs come from
   `git log -1 -- <folder>`. The PoC does not test real multi-repo checkouts, per-repo branches, access control or cross-repo PR flows.
@@ -53,5 +53,10 @@ Status: milestone 4 (schema, scanners, linker, Neo4j load, trace, baseline runne
   A real service may enforce a different limit, and may not render everything we send.
 * **Blocking policies can fire on intended changes** (a deliberate rename, deletion or route change whose callers are fixed in another PR). Blocking is off by default; it never uses a risk label.
 * **PR-run timing** (about 2 to 5 s) is measured on a tiny synthetic repository on one machine; it says nothing about large repositories or CI agents.
-* **Not built *(planned)*:** explorer API and UI, evaluation harness.
+* **The explorer shows structure only.** It draws stored edges and their evidence; it does not run code, measure behaviour, or judge correctness, and its data is the **synthetic-extended
+  sample**, so it says nothing about real code bases. It is a static snapshot (`tools/export_graph.py`), not a live view: re-export after rebuilding the baseline. It is read-only, local and
+  unauthenticated (bound to 127.0.0.1 by default) and not hardened for hosting. "View on GitHub" links use the edge's commit id and only resolve if that commit exists in the configured repository.
+  Layouts are automatic and large expansions become hard to read; filters and depth are the tools for that. Accessibility was considered (text list of visible nodes, line style plus colour,
+  focus outlines) but not audited. The Playwright smoke test covers one end-to-end path in one browser (Chromium); it is not a full UI test suite.
+* **Not built *(planned)*:** evaluation harness. An optional read-only API for the explorer (live from Neo4j) was not built.
 * **No licence for the tooling.** The repository has no top-level licence file; only the upstream-derived sample is MIT.

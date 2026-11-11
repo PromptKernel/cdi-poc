@@ -3,8 +3,8 @@
 A cross-layer dependency graph and PR impact proof of concept: static scanners for a frontend (TypeScript/Angular), an API
 (C#/.NET) and SQL Server code emit one shared, evidence-backed graph schema.
 
-**Status: milestone 4 of the PoC (schema, three scanners, cross-repo linker, Neo4j load, bidirectional trace, baseline runner, PR impact report, simulated CI check).** Explorer
-and evaluation are planned and not in this repository yet. See `LIMITATIONS.md`.
+**Status: milestone 5 of the PoC (schema, three scanners, cross-repo linker, Neo4j load, bidirectional trace, baseline runner, PR impact report, simulated CI check, local explorer UI).**
+The evaluation harness is planned and not in this repository yet. See `LIMITATIONS.md`.
 
 ## What is real and what is synthetic
 - `samples/*` start from an upstream MIT-licensed sample (Angular + ASP.NET Core + ADO.NET), see `NOTICE` and `docs/changes.md`.
@@ -41,6 +41,16 @@ python3 -m venv .venv && .venv/bin/pip install -r requirements.txt
 7. PR impact report for one branch: `.venv/bin/python -m impact.cli --target main --pr <branch>` writes `out/report-<branch>.md` / `.json`. See `docs/impact-report.md`.
 8. `.venv/bin/python tools/show_workflow.py FetchEmployeeComponent spGetAllEmployees` - raw scanner edges with the cited source line re-read from disk.
 
+## Local explorer (graph UI)
+```
+python tools/export_graph.py                                   # out/explorer/ (git-ignored): graph.json + copies of reports and the simulated PR comment/status
+cd explorer && npm ci && npm run build && npm run preview      # http://127.0.0.1:4173  (npm run dev for hot reload)
+```
+Search by name, expand a node by depth, toggle direction (downstream = consumers, upstream = dependencies, as in `docs/schema.md`), filter by repo/kind/confidence; confidence is
+drawn by line style, colour and arrowhead; unresolved/not-found nodes are distinct and explain why; the side panel links to the exact file and line on GitHub; a Reports page renders the
+impact reports and a PR comment preview shows the (simulated) comment. Read-only, local, no telemetry, no CDNs. Tests: `cd explorer && npm test && npm run test:e2e`.
+It shows structure only, on synthetic sample data. Details: `docs/explorer.md`.
+
 ## Simulated CI check (advisory)
 `pipeline/run_pr.sh --target main --pr <branch>` is the single local entry point: freshness check, impact engine, then `out/pr-comment.md` and `out/pr-status.json`
 (Azure DevOps comment-thread and status bodies, **shapes not tested against a real service**), with timing. Advisory by default: exit code 0 in every case. A missing baseline
@@ -66,6 +76,6 @@ git copy of `config/` + `samples/`. `tests/expected_edges.yml` is a **hand-writt
 sample; `tools/compare_expected.py` reports recall against it (synthetic data only).
 
 ## Layout
-`samples/` logical repos - `scanners/` - `linker/` (cross-repo linking) - `graph/` (Neo4j compose, loader, Cypher queries) - `impact/` (traversal, trace CLI, PR impact engine and report) - `ci/` (comment, payloads, policies, adapters) - `scripts/` (demo branches) -
+`samples/` logical repos - `scanners/` - `linker/` (cross-repo linking) - `graph/` (Neo4j compose, loader, Cypher queries) - `impact/` (traversal, trace CLI, PR impact engine and report) - `ci/` (comment, payloads, policies, adapters) - `explorer/` (local graph UI) - `scripts/` (demo branches) -
 `schema/` - `config/` (repo paths, route/naming conventions, graph store) - `docs/` - `tools/` - `pipeline/` - `tests/`.
-Planned: `explorer-api/`, `explorer/`, `eval/`.
+Planned: `eval/` (an optional read-only API for the explorer is not built).

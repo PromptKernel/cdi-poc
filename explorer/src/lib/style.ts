@@ -15,7 +15,7 @@ export const KIND_SHAPE: Record<string, string> = {
 }
 
 export const stylesheet = (): StylesheetJson => [
-  { selector: 'node', style: { label: 'data(label)', 'font-size': 11, 'text-wrap': 'ellipsis', 'text-max-width': '150px', 'text-valign': 'center', 'text-halign': 'center',
+  { selector: 'node', style: { label: 'data(label)', 'font-size': 11, 'text-wrap': 'ellipsis', 'text-max-width': '230px', 'text-valign': 'center', 'text-halign': 'center',
       color: '#111827', 'background-color': 'data(color)', 'background-opacity': 0.18, 'border-width': 2, 'border-color': 'data(color)', shape: 'data(shape)' as never,
       width: 'label', height: 'label', padding: '9px' } as never },
   // synthetic code: double border
@@ -29,6 +29,6 @@ export const stylesheet = (): StylesheetJson => [
     selector: `edge[confidence = "${c}"]`,
     style: { 'line-color': s.color, 'target-arrow-color': s.color, 'line-style': s.line, width: s.width, 'target-arrow-shape': s.arrow, 'curve-style': 'bezier', 'arrow-scale': 1.3 } as never,
   })),
-  { selector: 'edge', style: { label: 'data(type)', 'font-size': 8, color: '#374151', 'text-rotation': 'autorotate', 'text-background-color': '#ffffff', 'text-background-opacity': 0.8, 'text-background-padding': '1px' } as never },
+  { selector: 'edge', style: { label: 'data(type)', 'font-size': 8, color: '#374151', 'text-rotation': 'none', 'text-background-color': '#ffffff', 'text-background-opacity': 0.9, 'text-background-padding': '2px', 'text-margin-x': 6 } as never },
   { selector: 'edge:selected', style: { 'overlay-color': '#facc15', 'overlay-opacity': 0.4, 'overlay-padding': 6 } as never },
 ]

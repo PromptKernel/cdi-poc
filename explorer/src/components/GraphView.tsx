@@ -8,7 +8,16 @@ import type { Selection } from './GraphPage'
 let registered = false
 function register() { if (!registered) { cytoscape.use(dagre as never); registered = true } }
 
-const label = (n: GNode) => (n.kind === 'UNRESOLVED' ? `✕ ${n.name}` : n.name.length > 38 ? `…${n.name.slice(-36)}` : n.name)
+// On-canvas label: drop namespaces from C# names (the side panel always shows the full name)
+export const shortName = (name: string): string => {
+  const paren = name.indexOf('(')
+  const head = paren >= 0 ? name.slice(0, paren) : name
+  const tail = paren >= 0 ? name.slice(paren) : ''
+  if (!/^[A-Za-z_][\w]*(\.[A-Za-z_][\w]*){2,}$/.test(head)) return name.length > 52 ? `…${name.slice(-50)}` : name
+  const parts = head.split('.')
+  return `${parts.slice(-2).join('.')}${tail.length > 26 ? tail.slice(0, 24) + '…)' : tail}`
+}
+const label = (n: GNode) => (n.kind === 'UNRESOLVED' ? `✕ ${n.name}` : shortName(n.name))
 
 export default function GraphView({ ix, nodes, edges, selection, onSelect }: { ix: Index; nodes: GNode[]; edges: GEdge[]; selection: Selection; onSelect: (s: Selection) => void }) {
   const box = useRef<HTMLDivElement>(null)
@@ -24,7 +33,9 @@ export default function GraphView({ ix, nodes, edges, selection, onSelect }: { i
     c.on('tap', (ev) => { if (ev.target === c) cb.current(null) })
     cy.current = c
     ;(window as unknown as { __cy?: Core }).__cy = c   // read-only debugging/test handle (local tool)
-    return () => { c.destroy(); cy.current = null }
+    const ro = new ResizeObserver(() => { c.resize(); if (c.nodes().length) c.fit(undefined, 28) })
+    if (box.current) ro.observe(box.current)
+    return () => { ro.disconnect(); c.destroy(); cy.current = null }
   }, [])
 
   useEffect(() => {
@@ -37,7 +48,8 @@ export default function GraphView({ ix, nodes, edges, selection, onSelect }: { i
         ...edges.map((e) => ({ group: 'edges' as const, data: { id: e.id, source: e.source, target: e.target, type: e.type, confidence: e.confidence } })),
       ])
     })
-    if (nodes.length) c.layout({ name: 'dagre', rankDir: 'TB', nodeSep: 28, rankSep: 55, animate: false, fit: true, padding: 24 } as never).run()
+    c.resize()                                           // the container may have changed size since creation: fit against its real size
+    if (nodes.length) c.layout({ name: 'dagre', rankDir: 'TB', nodeSep: 36, rankSep: 70, animate: false, fit: true, padding: 28 } as never).run()
   }, [nodes, edges])
 
   useEffect(() => {

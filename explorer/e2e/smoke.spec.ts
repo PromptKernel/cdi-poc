@@ -102,6 +102,7 @@ test('explorer smoke: search, expand, trace UI -> SQL in both directions, styles
     await expect(page.locator('.sim')).toContainText('Simulated')
     await expect(page.locator('.sim')).toContainText('not tested against a real service')
     await expect(page.locator('.json')).toContainText('"simulated": true')
+    await expect(page.locator('.marker')).toContainText('cdi-poc:impact-report:v1')
   })
 
   expect(external, 'no request may leave localhost (no CDNs, no telemetry)').toEqual([])

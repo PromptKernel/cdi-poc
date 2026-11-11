@@ -7,8 +7,8 @@ carries them; later milestones link them across repos, load a graph store, and r
 ## Layout
 - `samples/web|api|db` - the three logical repos (folders of this one git repo). `samples/*/LICENSE` is the upstream MIT licence; see `NOTICE`.
 - `scanners/` - Roslyn (C#), ts-morph (TypeScript), ScriptDom (SQL); `scanners/common-dotnet` is shared.
-- `linker/` (cross-repo links), `graph/` (Neo4j), `impact/` (traversal, PR impact engine, report), `ci/` (PR comment, status payloads, blocking policies, posting adapters), `pipeline/` (scan, baseline, PR run), `schema/`, `config/`, `docs/`, `tools/`, `scripts/`, `tests/`.
-- Planned: `explorer-api/`, `explorer/`, `eval/`.
+- `linker/` (cross-repo links), `graph/` (Neo4j), `impact/` (traversal, PR impact engine, report), `ci/` (PR comment, status payloads, blocking policies, posting adapters), `explorer/` (local React + Cytoscape graph UI), `pipeline/` (scan, baseline, PR run), `schema/`, `config/`, `docs/`, `tools/`, `scripts/`, `tests/`.
+- Planned: `eval/` (an optional read-only API for the explorer is not built).
 
 ## Working rules
 - Every claim in a report must trace to a stored edge with file:line, method, confidence and commit.
