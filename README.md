@@ -59,6 +59,6 @@ git copy of `config/` + `samples/`. `tests/expected_edges.yml` is a **hand-writt
 sample; `tools/compare_expected.py` reports recall against it (synthetic data only).
 
 ## Layout
-`samples/` logical repos - `scanners/` - `linker/` (cross-repo linking) - `graph/` (Neo4j compose, loader, Cypher queries) - `impact/` (traversal, trace CLI) -
+`samples/` logical repos - `scanners/` - `linker/` (cross-repo linking) - `graph/` (Neo4j compose, loader, Cypher queries) - `impact/` (traversal, trace CLI, PR impact engine and report) - `scripts/` (demo branches) -
 `schema/` - `config/` (repo paths, route/naming conventions, graph store) - `docs/` - `tools/` - `pipeline/` - `tests/`.
-Planned: `explorer-api/ explorer/ eval/`, impact engine and PR report.
+Planned: CI simulation, `explorer-api/`, `explorer/`, `eval/`.

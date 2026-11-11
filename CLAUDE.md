@@ -7,8 +7,8 @@ carries them; later milestones link them across repos, load a graph store, and r
 ## Layout
 - `samples/web|api|db` - the three logical repos (folders of this one git repo). `samples/*/LICENSE` is the upstream MIT licence; see `NOTICE`.
 - `scanners/` - Roslyn (C#), ts-morph (TypeScript), ScriptDom (SQL); `scanners/common-dotnet` is shared.
-- `schema/`, `config/`, `docs/`, `tools/`, `pipeline/`.
-- Planned: `linker/`, `graph/`, `impact/`, `explorer-api/`, `explorer/`, `eval/`, `tests/`.
+- `linker/` (cross-repo links), `graph/` (Neo4j), `impact/` (traversal, PR impact engine, report), `pipeline/` (scan, baseline), `schema/`, `config/`, `docs/`, `tools/`, `scripts/`, `tests/`.
+- Planned: CI simulation, `explorer-api/`, `explorer/`, `eval/`.
 
 ## Working rules
 - Every claim in a report must trace to a stored edge with file:line, method, confidence and commit.
