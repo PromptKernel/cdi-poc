@@ -23,7 +23,9 @@ def referenced_not_found(result):
     for u in result["new_unresolved"]:
         if (u["type"] == "RESOLVES_TO" and u.get("target_cause") == "referenced_not_found") or \
            (u["confidence"] == "UNRESOLVED" and u.get("target_kind") == "SQL_REF"):
-            out.append(_violation("P1-referenced-not-found-introduced", u, f"`{u['source_node']}` is referenced but no definition was found"))
+            what = (f"`{u['source_node']}` is referenced but no definition was found" if u["type"] == "RESOLVES_TO"
+                    else f"`{u['source_node']}` ({u['source_kind']}) references an object that is not defined in the scanned repos")
+            out.append(_violation("P1-referenced-not-found-introduced", u, what))
     return out
 
 
