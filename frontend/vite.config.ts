@@ -6,7 +6,7 @@ import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 
 const here = path.dirname(fileURLToPath(import.meta.url))
-// The explorer reads generated data (never committed) from out/explorer, written by tools/export_graph.py.
+// The explorer reads generated data (never committed) from out/explorer, written by `python -m cdi.export`.
 const dataDir = path.resolve(process.env.EXPLORER_DATA_DIR ?? path.join(here, '../out/explorer'))
 const types: Record<string, string> = { '.json': 'application/json', '.md': 'text/markdown; charset=utf-8' }
 
