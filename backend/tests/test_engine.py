@@ -83,3 +83,51 @@ def test_graph_delta_classifies_added_removed_moved_changed():
     assert d["edges_removed"] == [e_gone["id"]] and d["edges_added"] == [e_new["id"]]
     assert d["edges_moved"] == [{"from": [e_moved_old["id"]], "to": [e_moved_new["id"]]}]
     assert d["edges_changed"] == [e_conf_old["id"]]
+
+
+# ---------- staleness warning only when it matters ----------
+def _git_repo(tmp_path):
+    import subprocess
+    def g(*a):
+        subprocess.run(["git", "-c", "user.name=t", "-c", "user.email=t@example.invalid", "-c", "commit.gpgsign=false", *a], cwd=tmp_path, check=True, capture_output=True)
+    g("init", "-q", "-b", "main")
+    (tmp_path / "db").mkdir(); (tmp_path / "web/src").mkdir(parents=True); (tmp_path / ".cdi").mkdir()
+    (tmp_path / "db/a.sql").write_text("-- a\n"); (tmp_path / "web/src/a.ts").write_text("export {}\n"); (tmp_path / "README.md").write_text("x\n"); (tmp_path / ".cdi/config.yml").write_text("version: 1\n")
+    g("add", "-A"); g("commit", "-q", "-m", "base")
+    rev = lambda: subprocess.run(["git", "rev-parse", "HEAD"], cwd=tmp_path, capture_output=True, text=True).stdout.strip()
+    return g, rev
+
+
+REPOS = [{"name": "db", "path": "db", "include": ["**/*.sql"], "exclude": []}, {"name": "web", "path": "web", "include": ["src/**/*.ts"], "exclude": ["**/*.d.ts"]}]
+
+
+def test_target_changes_outside_the_scanned_files_do_not_make_the_baseline_stale(tmp_path):
+    g, rev = _git_repo(tmp_path)
+    mb = rev()
+    (tmp_path / "README.md").write_text("changed\n"); (tmp_path / ".github").mkdir(); (tmp_path / ".github/w.yml").write_text("on: push\n")
+    (tmp_path / "db/notes.txt").write_text("not sql\n"); (tmp_path / "web/src/types.d.ts").write_text("declare const x: 1\n")
+    g("add", "-A"); g("commit", "-q", "-m", "docs and workflows only")
+    tip = rev()
+    assert engine.moved_files_that_matter(tmp_path, REPOS, mb, tip) == []
+    assert engine.freshness_warnings({"commits": dict(TC)}, TC, mb, tip, []) == [], "no OLDER-target warning when nothing relevant moved"
+
+
+def test_target_changes_to_scanned_files_or_configuration_do_warn_and_name_the_file(tmp_path):
+    g, rev = _git_repo(tmp_path)
+    mb = rev()
+    (tmp_path / "db/a.sql").write_text("-- changed\n")
+    g("add", "-A"); g("commit", "-q", "-m", "sql moved")
+    assert engine.moved_files_that_matter(tmp_path, REPOS, mb, rev()) == ["db/a.sql"]
+    mb2 = rev()
+    (tmp_path / ".cdi/config.yml").write_text("version: 1\nbranches: {base: main}\n"); (tmp_path / "web/src/a.ts").write_text("export const y = 1\n")
+    g("add", "-A"); g("commit", "-q", "-m", "ts and config moved")
+    moved = engine.moved_files_that_matter(tmp_path, REPOS, mb2, rev())
+    assert sorted(moved) == [".cdi/config.yml", "web/src/a.ts"]
+    w = engine.freshness_warnings({"commits": dict(TC)}, TC, mb2, rev(), moved)
+    assert len(w) == 1 and "OLDER target" in w[0] and "2 file(s)" in w[0] and "`.cdi/config.yml`" in w[0]
+
+
+def test_same_merge_base_and_tip_never_warns_and_unknown_keeps_the_old_behaviour(tmp_path):
+    g, rev = _git_repo(tmp_path)
+    assert engine.moved_files_that_matter(tmp_path, REPOS, rev(), rev()) == []
+    assert any("OLDER target" in x for x in engine.freshness_warnings({"commits": dict(TC)}, TC, "1" * 40, "2" * 40))     # moved=None

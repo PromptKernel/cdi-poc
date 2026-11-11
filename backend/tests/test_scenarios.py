@@ -209,3 +209,30 @@ def test_depth_limit_is_reported_when_a_traversal_is_cut_off(tmp_path_factory):
     assert "FetchEmployeeComponent" not in {c["name"] for c in o["consumers"].get("screen", [])}, "the screen is beyond depth 3"
     md = report.render(res)
     assert "stopped at the depth limit (3)" in md and "NOT listed" in md
+
+
+def test_report_wording_follows_the_synthetic_flag_not_a_fixed_claim(world):
+    p, runner, g, fresh = world
+    res = run(world, "pr-a-sp-body", fresh=fresh)
+    md = report.render(res)
+    for phrase in ("small synthetic", "synthetic-extended", "this small synthetic sample"):
+        assert phrase not in md
+    assert res["meta"]["synthetic_notice"] is True and "flagged synthetic by this repository's configuration" in md
+    res["meta"]["synthetic_notice"] = False
+    md2 = report.render(res)
+    assert "flagged synthetic" not in md2 and "Static-analysis evidence only" in md2 and "(measured on this repository and machine only)" in md2
+
+
+def test_older_target_warning_only_when_relevant_files_moved_on_the_target(world):
+    p, runner, g, fresh = world
+    # a README-only commit on main after the branch point must not produce the warning (the earlier test already moved a scanned file; use a fresh branch point)
+    make_branch(p, "pr-h-before-docs", {"samples/db/synthetic/procedures/spGetCityList.sql": lambda t: t + "-- pr change\n"}, base="main")
+    (p.path / "README.md").write_text("docs only\n")
+    p.commit_all("docs only on main")
+    res = run(world, "pr-h-before-docs", fresh={**fresh, "commits": {r: p.head_for(f"samples/{r}") for r in ("web", "api", "db")}})
+    assert not any("OLDER target" in w for w in res["meta"]["warnings"]), res["meta"]["warnings"]
+    (p.path / "samples/web/src/app/services/employee.service.ts").write_text((p.path / "samples/web/src/app/services/employee.service.ts").read_text() + "\n// moved\n")
+    p.commit_all("a scanned file moves on main")
+    res = run(world, "pr-h-before-docs", fresh=fresh)
+    w = [x for x in res["meta"]["warnings"] if "OLDER target" in x]
+    assert len(w) == 1 and "samples/web/src/app/services/employee.service.ts" in w[0]

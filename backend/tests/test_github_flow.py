@@ -323,3 +323,25 @@ def test_comment_shows_branch_names_and_points_at_a_report_that_exists(world, tm
     assert "origin/main" not in out and "Neo4j" not in out and "PR branch `pr-f-route`" in out, "no remote-tracking ref, no wrong store name, no sha as branch name"
     assert "Baseline graph (read-only)" in out
     assert TOKEN not in out
+
+
+@pytest.fixture(scope="module")
+def moved_docs(tmp_path_factory):
+    """main advanced by a README and a workflow file only (nothing a scanner reads) AFTER the PR branched; baseline built from the branch point."""
+    p = Project(tmp_path_factory.mktemp("ghdocs"))
+    bl = tmp_path_factory.mktemp("ghdocsbase") / "baseline.json"
+    build_baseline(p, bl)
+    make_branch(p, "pr-early", SCEN["pr-f-route"])
+    (p.path / "README.md").write_text("docs only\n"); (p.path / ".github").mkdir(); (p.path / ".github/w.yml").write_text("on: push\n")
+    p.commit_all("docs and workflow only")
+    return p, bl
+
+
+def test_main_moving_only_outside_the_scanned_files_gives_no_stale_warning(moved_docs, tmp_path):
+    """Found on the real run: re-pinning the action moved main and every PR got 'based on an OLDER target' although nothing the scanners read had changed."""
+    p, bl = moved_docs
+    with FakeGitHub() as gh:
+        code, _ = run_flow(tmp_path, p, bl, gh, ev=event_file(tmp_path, p, head="pr-early"))
+        body = comment_body(gh)
+    assert code == 0 and "OLDER target" not in body and "### ⚠ Warnings" not in body
+    assert "Basis:" in body and "compared with target `main`" in body

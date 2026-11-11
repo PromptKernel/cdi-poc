@@ -61,7 +61,25 @@ def path_conf(path):
     return T.path_confidence(path)
 
 
-def freshness_warnings(recorded, target_commits, merge_base, target_tip):
+def moved_files_that_matter(root, repos, merge_base, target_tip):
+    """Files that changed on the target between the merge-base and its tip AND matter to the analysis: files a scanner reads (the repo's include/exclude
+    globs) or the tool configuration (.cdi/). Anything else (a README, a workflow file) does not make the baseline unreliable for this PR."""
+    if merge_base == target_tip:
+        return []
+    changed = D.git(root, "diff", "--name-only", "--no-renames", merge_base, target_tip).splitlines()
+    out = []
+    for f in changed:
+        if f.startswith(".cdi/"):
+            out.append(f); continue
+        for r in repos:
+            folder = r["path"].rstrip("/") + "/"
+            if f.startswith(folder) and D.is_scanned(f[len(folder):], r.get("include", []), r.get("exclude", [])):
+                out.append(f); break
+    return out
+
+
+def freshness_warnings(recorded, target_commits, merge_base, target_tip, moved=None):
+    """`moved`: files from moved_files_that_matter(). None = unknown (warn whenever the merge-base is not the tip, the old behaviour)."""
     w = []
     if not recorded:
         w.append("No baseline freshness record found: cannot tell which commits the graph was built from.")
@@ -71,8 +89,10 @@ def freshness_warnings(recorded, target_commits, merge_base, target_tip):
         if rec != cur:
             w.append(f"Baseline is STALE for '{repo}': the graph was built from {short(rec)} but the target branch is at {short(cur)}. "
                      f"Results may miss changes already merged into the target.")
-    if merge_base != target_tip:
-        w.append(f"The PR branch is based on an OLDER target: merge-base is {short(merge_base)}, the target tip is {short(target_tip)}. "
+    if merge_base != target_tip and (moved is None or moved):
+        what = "" if not moved else (f" {len(moved)} file(s) the scanners read or the configuration changed on the target since then "
+                                     f"(for example `{moved[0]}`).")
+        w.append(f"The PR branch is based on an OLDER target: merge-base is {short(merge_base)}, the target tip is {short(target_tip)}.{what} "
                  f"The diff covers only the PR's own changes (three-dot), but the baseline graph reflects the target tip.")
     return w
 
@@ -141,7 +161,7 @@ def analyze(project_root, tool_root, config_dir, target, pr, baseline: Graph, fr
     tgt, head_sha = D.resolve(root, target), D.resolve(root, pr)
     mb = D.merge_base(root, tgt, head_sha)
     target_commits = {r["name"]: D.folder_commit(root, tgt, r["path"]) for r in repos}
-    warnings = freshness_warnings(freshness, target_commits, mb, tgt)
+    warnings = freshness_warnings(freshness, target_commits, mb, tgt, moved_files_that_matter(root, repos, mb, tgt))
 
     commits = dict(baseline.commits)
     base_frags = M.split_scanner_fragments(baseline, names, commits)
