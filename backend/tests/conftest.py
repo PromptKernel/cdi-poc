@@ -18,7 +18,7 @@ def sh(cmd, cwd=None, check=True):
 @pytest.fixture(scope="session", autouse=True)
 def built_scanners():
     for proj in ("sql-scriptdom", "dotnet-roslyn"):
-        sh(["dotnet", "build", "-nologo", "-v", "q", str(ROOT / "scanners" / proj)])
+        sh(["dotnet", "build", "-nologo", "-v", "q", str(ROOT / "backend/scanners" / proj)])
 
 
 def scan_cmd(project, repo, out, only=None):
@@ -27,9 +27,9 @@ def scan_cmd(project, repo, out, only=None):
     if only is not None:
         base += ["--only", str(only)]
     if kind == "ts":
-        return ["node", str(ROOT / "scanners/ts-morph/scan.mjs")] + base
+        return ["node", str(ROOT / "backend/scanners/ts-morph/scan.mjs")] + base
     dll = {"cs": "dotnet-roslyn/bin/Debug/net10.0/CsScanner.dll", "sql": "sql-scriptdom/bin/Debug/net10.0/SqlScanner.dll"}[kind]
-    return ["dotnet", str(ROOT / "scanners" / dll)] + base
+    return ["dotnet", str(ROOT / "backend/scanners" / dll)] + base
 
 
 class Project:

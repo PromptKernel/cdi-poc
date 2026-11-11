@@ -196,6 +196,6 @@ def test_linker_output_validates_and_is_deterministic(real, full, tmp_path):
     from jsonschema import Draft202012Validator
     lk, g = real
     frag = build_fragment(lk)
-    assert not list(Draft202012Validator(json.loads((ROOT / "schema/graph.schema.json").read_text())).iter_errors(frag))
+    assert not list(Draft202012Validator(json.loads((ROOT / "backend/schema/graph.schema.json").read_text())).iter_errors(frag))
     again = build_fragment(Linker(Graph.from_fragments([full["web"], full["api"], full["db"]]), CFG).run())
     assert json.dumps(frag, sort_keys=True) == json.dumps(again, sort_keys=True)

@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
-"""Validate scanner/linker output against schema/graph.schema.json and check referential integrity."""
+"""Validate scanner/linker output against backend/schema/graph.schema.json and check referential integrity."""
 import json, sys, pathlib
 from jsonschema import Draft202012Validator
 
 root = pathlib.Path(__file__).resolve().parents[1]
-schema = json.loads((root / "schema/graph.schema.json").read_text())
+schema = json.loads((root / "backend/schema/graph.schema.json").read_text())
 v = Draft202012Validator(schema)
 bad = 0
 frags = {p: json.loads(pathlib.Path(p).read_text()) for p in sys.argv[1:]}

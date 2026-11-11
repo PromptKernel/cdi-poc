@@ -16,7 +16,7 @@ class ScanRunner:
     def build(self):
         if not self._built:
             for p in ("sql-scriptdom", "dotnet-roslyn"):
-                subprocess.run(["dotnet", "build", "-nologo", "-v", "q", str(self.tool_root / "scanners" / p)], env=self.env, check=True, capture_output=True)
+                subprocess.run(["dotnet", "build", "-nologo", "-v", "q", str(self.tool_root / "backend/scanners" / p)], env=self.env, check=True, capture_output=True)
             self._built = True
 
     def scan(self, repo_cfg, repo_path, only_files=None):
@@ -33,10 +33,10 @@ class ScanRunner:
             args += ["--only", str(of)]
         kind = KIND_SCANNER[repo_cfg["kind"]]
         if kind == "ts":
-            cmd = ["node", str(self.tool_root / "scanners/ts-morph/scan.mjs")] + args
+            cmd = ["node", str(self.tool_root / "backend/scanners/ts-morph/scan.mjs")] + args
         else:
             dll = {"cs": "dotnet-roslyn/bin/Debug/net10.0/CsScanner.dll", "sql": "sql-scriptdom/bin/Debug/net10.0/SqlScanner.dll"}[kind]
-            cmd = ["dotnet", str(self.tool_root / "scanners" / dll)] + args
+            cmd = ["dotnet", str(self.tool_root / "backend/scanners" / dll)] + args
         r = subprocess.run(cmd, env=self.env, capture_output=True, text=True)
         if r.returncode != 0:
             raise RuntimeError(f"scanner for {repo_cfg['name']} failed:\n{r.stdout}\n{r.stderr}")

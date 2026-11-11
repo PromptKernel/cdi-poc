@@ -51,6 +51,17 @@ drawn by line style, colour and arrowhead; unresolved/not-found nodes are distin
 impact reports and a PR comment preview shows the (simulated) comment. Read-only, local, no telemetry, no CDNs. Tests: `cd explorer && npm test && npm run test:e2e`.
 It shows structure only, on synthetic sample data. Details: `docs/explorer.md`.
 
+Screenshots (synthetic sample data; regenerate with `cd explorer && npm run preview` then `npm run screenshots -- <dir>`):
+
+| | |
+|---|---|
+| ![Search](docs/screenshots/01-search.png) | ![Expanded workflow with the three confidence styles](docs/screenshots/02-expanded-workflow-three-confidence-styles.png) |
+| Search by name | A workflow expanded upstream: solid = confirmed, dashed = inferred, dotted = unresolved |
+| ![Side panel: inferred edge](docs/screenshots/03-side-panel-inferred-edge.png) | ![Side panel: unresolved node](docs/screenshots/04-side-panel-unresolved-node.png) |
+| An inferred edge with its reason, evidence, commit and GitHub link | An unresolved / not-found node and why |
+| ![Reports page](docs/screenshots/05-reports-page.png) | ![PR comment preview](docs/screenshots/06-pr-comment-preview.png) |
+| A rendered impact report | The simulated PR comment and status |
+
 ## Evaluation harness
 `eval/` compares the affected workflows the tool reports for the synthetic scenarios with a ground truth you write **before** running anything (`docs/eval/ground_truth_input.template.md`).
 `python -m eval.ground_truth list-workflows | convert | validate`, commit `eval/ground_truth.yml`, then `python -m eval.run_eval` (it refuses unless the file is committed and unmodified)

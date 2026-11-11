@@ -8,14 +8,14 @@ export DOTNET_CLI_TELEMETRY_OPTOUT=1
 [ -z "${DOTNET_ROOT:-}" ] && [ -d /opt/homebrew/opt/dotnet/libexec ] && export DOTNET_ROOT=/opt/homebrew/opt/dotnet/libexec || true
 PY="${PYTHON:-.venv/bin/python}"
 OUT="${1:-out/graph}"
-dotnet build -v q -nologo scanners/sql-scriptdom >/dev/null
-dotnet build -v q -nologo scanners/dotnet-roslyn >/dev/null
+dotnet build -v q -nologo backend/scanners/sql-scriptdom >/dev/null
+dotnet build -v q -nologo backend/scanners/dotnet-roslyn >/dev/null
 files=()
 while read -r name kind path; do
   case "$kind" in
-    sql)      dotnet scanners/sql-scriptdom/bin/Debug/net10.0/SqlScanner.dll --config config --repo "$name" --out "$OUT/$name.json" ;;
-    api)      dotnet scanners/dotnet-roslyn/bin/Debug/net10.0/CsScanner.dll  --config config --repo "$name" --out "$OUT/$name.json" ;;
-    frontend) node scanners/ts-morph/scan.mjs --config config --repo "$name" --out "$OUT/$name.json" ;;
+    sql)      dotnet backend/scanners/sql-scriptdom/bin/Debug/net10.0/SqlScanner.dll --config config --repo "$name" --out "$OUT/$name.json" ;;
+    api)      dotnet backend/scanners/dotnet-roslyn/bin/Debug/net10.0/CsScanner.dll  --config config --repo "$name" --out "$OUT/$name.json" ;;
+    frontend) node backend/scanners/ts-morph/scan.mjs --config config --repo "$name" --out "$OUT/$name.json" ;;
     *) echo "unknown kind '$kind' for repo $name" >&2; exit 1 ;;
   esac
   files+=("$OUT/$name.json")
