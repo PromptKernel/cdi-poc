@@ -1,0 +1,8 @@
+{
+  "name": "ts-scanner",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "ts-morph scanner emitting the shared graph schema",
+  "dependencies": { "fast-glob": "3.3.2", "ts-morph": "24.0.0", "yaml": "2.6.1" }
+}
