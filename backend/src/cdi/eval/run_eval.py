@@ -116,6 +116,10 @@ def evaluate_scenario(name, gt_entry, result, base, head, kinds, universe):
         "changed_objects": [{"name": o["name"], "kind": o["kind"], "change": o["change"], "risk": (o["risk"] or {}).get("label")} for o in result["objects"]],
         "ground_truth": sorted(gt), "reported_any_confidence": sorted(rep_all), "reported_confirmed_only": sorted(rep_conf),
         "metrics_any_confidence": m_all, "metrics_confirmed_only": m_conf,
+        "not_flagged_check": {**M.not_flagged_check(gt_entry.get("not_flagged_workflows") or [], rep_all, rep_conf),
+                              "listed_workflows": sorted(gt_entry.get("not_flagged_workflows") or []),
+                              "detail": [{"workflow": w, "detail": unexpected_detail(w, result, kinds)}
+                                         for w in sorted(set(gt_entry.get("not_flagged_workflows") or []) & rep_all)]},
         "found_only_through_inferred_links": sorted((gt & rep_all) - rep_conf),
         "misses": [{"workflow": w, **explain_miss(w, result, base, head, kinds)} for w in m_all["misses"]],
         "unexpected": [{"workflow": w, "detail": unexpected_detail(w, result, kinds)} for w in m_all["unexpected"]],
@@ -182,6 +186,7 @@ def run(source=".", gt_path="eval/ground_truth.yml", out="out/eval", baseline="m
         "scenarios": per,
         "overall_any_confidence": M.aggregate([p["metrics_any_confidence"] for p in per]),
         "overall_confirmed_only": M.aggregate([p["metrics_confirmed_only"] for p in per]),
+        "not_flagged_check": M.aggregate_not_flagged([p["not_flagged_check"] for p in per]),
         "timing": {"baseline_build_s": baseline_build_s, "pr_run_s": durs, "pr_run_mean_s": round(sum(durs) / len(durs), 3) if durs else None, "pr_run_max_s": max(durs) if durs else None},
     }
     out = pathlib.Path(out); out.mkdir(parents=True, exist_ok=True)

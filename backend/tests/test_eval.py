@@ -250,8 +250,10 @@ def test_report_handles_empty_ground_truth():
 
 # ------------------------------------------------------------------ end to end on a TEST-ONLY fixture ground truth
 FIXTURE_GT = {"version": 1, "synthetic": True, "workflow_kinds": KINDS, "scenarios": {
-    "pr-f-route": {"description": "TEST FIXTURE", "affected_workflows": ["FetchEmployeeComponent", "ASPCoreWithAngular.Controllers.EmployeeController.Index()"]},
-    "pr-e-delete-proc": {"description": "TEST FIXTURE", "affected_workflows": ["DepartmentReportComponent", "ASPCoreWithAngular.Synthetic.Controllers.DepartmentController.Headcount()"]},
+    "pr-f-route": {"description": "TEST FIXTURE", "affected_workflows": ["FetchEmployeeComponent", "ASPCoreWithAngular.Controllers.EmployeeController.Index()"],
+                    "not_flagged_workflows": ["DepartmentReportComponent"]},
+    "pr-e-delete-proc": {"description": "TEST FIXTURE", "affected_workflows": ["DepartmentReportComponent", "ASPCoreWithAngular.Synthetic.Controllers.DepartmentController.Headcount()"],
+                         "not_flagged_workflows": ["FetchEmployeeComponent"]},
     "pr-d-dynamic-sql": {"description": "TEST FIXTURE (empty on purpose)", "affected_workflows": []}}}
 
 
@@ -329,3 +331,156 @@ def test_eval_label_and_caps_follow_the_synthetic_flag():
     s = {**fake_summary(), "label": plain, "cap": "(measured on this repository's scenarios)"}
     md = report.render(s)
     assert md.count("(measured on this repository's scenarios)") >= 7 and "measured on synthetic data" not in md.lower()
+
+
+# ------------------------------------------------------------------ current input layout (INVENTED example; never the real input file)
+NEW_MD = """# Ground truth input (to be filled in by a person)
+
+Author: A. Tester   Date: 2026-01-01   Source revision of the sample repository reviewed: abc1234
+
+---
+
+## Scenario 1: `pr-a-sp-body` (a stored procedure's body changes)
+Reference (orientation only): a made-up note.
+
+- **Change description (your words):** The list procedure skips blank names.
+- **Workflows I believe should be flagged:**
+  - FetchEmployeeComponent   — the list screen
+  - `ASPCoreWithAngular.Controllers.EmployeeController.Index()` # endpoint
+- **Workflows that should NOT be flagged:** DepartmentReportComponent; AddEmployeeComponent
+- **Notes:** unsure about the second one
+
+## Scenario 2: `pr-b-view` (a view changes)
+- **Change description (your words):** A view gains a column.
+- **Workflows I believe should be flagged:** none
+- **Workflows that should NOT be flagged:** FetchEmployeeComponent, ASPCoreWithAngular.Controllers.EmployeeController.Edit(ASPCoreWithAngular.Models.Employee, int)
+- **Notes:**
+
+---
+
+## Optional extra scenarios (up to four more)
+
+### Extra scenario A: name: ______________________
+- **Change description (your words):**
+- **Workflows I believe should be flagged:**
+- **Workflows that should NOT be flagged:**
+- **Notes:**
+
+### Extra scenario B: name: pr-extra-b
+- **Change description (your words):** An extra one.
+- **Workflows I believe should be flagged:** Foo
+- **Workflows that should NOT be flagged:** none
+- **Notes:** x
+"""
+
+
+def test_current_layout_is_converted_with_both_lists_notes_and_header():
+    p = G.parse_input_md(NEW_MD)
+    assert p["unparsed"] == [] and list(p["scenarios"]) == ["pr-a-sp-body", "pr-b-view", "pr-extra-b"], p["unparsed"]
+    a, b = p["scenarios"]["pr-a-sp-body"], p["scenarios"]["pr-b-view"]
+    assert a["description"] == "The list procedure skips blank names." and a["notes"] == "unsure about the second one"
+    assert a["affected_workflows"] == ["FetchEmployeeComponent", "ASPCoreWithAngular.Controllers.EmployeeController.Index()"]
+    assert a["not_flagged_workflows"] == ["DepartmentReportComponent", "AddEmployeeComponent"]
+    assert b["affected_workflows"] == [] and b["notes"] == ""
+    assert b["not_flagged_workflows"] == ["FetchEmployeeComponent", "ASPCoreWithAngular.Controllers.EmployeeController.Edit(ASPCoreWithAngular.Models.Employee, int)"], "commas inside a signature do not split"
+    assert p["header"] == {"author": "A. Tester", "date": "2026-01-01", "source_revision": "abc1234"}
+
+
+def test_current_layout_round_trips_through_yaml_and_the_loader(tmp_path):
+    f = tmp_path / "gt.yml"; f.write_text(G.to_yaml(G.parse_input_md(NEW_MD)))
+    d = G.load(f)
+    assert d["author"] == "A. Tester" and d["scenarios"]["pr-a-sp-body"]["not_flagged_workflows"] == ["DepartmentReportComponent", "AddEmployeeComponent"]
+    assert d["scenarios"]["pr-b-view"]["affected_workflows"] == [] and d["scenarios"]["pr-extra-b"]["not_flagged_workflows"] == []
+
+
+def test_an_unfilled_template_is_reported_field_by_field_and_nothing_is_filled_in():
+    lines = [l for l in NEW_MD.splitlines() if not l.startswith("  - ")]                      # no nested bullets
+    blank = "\n".join((l.split(":**")[0] + ":**") if l.startswith("- **") else l for l in lines)
+    blank = blank.replace("A. Tester", "______").replace("2026-01-01", "______").replace("abc1234", "______").replace("name: pr-extra-b", "name: ______")
+    p = G.parse_input_md(blank)
+    assert p["header"] == {}
+    assert all(not s["description"] and not s["affected_workflows"] and not s["not_flagged_workflows"] for s in p["scenarios"].values())
+    msgs = p["unparsed"]
+    for sc_ in ("pr-a-sp-body", "pr-b-view"):
+        for f in ("change description", "workflows i believe should be flagged", "workflows that should not be flagged"):
+            assert any(m.startswith(f"{sc_}: missing field '{f}'") for m in msgs), (sc_, f)
+    assert not any("Extra scenario" in m for m in msgs), "unused optional extras are ignored"
+    assert not any("notes" in m for m in msgs), "notes are optional"
+    assert {"header: 'author' is not filled in", "header: 'date' is not filled in", "header: 'source_revision' is not filled in"} <= set(msgs)
+
+
+def test_missing_fields_blank_lists_and_contradictions_are_reported_not_guessed():
+    md = NEW_MD.replace("- **Workflows I believe should be flagged:** none", "- **Workflows I believe should be flagged:**")
+    md = md.replace("- **Change description (your words):** An extra one.", "- **Change description (your words):**")
+    md = md.replace("DepartmentReportComponent; AddEmployeeComponent", "FetchEmployeeComponent; none")
+    msgs = "\n".join(G.parse_input_md(md)["unparsed"])
+    assert "pr-b-view: missing field 'workflows i believe should be flagged' (write 'none' if the list is deliberately empty)" in msgs
+    assert "pr-extra-b: missing field 'change description'" in msgs
+    assert "pr-a-sp-body: both workflows and 'none' were given under 'should NOT be flagged'" in msgs
+    assert "listed both as flagged and as NOT flagged: FetchEmployeeComponent" in msgs
+
+
+def test_extra_scenario_with_fields_but_no_name_is_an_error_and_blank_notes_are_fine():
+    md = NEW_MD.replace("name: pr-extra-b", "name: ____")
+    msgs = "\n".join(G.parse_input_md(md)["unparsed"])
+    assert "Extra scenario B: fields are filled but the scenario name is missing" in msgs
+    assert "Notes" not in msgs and "notes" not in msgs
+
+
+def test_validate_checks_the_not_flagged_names_too(tmp_path):
+    g, _ = mini()
+    f = tmp_path / "gt.yml"
+    f.write_text(yaml.safe_dump({"version": 1, "workflow_kinds": KINDS, "scenarios": {"pr-a": {"affected_workflows": ["Screen"], "not_flagged_workflows": ["Scren", "Screen"]}}}))
+    probs = G.validate(G.load(f), g, {"pr-a"})
+    assert any("(NOT-flagged list)" in p and "'Scren'" in p and "similar: Screen" in p for p in probs)
+    assert any("'Screen' is listed as both flagged and NOT flagged" in p for p in probs)
+
+
+def test_convert_command_writes_nothing_when_anything_is_missing(tmp_path, capsys):
+    src, out = tmp_path / "in.md", tmp_path / "gt.yml"
+    src.write_text(NEW_MD.replace("abc1234", "______"))
+    with pytest.raises(SystemExit) as e:
+        G.main(["convert", str(src), str(out)])
+    assert "could not convert" in str(e.value) and not out.exists()
+    src.write_text(NEW_MD)
+    G.main(["convert", str(src), str(out)])
+    assert out.exists() and "3 scenario(s)" in capsys.readouterr().out
+
+
+# ------------------------------------------------------------------ the separate 'should NOT be flagged' check
+def test_not_flagged_check_counts_violations_separately_from_the_main_metrics():
+    c = M.not_flagged_check({"x", "y"}, reported_any={"a", "x"}, reported_confirmed={"a"})
+    assert (c["listed"], c["violations"], c["violations_confirmed_only"]) == (2, 1, 0)
+    assert c["violation_rate"] == 0.5 and c["violation_rate_confirmed_only"] == 0.0 and c["violating_workflows"] == ["x"] and c["not_reported"] == ["y"]
+    m = M.workflow_metrics({"a"}, {"a", "x"}, U)
+    assert m["fp"] == 1, "the main metrics are unchanged by the list: 'x' is unexpected either way"
+
+
+def test_not_flagged_check_empty_list_has_undefined_rates_and_aggregate_pools_counts():
+    e = M.not_flagged_check(set(), {"a"}, {"a"})
+    assert e["listed"] == 0 and e["violation_rate"] is None
+    o = M.aggregate_not_flagged([M.not_flagged_check({"x", "y"}, {"x"}, set()), e, M.not_flagged_check({"z"}, set(), set())])
+    assert (o["scenarios"], o["scenarios_with_a_list"], o["listed"], o["violations"]) == (3, 2, 3, 1) and o["violation_rate"] == pytest.approx(1 / 3)
+    assert M.aggregate_not_flagged([])["violation_rate"] is None
+
+
+def test_report_has_a_separate_labelled_section_for_the_not_flagged_check():
+    s = fake_summary()
+    nfc = M.not_flagged_check({"x", "q"}, {"a", "x"}, {"a"})
+    s["scenarios"][0]["not_flagged_check"] = {**nfc, "listed_workflows": ["q", "x"], "detail": [{"workflow": "x", "detail": [{"via": "dbo.p", "confidence": "INFERRED", "evidence": "api:A.cs:7"}]}]}
+    s["not_flagged_check"] = M.aggregate_not_flagged([nfc])
+    md = report.render(s)
+    sec = md.split("## Check on the 'should NOT be flagged' lists", 1)[1].split("\n## ", 1)[0]
+    assert "measured on synthetic data" in md.split("## Check on the 'should NOT be flagged' lists", 1)[1].split("\n", 1)[0].lower()
+    assert "listed: 2 workflow(s) in 1 scenario(s); reported anyway: 1 (50.0%)" in sec and "violation: `pr-x` / `x` - via `dbo.p` [INFERRED] at api:A.cs:7" in sec
+    s["not_flagged_check"] = M.aggregate_not_flagged([M.not_flagged_check(set(), set(), set())])
+    assert "nothing to check" in report.render(s)
+
+
+def test_e2e_not_flagged_lists_are_checked_per_scenario_and_overall(e2e):
+    p, gt, s, out = e2e
+    assert sc(s, "pr-f-route")["not_flagged_check"]["listed_workflows"] == ["DepartmentReportComponent"]
+    assert sc(s, "pr-f-route")["not_flagged_check"]["violations"] == 0 and sc(s, "pr-e-delete-proc")["not_flagged_check"]["violations"] == 0
+    assert sc(s, "pr-d-dynamic-sql")["not_flagged_check"]["listed"] == 0
+    assert s["not_flagged_check"]["listed"] == 2 and s["not_flagged_check"]["violations"] == 0 and s["not_flagged_check"]["scenarios_with_a_list"] == 2
+    assert "Check on the 'should NOT be flagged' lists" in (out / "summary.md").read_text()

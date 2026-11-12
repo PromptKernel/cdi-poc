@@ -7,6 +7,10 @@ Definitions (per scenario), with GT = ground-truth workflows, R = workflows the 
   false_positive_share  = |FP| / |R|                 (the share of reported workflows that are not in the ground truth; None when R is empty)
   false_positive_rate   = |FP| / |U - GT|            (the share of workflows that should NOT be flagged but were; None when there are none such)
   precision             = |TP| / |R|                 (None when R is empty)
+
+Separate check (never mixed into the numbers above): NF = workflows the author said should NOT be flagged for the scenario.
+  violations            = NF & R                     (an NF workflow the tool reported anyway)
+  violation_rate        = |NF & R| / |NF|            (None when NF is empty)
 """
 from __future__ import annotations
 
@@ -28,6 +32,21 @@ def workflow_metrics(gt, reported, universe=None) -> dict:
         "negatives": None if negatives is None else len(negatives),
         "true_positives": sorted(tp), "misses": sorted(fn), "unexpected": sorted(fp),
     }
+
+
+def not_flagged_check(not_flagged, reported_any, reported_confirmed) -> dict:
+    nf, any_, conf = set(not_flagged), set(reported_any), set(reported_confirmed)
+    v, vc = nf & any_, nf & conf
+    return {"listed": len(nf), "violations": len(v), "violations_confirmed_only": len(vc),
+            "violation_rate": _ratio(len(v), len(nf)), "violation_rate_confirmed_only": _ratio(len(vc), len(nf)),
+            "violating_workflows": sorted(v), "not_reported": sorted(nf - any_)}
+
+
+def aggregate_not_flagged(per_scenario) -> dict:
+    listed = sum(c["listed"] for c in per_scenario)
+    v, vc = sum(c["violations"] for c in per_scenario), sum(c["violations_confirmed_only"] for c in per_scenario)
+    return {"scenarios": len(per_scenario), "scenarios_with_a_list": sum(1 for c in per_scenario if c["listed"]), "listed": listed,
+            "violations": v, "violations_confirmed_only": vc, "violation_rate": _ratio(v, listed), "violation_rate_confirmed_only": _ratio(vc, listed)}
 
 
 def aggregate(per_scenario) -> dict:

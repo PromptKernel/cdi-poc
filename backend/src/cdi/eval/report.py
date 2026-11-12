@@ -40,6 +40,21 @@ def render(s) -> str:
         a(f"- recall: micro {M.pct(o['micro_recall'])} (pooled), macro {M.pct(o['macro_recall'])} (mean over scenarios that have ground truth)")
         a(f"- false-positive share {M.pct(o['micro_false_positive_share'])} (unexpected / reported); false-positive rate {M.pct(o['micro_false_positive_rate'], 1)} (unexpected / workflows that should not be flagged)")
         a("")
+    nf = s.get("not_flagged_check")
+    if nf is not None:
+        a(f"## Check on the 'should NOT be flagged' lists {CAP}")
+        a("Separate from the metrics above: these are workflows the author named as not affected. A violation is one of them reported anyway (any confidence).")
+        if nf["listed"]:
+            a(f"- listed: {nf['listed']} workflow(s) in {nf['scenarios_with_a_list']} scenario(s); reported anyway: {nf['violations']} ({M.pct(nf['violation_rate'], 1)}); "
+              f"reported anyway through confirmed links only: {nf['violations_confirmed_only']} ({M.pct(nf['violation_rate_confirmed_only'], 1)})")
+        else:
+            a("- no scenario lists a workflow that should not be flagged: nothing to check.")
+        for p in s["scenarios"]:
+            c = p.get("not_flagged_check")
+            for d in (c or {}).get("detail", []):
+                dd = "; ".join(f"via `{x['via']}` [{x['confidence']}]" + (f" at {x['evidence']}" if x.get("evidence") else "") for x in d["detail"])
+                a(f"- violation: `{p['scenario']}` / `{d['workflow']}` - {dd}")
+        a("")
     t = s["timing"]
     a(f"## Timing {CAP}")
     a(f"- baseline build: {t['baseline_build_s']} s; PR run: mean {t['pr_run_mean_s']} s, max {t['pr_run_max_s']} s (one repository, one machine)")

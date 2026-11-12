@@ -15,6 +15,10 @@ Everything is **measured on synthetic data** (the synthetic-extended sample and 
    recall = |GT ∩ R| / |GT| (undefined when GT is empty); false-positive share = |R − GT| / |R|; false-positive rate = |R − GT| / |U − GT|. Reported twice: with every link, and with
    CONFIRMED links only (so reliance on INFERRED links is visible). Overall: micro (pooled counts) and macro (mean over scenarios that have ground truth).
    Also reported: number of unresolved and not-found items, PR run duration, baseline freshness (commits per logical repo, load time, stale/fresh).
+   **"Should NOT be flagged" check.** The input also lets the author name workflows that a change must not affect. That list is checked **separately** from the metrics above: a violation is a listed workflow
+   the tool reported anyway (any confidence, and confirmed-only), reported with the path that led to it. It never changes recall or the false-positive numbers.
+   The converter reads the current input layout (blocks `## Scenario N: `name``, bold-labelled fields) and the older bullet layout. A blank required field is reported as missing and nothing is written;
+   `none` marks a deliberately empty list.
 5. **Misses are explained.** For each ground-truth workflow not reported, the harness states why: the name is not in the graph; no changed object was mapped; an UNRESOLVED link lies on the
    workflow's dependency path (the tool never traverses those); the depth limit was hit; or no path exists at all (not visible to static analysis). Workflows found only through INFERRED links are listed separately.
 6. **Output:** `out/eval/summary.md` and `summary.json` (git-ignored). Every number is labelled "measured on synthetic data".
