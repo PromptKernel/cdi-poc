@@ -24,6 +24,19 @@ The same applies to `gh` commands that publish content.
 So merging a branch that is already pushed (e.g. fast-forwarding `main` to `origin/restructure`) does not re-scan commits that are public already; the committed tree and the staging area are still scanned in full,
 and any new commit is scanned in full. The gate prints how many commits it skipped for that reason.
 
+## The default range: commits not yet on the remote
+**Rule.** Unless `--range` is given, the gate checks the commits that are not yet on the remote of the branch's upstream: `HEAD --not --remotes=<remote>`. With no upstream it checks every commit that is on no remote. The committed tree and the staging area are always scanned in full, and every new commit is scanned in full (files, added lines, messages, authors). The gate prints how many commits it skipped because they are already on the remote.
+
+**Why.** The first version scanned everything reachable from `HEAD`. Fast-forwarding `main` to an already pushed branch then re-flagged content that was public already (six images from an earlier commit, two fake credential-looking test strings), so a push of nothing new was blocked and the only ways forward were to disable the gate or to rewrite public history. Rewriting history was ruled out, and a gate that has to be bypassed is worse than none. Checking what a push would *publish* is the purpose of the gate; what the remote already holds cannot be un-published by it. Commits that are already public stay visible in history; the gate does not claim to clean them.
+
+**What this does not do.** It does not scan commits on the remote, so anything already public is not re-checked; it does not weaken the tree scan, so a bad file still tracked at the tip is always caught.
+
+**The push form (exactly one command, no pipe, no `tail`, no `;`):**
+```
+scripts/prepush_gate.sh && git push origin <branch>
+```
+`&&` makes the push run only if the gate exits 0. Do not put a pipe in the gate's command (`scripts/prepush_gate.sh | tail -1 && git push ...`): a pipeline takes the exit status of its last command, so a failing gate would not stop the push and the output would be filtered. Do not use `;` or `&` either. Read the complete gate output; it is the check.
+
 ## Nothing is hardcoded
 Rules live in `.prepush-gate.conf` (`KEY=value`, parsed and never executed) and in `PREPUSH_<KEY>` environment variables, which win. The file holds no names, paths or identities.
 The private names to search for go in `private/prepush-terms.txt` (one regex per line) and the private text for the overlap check in `private/overlap-source.txt`; `private/` is git-ignored.

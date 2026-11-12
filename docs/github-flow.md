@@ -172,7 +172,7 @@ Differences from the previous run of the same PRs: only the commit shas, the tar
 10. On the stale-target positive case the OLDER-target warning said "the baseline graph reflects the target tip", which is false: the baseline restored for a PR belongs to the PR's own base commit. Fixed in `b42bae8`; verified on the final runs.
 11. The pre-push gate re-flagged commits that were already public when merging an already-pushed branch; it now scans only commits not yet on the remote (plus the whole tree). Not a GitHub behaviour; local tests.
 
-Still imperfect (cosmetic, not fixed): the STALE message says "the target branch is at 8466e234", meaning the last commit that touched that folder, while the OLDER-target message names the branch tip (`651dd7a0`); the two shas differ legitimately but read as a contradiction.
+12. The STALE and OLDER-target warnings named different commits for "the target" (the last commit touching the folder versus the branch tip) and read as a contradiction. Both now name the same three commits and say which is which: the STALE warning says "the graph was built from X; the last change to the 'db' folder on the target is Y; the target branch tip is Z", and the OLDER-target warning says "merge-base is M, the target tip is Z". Tests in `test_engine.py`; to be re-verified on GitHub (see the re-pin section below once done).
 
 ## Not verified
 * **Fork pull requests** (this needs a second account): the skip is tested only against the fake server.

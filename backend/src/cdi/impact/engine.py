@@ -87,8 +87,8 @@ def freshness_warnings(recorded, target_commits, merge_base, target_tip, moved=N
     for repo, cur in sorted(target_commits.items()):
         rec = (recorded.get("commits") or {}).get(repo)
         if rec != cur:
-            w.append(f"Baseline is STALE for '{repo}': the graph was built from {short(rec)} but the target branch is at {short(cur)}. "
-                     f"Results may miss changes already merged into the target.")
+            w.append(f"Baseline is STALE for '{repo}': the graph was built from {short(rec)}; the last change to the '{repo}' folder on the target is {short(cur)}; "
+                     f"the target branch tip is {short(target_tip)}. Results may miss changes already merged into the target.")
     if merge_base != target_tip and (moved is None or moved):
         what = "" if not moved else (f" {len(moved)} file(s) the scanners read or the configuration changed on the target since then "
                                      f"(for example `{moved[0]}`).")

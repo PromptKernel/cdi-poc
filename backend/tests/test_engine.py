@@ -58,6 +58,16 @@ def test_fresh_baseline_and_up_to_date_branch_give_no_warning():
 def test_stale_baseline_warns_per_repo():
     w = engine.freshness_warnings({"commits": {"web": "old00000", "api": "bbbb2222"}}, TC, "m" * 40, "m" * 40)
     assert len(w) == 1 and "STALE" in w[0] and "'web'" in w[0] and "old00000"[:8] in w[0] and "aaaa1111" in w[0]
+    assert "built from old00000" in w[0] and "last change to the 'web' folder on the target is aaaa1111" in w[0] and "target branch tip is mmmmmmmm" in w[0]
+
+
+def test_stale_and_older_target_warnings_name_the_same_target_tip():
+    tip = "2" * 40
+    w = engine.freshness_warnings({"commits": {"web": "old00000", "api": "bbbb2222"}}, TC, "1" * 40, tip)
+    stale, older = [x for x in w if "STALE" in x], [x for x in w if "OLDER" in x]
+    assert len(stale) == 1 and len(older) == 1
+    assert "target branch tip is 22222222" in stale[0] and "the target tip is 22222222" in older[0]
+    assert "merge-base is 11111111" in older[0] and "built from old00000" in stale[0]
 
 
 def test_pr_based_on_older_target_warns():
