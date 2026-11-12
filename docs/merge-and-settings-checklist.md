@@ -1,4 +1,4 @@
-# Merge status and repository settings (state on 2026-11-11, after the merge)
+# Merge status and repository settings (state on 2026-11-12, after the merge and the re-pins)
 
 ## What has been done
 * `restructure` was fast-forwarded into `main` of `PromptKernel/cdi-poc`; `restructure` still exists (do not delete it without a decision). The six explorer screenshots are in history (`c32e7e5`, reviewed and approved as clean) but not in any tree.
@@ -10,7 +10,7 @@ Apply to **`promptkernel/cdi-sample-app`** (*Settings > Actions > General > Acti
 actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1            # v7.0.1
 actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9      # v6.1.0
 actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9         # v6.1.0
-promptkernel/cdi-poc/.github/actions/cdi@b42bae8711669c8ab7cce8f55e0c6b712763c14b
+promptkernel/cdi-poc/.github/actions/cdi@2476a3a2b39e0db40aaa9afed080b07ec1c986f3  # pinned by the sample as of 2026-11-12 (replaces the earlier b42bae8 and 5eb4ef9 entries)
 ```
 and, because the composite action calls them, these three as well (they are pinned inside `.github/actions/cdi/action.yml` of the tool at that commit):
 ```
