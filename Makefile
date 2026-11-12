@@ -8,6 +8,8 @@ CDI_WEB_PORT    ?= 5173
 CDI_TARGET      ?= .
 # Branch or sha for `make pr`
 PR              ?=
+# The sample application checkout used by the sample-* shortcuts
+SAMPLE          ?= ../cdi-sample-app
 
 PY  := $(abspath $(VENV))/bin/python
 CDI := $(abspath $(VENV))/bin/cdi
@@ -16,7 +18,7 @@ TARGET := $(abspath $(CDI_TARGET))
 WEB_ORIGIN := http://$(CDI_WEB_HOST):$(CDI_WEB_PORT)
 export CDI_API_HOST CDI_API_PORT CDI_WEB_HOST CDI_WEB_PORT
 
-.PHONY: help setup test test-backend test-web e2e audit baseline pr serve web web-preview smoke
+.PHONY: help setup test test-backend test-web e2e audit baseline pr serve web web-preview smoke sample-baseline sample-pr sample-serve
 
 help:           ## list the targets
 	@grep -E '^[a-z-]+:.*## ' $(MAKEFILE_LIST) | sed -E 's/^([a-z-]+):.*## (.*)/  make \1\t\2/'
@@ -59,3 +61,12 @@ web-preview:    ## terminal 2 alternative: production build + preview server
 
 smoke:          ## end-to-end check on free ports: baseline, PR run, API, frontend, then clean shutdown (CDI_SAMPLE_REPO=path to use the sample repo)
 	$(PY) backend/scripts/smoke.py
+
+sample-baseline: ## shortcut: baseline of the sample app checkout (SAMPLE=../cdi-sample-app)
+	$(MAKE) baseline CDI_TARGET=$(SAMPLE)
+
+sample-pr:      ## shortcut: impact report of a branch of the sample app: make sample-pr PR=<branch>
+	$(MAKE) pr CDI_TARGET=$(SAMPLE) PR=$(PR)
+
+sample-serve:   ## shortcut: terminal 1, the read-only API over the sample app's baseline (terminal 2: make web)
+	$(MAKE) serve CDI_TARGET=$(SAMPLE)
