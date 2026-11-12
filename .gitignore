@@ -36,3 +36,6 @@ playwright-report/
 *.egg-info/
 
 dist-live/
+
+# Local state (generated passwords)
+.local/

@@ -20,6 +20,15 @@ result is a Markdown report, a PR comment and a commit status. The tool contains
 | Azure DevOps adapter | **Written, never run** (disabled by default; shapes taken from public docs). Optional plugin, not the default flow |
 | File-sink "simulated CI" (`out/pr-comment.md`) | **Simulation**: writes files only; used locally and as the no-token fallback |
 
+## Quick start (one command each; each installs or builds what is missing)
+```
+make run            # setup if needed, baseline if missing, then the API and the explorer together (Ctrl-C stops both)
+make api            # the same API alone (terminal 1)          make ui   # the explorer alone (terminal 2)
+make neo4j          # optional: Neo4j in Docker;  make run STORE=neo4j  uses it instead of the JSON file
+```
+They analyse `CDI_TARGET` (default `../cdi-sample-app`), which must have its own `.cdi/config.yml` (start from `config.example/config.yml`; `make baseline` says so when it is missing).
+Needs Python 3.10+, .NET 10, Node 22.12+ and git (Docker only for `make neo4j`). Neo4j is optional: the default store is the file `out/baseline.json` in the target.
+
 ## Layout
 `backend/` (`src/cdi/` Python package, `scanners/` Roslyn, ts-morph and ScriptDom, `schema/`, `scripts/`, `tests/`) - `frontend/` (React + Cytoscape explorer) - `docs/` - `.github/` (composite action) -
 `config.example/` (annotated config, GitHub workflows, optional Azure example). The sample application lives in its **own repository** (default name `promptkernel/cdi-sample-app`, a name only) and is
