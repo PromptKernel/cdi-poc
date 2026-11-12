@@ -47,6 +47,9 @@ def render(res):
         for w in m["warnings"]:
             a(f"- {w}")
         a("")
+    for n in m.get("notes", []):
+        a(f"_{n}_")
+        a("")
     t = m["timing_s"]
     a("## Run")
     a(f"- PR branch `{m['pr_branch']}` @ `{m['pr_sha'][:8]}`; target `{m['target']}` @ `{m['target_sha'][:8]}`; merge-base `{m['merge_base'][:8]}` (diff is merge-base..PR, three-dot)")

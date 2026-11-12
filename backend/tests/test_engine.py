@@ -58,7 +58,7 @@ def test_fresh_baseline_and_up_to_date_branch_give_no_warning():
 def test_stale_baseline_warns_per_repo():
     w = engine.freshness_warnings({"commits": {"web": "old00000", "api": "bbbb2222"}}, TC, "m" * 40, "m" * 40)
     assert len(w) == 1 and "STALE" in w[0] and "'web'" in w[0] and "old00000"[:8] in w[0] and "aaaa1111" in w[0]
-    assert "built from old00000" in w[0] and "last change to the 'web' folder on the target is aaaa1111" in w[0] and "target branch tip is mmmmmmmm" in w[0]
+    assert "baseline's last change to the 'web' folder was old00000" in w[0] and "last change to the 'web' folder on the target is aaaa1111" in w[0] and "target branch tip is mmmmmmmm" in w[0]
 
 
 def test_stale_and_older_target_warnings_name_the_same_target_tip():
@@ -67,7 +67,7 @@ def test_stale_and_older_target_warnings_name_the_same_target_tip():
     stale, older = [x for x in w if "STALE" in x], [x for x in w if "OLDER" in x]
     assert len(stale) == 1 and len(older) == 1
     assert "target branch tip is 22222222" in stale[0] and "the target tip is 22222222" in older[0]
-    assert "merge-base is 11111111" in older[0] and "built from old00000" in stale[0]
+    assert "merge-base is 11111111" in older[0] and "baseline's last change to the 'web' folder was old00000" in stale[0]
 
 
 def test_pr_based_on_older_target_warns():
@@ -147,3 +147,28 @@ def test_older_target_warning_makes_no_claim_about_what_the_baseline_reflects():
     """Found on the real run: the baseline restored for a PR belongs to the PR's own base commit, so 'the baseline graph reflects the target tip' was false."""
     w = engine.freshness_warnings({"commits": dict(TC)}, TC, "1" * 40, "2" * 40)[0]
     assert "reflects the target tip" not in w and "not part of this analysis" in w and "three-dot" in w
+
+
+# ---------- neutral note when the PR touches nothing analysed ----------
+def test_pr_touches_analysed_files_only_for_scanned_files_or_configuration():
+    assert engine.pr_touches_analysed(["db/a.sql"], REPOS)
+    assert engine.pr_touches_analysed([".cdi/config.yml"], REPOS)
+    assert engine.pr_touches_analysed(["README.md", "web/src/a.ts"], REPOS)
+    assert not engine.pr_touches_analysed(["README.md", ".github/w.yml", "db/notes.txt", "web/src/types.d.ts"], REPOS)
+    assert not engine.pr_touches_analysed([], REPOS)
+
+
+def test_both_staleness_warnings_become_one_neutral_line_when_the_pr_touches_nothing_analysed():
+    w = engine.freshness_warnings({"commits": {"web": "old00000", "api": "bbbb2222"}}, TC, "1" * 40, "2" * 40)
+    assert len(w) == 2
+    kept, notes = engine.neutralize_staleness(w, False, "1" * 40, "2" * 40, "main")
+    assert kept == [] and notes == ["main has moved since this branch; this PR does not touch analysed files."]
+
+
+def test_full_staleness_warnings_are_kept_when_the_pr_touches_analysed_files_or_the_target_did_not_move():
+    w = engine.freshness_warnings({"commits": {"web": "old00000", "api": "bbbb2222"}}, TC, "1" * 40, "2" * 40)
+    assert engine.neutralize_staleness(w, True, "1" * 40, "2" * 40, "main") == (w, [])
+    same = engine.freshness_warnings({"commits": {"web": "old00000", "api": "bbbb2222"}}, TC, "m" * 40, "m" * 40)
+    assert engine.neutralize_staleness(same, False, "m" * 40, "m" * 40, "main") == (same, []), "branch is at the tip: nothing 'moved since this branch'"
+    other = ["No baseline freshness record found: cannot tell which commits the graph was built from."]
+    assert engine.neutralize_staleness(other, False, "1" * 40, "2" * 40, "main") == (other, [])

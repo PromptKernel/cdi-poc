@@ -43,6 +43,7 @@ def _render(result, b, ccfg, scale, violations, blocking):
     meta = result["meta"]
     if meta["warnings"]:
         lines += ["### ⚠ Warnings"] + [f"- {w}" for w in meta["warnings"]] + [""]
+    lines += [f"_{n}_" for n in meta.get("notes", [])] + ([""] if meta.get("notes") else [])
     objs = result["objects"]
     if blocking:
         lines += ["### Blocking policies (enabled for this run)"]

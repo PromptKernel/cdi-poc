@@ -236,3 +236,21 @@ def test_older_target_warning_only_when_relevant_files_moved_on_the_target(world
     res = run(world, "pr-h-before-docs", fresh=fresh)
     w = [x for x in res["meta"]["warnings"] if "OLDER target" in x]
     assert len(w) == 1 and "samples/web/src/app/services/employee.service.ts" in w[0]
+
+
+def test_pr_touching_no_analysed_file_gets_one_neutral_line_instead_of_both_staleness_warnings(world):
+    p, runner, g, fresh = world
+    make_branch(p, "pr-i-readme", {"README.md": lambda t: (t or "") + "note\n"}, base="main")
+    make_branch(p, "pr-j-moves-main", {"samples/db/synthetic/procedures/spGetCityList.sql": lambda t: t + "-- later\n"}, base="main")
+    sh(["git", "merge", "--ff-only", "pr-j-moves-main"], cwd=p.path)
+    stale = {**fresh, "commits": {**fresh["commits"], "db": "0" * 40}}
+    res = run(world, "pr-i-readme", fresh=stale)
+    assert res["meta"]["warnings"] == [], res["meta"]["warnings"]
+    assert res["meta"]["notes"] == ["main has moved since this branch; this PR does not touch analysed files."]
+    md = report.render(res)
+    assert "## ⚠ Warnings" not in md and "_main has moved since this branch; this PR does not touch analysed files._" in md
+    assert "STALE" not in md and "OLDER" not in md
+    # a PR that does touch a scanned file keeps both full warnings and no note
+    res2 = run(world, "pr-a-sp-body", fresh=stale)
+    assert any("STALE" in w for w in res2["meta"]["warnings"]) and any("OLDER target" in w for w in res2["meta"]["warnings"])
+    assert res2["meta"]["notes"] == []

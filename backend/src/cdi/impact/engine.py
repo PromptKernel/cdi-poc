@@ -87,7 +87,7 @@ def freshness_warnings(recorded, target_commits, merge_base, target_tip, moved=N
     for repo, cur in sorted(target_commits.items()):
         rec = (recorded.get("commits") or {}).get(repo)
         if rec != cur:
-            w.append(f"Baseline is STALE for '{repo}': the graph was built from {short(rec)}; the last change to the '{repo}' folder on the target is {short(cur)}; "
+            w.append(f"Baseline is STALE for '{repo}': the baseline's last change to the '{repo}' folder was {short(rec)}; the last change to the '{repo}' folder on the target is {short(cur)}; "
                      f"the target branch tip is {short(target_tip)}. Results may miss changes already merged into the target.")
     if merge_base != target_tip and (moved is None or moved):
         what = "" if not moved else (f" {len(moved)} file(s) the scanners read or the configuration changed on the target since then "
@@ -95,6 +95,29 @@ def freshness_warnings(recorded, target_commits, merge_base, target_tip, moved=N
         w.append(f"The PR branch is based on an OLDER target: merge-base is {short(merge_base)}, the target tip is {short(target_tip)}.{what} "
                  f"The diff covers only the PR's own changes (three-dot); changes merged into the target since the merge-base are not part of this analysis.")
     return w
+
+
+def pr_touches_analysed(changed_files, repos):
+    """True when the PR changes a file a scanner reads or the tool configuration (.cdi/)."""
+    for f in changed_files:
+        if f.startswith(".cdi/"):
+            return True
+        for r in repos:
+            folder = r["path"].rstrip("/") + "/"
+            if f.startswith(folder) and D.is_scanned(f[len(folder):], r.get("include", []), r.get("exclude", [])):
+                return True
+    return False
+
+
+def neutralize_staleness(warnings, touches_analysed, merge_base, target_tip, target_label):
+    """(warnings, notes). When the PR touches no scanned file and no configuration and the target has moved past the merge-base, the two staleness
+    warnings (STALE baseline, OLDER target) are replaced by one neutral note: neither can change this PR's result. Everything else is kept."""
+    if touches_analysed or merge_base == target_tip:
+        return warnings, []
+    kept = [w for w in warnings if not (w.startswith("Baseline is STALE") or w.startswith("The PR branch is based on an OLDER target"))]
+    if len(kept) == len(warnings):
+        return warnings, []
+    return kept, [f"{target_label} has moved since this branch; this PR does not touch analysed files."]
 
 
 def test_categories(g: Graph, test_id, affected):
@@ -171,6 +194,7 @@ def analyze(project_root, tool_root, config_dir, target, pr, baseline: Graph, fr
     folders = [r["path"].rstrip("/") + "/" for r in repos]
     outside = [f for f in all_changed if not any(f.startswith(x) for x in folders)]          # changed files in no analysed logical repo (a root README, workflows, ...)
     limit = cfg["limits"]["max_changed_files"]
+    warnings, notes = neutralize_staleness(warnings, pr_touches_analysed(all_changed, repos), mb, tgt, target_label or target)
     n_changed = sum(len(D.changes(root, mb, head_sha, r["path"])) for r in repos)
     if n_changed > limit:
         raise PRTooLarge(n_changed, limit)
@@ -373,7 +397,7 @@ def analyze(project_root, tool_root, config_dir, target, pr, baseline: Graph, fr
     return {
         "meta": {"files_outside_analysed_folders": outside, "pr": name or pr, "pr_branch": pr_label or pr, "target": target_label or target, "target_sha": tgt, "pr_sha": head_sha, "merge_base": mb,
                  "baseline_commits": (freshness or {}).get("commits"), "baseline_loaded_at": (freshness or {}).get("loaded_at"),
-                 "baseline_mode": (freshness or {}).get("mode"), "target_commits": target_commits, "warnings": warnings,
+                 "baseline_mode": (freshness or {}).get("mode"), "target_commits": target_commits, "warnings": warnings, "notes": notes,
                  "synthetic_notice": synthetic_any, "scan_plan": plan,
                  "timing_s": {"total_pr_run": round(t_end - t_start, 3), "overlay_scan": round(t_scan_done - t_scan, 3),
                               "analysis_and_report_inputs": round(t_end - t_scan_done, 3)},
